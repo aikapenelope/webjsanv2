@@ -1,0 +1,127 @@
+---
+import '../../src/styles/global.css';
+import { SITE, NAV, waLink } from '../data/site';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Ruta canónica relativa, ej: "/nosotros/" */
+  path?: string;
+  /** JSON-LD adicional específico de la página */
+  jsonLdExtra?: object | object[];
+}
+
+const { title, description = SITE.description, path = '/', jsonLdExtra } = Astro.props;
+
+const canonical = new URL(path, SITE.url).href;
+const ogImage = new URL('/assets/logo-jsan.webp', SITE.url).href;
+
+const jsonLdLocal: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoRepair',
+  '@id': `${SITE.url}/#negocio`,
+  name: SITE.name,
+  legalName: SITE.name,
+  url: SITE.url,
+  telephone: SITE.phoneOficina1,
+  email: SITE.email,
+  foundingDate: String(SITE.fundacion),
+  taxID: SITE.rif,
+  image: new URL('/assets/logo-jsan.webp', SITE.url).href,
+  priceRange: '$$',
+  address: [
+    {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.direccion.oficina,
+      addressLocality: 'Caracas',
+      addressRegion: 'Miranda',
+      addressCountry: 'VE',
+    },
+    {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.direccion.taller,
+      addressLocality: 'Turumo',
+      addressRegion: 'Miranda',
+      addressCountry: 'VE',
+    },
+  ],
+  areaServed: ['Caracas', 'Miranda', 'Los Teques', 'Venezuela'],
+  sameAs: [SITE.redes.facebook, SITE.redes.threads],
+};
+
+const scriptsJsonLd = [jsonLdLocal, ...(jsonLdExtra ? (Array.isArray(jsonLdExtra) ? jsonLdExtra : [jsonLdExtra]) : [])];
+---
+
+<!doctype html>
+<html lang="es-VE">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ff5a00" />
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.shortName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="es_VE" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    {scriptsJsonLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+  </head>
+  <body>
+    <slot />
+
+    <!-- WHATSAPP FLOTANTE -->
+    <WhatsAppFloat />
+
+    <!-- NAV MOVIL -->
+    <div class="mnav" id="mnav">
+      <div class="mnav-head">
+        <img src="/assets/logo-jsan.webp" alt="J-SAN" />
+        <button class="mclose" id="mclose" aria-label="Cerrar menú">✕</button>
+      </div>
+      <nav class="mnav-links" aria-label="Menú móvil">
+        {NAV.map((n) => (
+          <a href={n.href}><i>{n.num}</i> {n.label}</a>
+        ))}
+      </nav>
+      <div class="mnav-foot">
+        <a class="btn-o" style="display:flex" target="_blank" rel="noopener" href={waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática')}>
+          WhatsApp directo
+        </a>
+      </div>
+    </div>
+
+    <script is:inline>
+      const mnav = document.getElementById('mnav');
+      document.getElementById('burger')?.addEventListener('click', () => mnav.classList.add('open'));
+      document.getElementById('mclose')?.addEventListener('click', () => mnav.classList.remove('open'));
+      mnav.addEventListener('click', (e) => {
+        const t = e.target;
+        if (t === mnav) mnav.classList.remove('open');
+        if (t && t.closest && t.closest('a')) mnav.classList.remove('open');
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') mnav.classList.remove('open');
+      });
+    </script>
+  </body>
+</html>

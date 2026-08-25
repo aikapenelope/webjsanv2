@@ -1,0 +1,26 @@
+---
+// Topbar sticky para páginas internas
+interface Props {
+  tagline?: string;
+}
+const { tagline = 'Taller Familiar · Est. 2013' } = Astro.props;
+import { waLink } from '../data/site';
+---
+
+<div class="topbar2">
+  <a class="tb-brand" href="/" aria-label="Inicio Hidromáticos J-SAN">
+    <img src="/assets/logo-jsan.webp" alt="Escudo J-SAN" />
+    <span>
+      <b>HIDROMÁTICOS J-SAN</b>
+      <small>{tagline}</small>
+    </span>
+  </a>
+  <div class="tb-right">
+    <a class="btn-line" href="/">← Inicio</a>
+    <a class="btn-line" href="/nosotros/">Nosotros</a>
+    <a class="btn-line" href="/contacto/">Contacto</a>
+    <a class="btn-o" target="_blank" rel="noopener" href={waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática')}>
+      WhatsApp →
+    </a>
+  </div>
+</div>
