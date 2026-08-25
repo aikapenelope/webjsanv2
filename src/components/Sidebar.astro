@@ -1,0 +1,21 @@
+---
+// Sidebar fija de escritorio (home)
+import { NAV, SITE, waLink } from '../data/site';
+---
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <img src="/assets/logo-jsan.webp" alt="Escudo Hidromáticos J-SAN" />
+    <b>HIDROMÁTICOS<br />J-SAN</b>
+    <small>Líderes en Transmisiones</small>
+  </div>
+  <nav class="sb-nav" aria-label="Navegación principal">
+    {NAV.map((n) => <a href={n.href}><i>{n.num}</i> {n.label}</a>)}
+  </nav>
+  <div class="sb-foot">
+    <a class="btn-o" target="_blank" rel="noopener" href={waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática')}>
+      WhatsApp directo
+    </a>
+    <a class="btn-line" href={`tel:+${SITE.whatsapp}`}>{SITE.whatsappDisplay}</a>
+  </div>
+</aside>

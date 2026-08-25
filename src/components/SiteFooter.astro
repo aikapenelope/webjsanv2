@@ -1,0 +1,39 @@
+---
+import { SITE } from '../data/site';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="f-grid">
+    <div>
+      <img src="/assets/logo-jsan.webp" alt="Escudo J-SAN" />
+      <p>
+        {SITE.name} · RIF {SITE.rif}<br />
+        Importadores de motores, cajas y repuestos automotrices desde {SITE.fundacion}.
+      </p>
+    </div>
+    <div class="f-col">
+      <b>Sedes</b>
+      <span>Oficina: Monte Cristo, Calle 10</span>
+      <span>Taller: La Floresta, Local 9, Turumo</span>
+    </div>
+    <div class="f-col">
+      <b>Contacto</b>
+      <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+      <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </div>
+    <div class="f-col">
+      <b>Explora</b>
+      <a href="/#servicios">Servicios</a>
+      <a href="/nosotros/">Sobre nosotros</a>
+      <a href="/resenas/">Reseñas</a>
+      <a href="/contacto/">Contacto</a>
+    </div>
+  </div>
+  <div class="f-legal">
+    <span>© {anio} {SITE.name} — Todos los derechos reservados</span>
+    <span>Diseño industrial · Caracas, Venezuela</span>
+  </div>
+</footer>
