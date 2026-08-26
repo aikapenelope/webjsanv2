@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Topbar from '../components/Topbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SITE } from '../data/site';
+import { waLink } from '../data/site';
 
 const title = 'Nosotros · Hidromáticos J-SAN — Taller familiar de transmisiones desde 2013';
 const description =
@@ -15,10 +15,6 @@ const VALORES = [
   { ico: 'reloj', t: 'Puntualidad', s: 'Tu tiempo vale como tu carro' },
   { ico: 'llave', t: 'Mano de obra excelente', s: 'Especialistas, no improvisados' },
 ];
-
-// Mismo patrón world-dots de la sección de marcas americanas
-const WORLD_DOTS =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><filter id='b'><feGaussianBlur stdDeviation='6'/></filter><g fill='white'><ellipse cx='38' cy='38' rx='26' ry='30'/><path d='M60 52 Q80 40 95 55 Q105 65 92 74 L70 78 Z'/><path d='M108 28 Q130 20 150 32 Q160 45 148 52 Q128 58 112 48 Z'/><path d='M118 62 Q138 58 146 72 Q142 86 124 84 Q112 76 118 62 Z'/><ellipse cx='168' cy='34' rx='20' ry='14'/><ellipse cx='196' cy='88' rx='12' ry='9'/></g></svg>\")";
 ---
 
 <BaseLayout title={title} description={description} path="/nosotros/">
@@ -34,7 +30,7 @@ const WORLD_DOTS =
 
   <!-- PROPÓSITO / MISIÓN / VISIÓN sobre fondo mapamundi blanco -->
   <div class="pmv-full pmv-full--claro">
-    <div class="world-dots" aria-hidden="true" style={`-webkit-mask-image:${WORLD_DOTS} center/cover no-repeat;mask-image:${WORLD_DOTS} center/cover no-repeat`}></div>
+    <div class="world-dots" aria-hidden="true"></div>
     <div class="pmv-b">
       <div class="pn"><i>N° 01</i><h2>Propósito</h2></div>
       <div>
@@ -89,7 +85,7 @@ const WORLD_DOTS =
     <div class="kick"><span class="sq"></span><span>Contacto</span></div>
     <h2>¿Tu caja está patinando?</h2>
     <div class="f-btns">
-      <a class="fb-dark" target="_blank" rel="noopener" href={`https://wa.me/${SITE.whatsapp}`}>Escribir por WhatsApp</a>
+      <a class="fb-dark" target="_blank" rel="noopener" href={waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática')}>Escribir por WhatsApp</a>
       <a class="fb-outline" href="/contacto/">Ver todos los canales →</a>
     </div>
   </section>
@@ -100,11 +96,6 @@ const WORLD_DOTS =
 <style>
   /* Variante CLARA del PMV: fondo blanco + world-dots (mismo lenguaje visual que MarcasUsa) */
   .pmv-full--claro{position:relative;background:#fff;color:#16181d;border-bottom:2px solid var(--line);overflow:hidden}
-  .world-dots{
-    position:absolute;inset:0;background-color:#fff;
-    background-image:radial-gradient(rgba(22,24,29,.13) 1.6px,transparent 1.6px);
-    background-size:18px 18px;pointer-events:none;
-  }
   .pmv-b{position:relative;display:grid;grid-template-columns:200px 1fr;gap:2rem;padding:2.6rem clamp(1.2rem,3vw,2.6rem);border-top:2px solid #e3e5e9}
   .pmv-b:first-of-type{border-top:none}
   .pmv-b .pn i{font-style:normal;font-family:var(--font-display);font-size:.8rem;letter-spacing:.2em;color:var(--orange-deep);display:block;margin-bottom:.5rem}

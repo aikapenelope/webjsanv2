@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Topbar from '../components/Topbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SITE, RESENAS } from '../data/site';
+import ReviewCarousel from '../components/ReviewCarousel.astro';
+import { RESENAS } from '../data/site';
 
 const title = 'Reseñas · Hidromáticos J-SAN — ★ 4.6 con 35 opiniones en Google';
 const description =
@@ -39,23 +40,7 @@ const jsonLdResenas = {
 
   <!-- CARRUSEL AUTO -->
   <section style="padding-top:clamp(1.6rem,4vh,2.6rem)">
-    <div class="carousel" aria-label="Reseñas de clientes">
-      <div class="car-track">
-        {[0, 1].map(() =>
-          RESENAS.map((r) => (
-            <article class="car-card">
-              <span class="t-stars">★★★★★</span>
-              <p>{r.texto}</p>
-              <div class="t-by">
-                <span class="sqv">{r.iniciales}</span>
-                <div><b>{r.nombre}</b><span>{r.meta}</span></div>
-                <span class="t-src">{r.fuente}</span>
-              </div>
-            </article>
-          ))
-        )}
-      </div>
-    </div>
+    <ReviewCarousel />
 
     <div class="opinion" style="border-style:solid;margin-top:2.4rem;padding:2rem">
       <div>

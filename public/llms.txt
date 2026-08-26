@@ -10,7 +10,7 @@
 - **Email:** hidromaticosjsan@gmail.com
 - **Sede única:** Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 (frente a Campi Ferretería), Miranda, Caracas
 - **Horario:** lunes a sábado, con cita previa por WhatsApp
-- **Redes:** facebook.com/HidromaticosJSan · threads.net/@hidromaticosjs
+- **Redes:** instagram.com/hidromaticosjs · facebook.com/HidromaticosJSan · threads.net/@hidromaticosjs
 
 ## Servicios
 
@@ -33,3 +33,6 @@ Toyota, Chevrolet, Ford, Hyundai, Nissan, Kia, Mitsubishi, Jeep, Volkswagen, Mer
 - `/nosotros/` — historia familiar, propósito, misión, visión y valores
 - `/resenas/` — reseñas de clientes y cómo dejar una nueva
 - `/contacto/` — canales de contacto, sede y horarios
+- `/videos/` — videos y reels reales de trabajos en el taller
+- `/blog/` — guías especializadas sobre cajas automáticas y mantenimiento
+- `/terminos/` — términos, condiciones del servicio y política de garantía

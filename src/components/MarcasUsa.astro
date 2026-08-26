@@ -1,6 +1,6 @@
 ---
 // Sección "Repuestos originales de EE.UU." — marcas americanas sobre patrón world-dots
-import { SITE, waLink } from '../data/site';
+import { waLink } from '../data/site';
 
 const MARCAS_USA = [
   {
@@ -76,16 +76,8 @@ const logo = (slug: string) => `/assets/marcas-usa/${slug}.png`;
 </section>
 
 <style>
-  /* ===== PATRÓN MAPAMUNDI EN PUNTOS (recreado en código) ===== */
+  /* ===== SECCIÓN MARCAS AMERICANAS ===== */
   .usa-section{position:relative;background:#fff;color:#16181d;border-bottom:2px solid var(--line);overflow:hidden}
-  .world-dots{
-    position:absolute;inset:0;
-    background-color:#ffffff;
-    background-image:radial-gradient(rgba(22,24,29,.14) 1.6px, transparent 1.6px);
-    background-size:18px 18px;
-    -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><filter id='b'><feGaussianBlur stdDeviation='6'/></filter><rect width='240' height='120' fill='white' filter='url(%23b)' opacity='0'/><g fill='white'><ellipse cx='38' cy='38' rx='26' ry='30'/><path d='M60 52 Q80 40 95 55 Q105 65 92 74 L70 78 Z'/><path d='M108 28 Q130 20 150 32 Q160 45 148 52 Q128 58 112 48 Z'/><path d='M118 62 Q138 58 146 72 Q142 86 124 84 Q112 76 118 62 Z'/><ellipse cx='168' cy='34' rx='20' ry='14'/><ellipse cx='196' cy='88' rx='12' ry='9'/></g></svg>") center/cover no-repeat;
-    mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><filter id='b'><feGaussianBlur stdDeviation='6'/></filter><rect width='240' height='120' fill='white' filter='url(%23b)' opacity='0'/><g fill='white'><ellipse cx='38' cy='38' rx='26' ry='30'/><path d='M60 52 Q80 40 95 55 Q105 65 92 74 L70 78 Z'/><path d='M108 28 Q130 20 150 32 Q160 45 148 52 Q128 58 112 48 Z'/><path d='M118 62 Q138 58 146 72 Q142 86 124 84 Q112 76 118 62 Z'/><ellipse cx='168' cy='34' rx='20' ry='14'/><ellipse cx='196' cy='88' rx='12' ry='9'/></g></svg>") center/cover no-repeat;
-  }
   .usa-inner{position:relative;padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
   .usa-inner .kick span:last-child,.usa-lead{color:#5c5f66}
   .usa-inner h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4.4vw,3.6rem);line-height:.98;text-transform:uppercase;max-width:24ch;margin:.6rem 0 1rem}
