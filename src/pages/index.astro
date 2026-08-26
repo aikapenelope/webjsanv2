@@ -4,7 +4,8 @@ import Sidebar from '../components/Sidebar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SocialGrid from '../components/SocialGrid.astro';
 import MarcasUsa from '../components/MarcasUsa.astro';
-import { SITE, MARCAS, RESENAS, waLink } from '../data/site';
+import ReviewCarousel from '../components/ReviewCarousel.astro';
+import { SITE, MARCAS, waLink } from '../data/site';
 
 const WA_FALLA = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
 const WA_AGENDAR = waLink('Hola J-SAN, quiero agendar un escaneo para mi carro');
@@ -103,7 +104,7 @@ const jsonLdFAQ = {
             <img src="/assets/logo-jsan.webp" alt="Escudo J-SAN" style="width:40px;height:auto;background:var(--panel-2);border:2px solid var(--line-strong);padding:.35rem" /><b style="font-family:var(--font-display);font-weight:400;font-size:1rem;letter-spacing:.05em">J-SAN</b>
           </a>
           <span class="tag">Caracas · Miranda · Venezuela</span>
-          <button class="burger" id="burger" aria-label="Abrir menú"><span></span></button>
+          <button class="burger" data-mnav-toggle aria-label="Abrir menú" aria-controls="mnav"><span></span></button>
         </div>
 
         <div class="hero-mid">
@@ -217,23 +218,7 @@ const jsonLdFAQ = {
           </div>
           <p>Reseñas reales de nuestra ficha de Google ★ 4.6 (35 opiniones).</p>
         </div>
-        <div class="carousel" aria-label="Reseñas de clientes">
-          <div class="car-track">
-            {[0, 1].map(() =>
-              RESENAS.map((r) => (
-                <article class="car-card">
-                  <span class="t-stars">★★★★★</span>
-                  <p>{r.texto}</p>
-                  <div class="t-by">
-                    <span class="sqv">{r.iniciales}</span>
-                    <div><b>{r.nombre}</b><span>{r.meta}</span></div>
-                    <span class="t-src">{r.fuente}</span>
-                  </div>
-                </article>
-              ))
-            )}
-          </div>
-        </div>
+        <ReviewCarousel />
         <div class="opinion">
           <div>
             <b>Valoramos tu opinión</b>
