@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es-VE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sobre Nosotros · Hidromáticos J-SAN — Líderes en Transmisiones</title>
+<meta name="description" content="Conoce a Hidromáticos J-SAN, C.A.: propósito, misión y visión del taller familiar especialista en cajas automáticas de Caracas, desde 2013.">
+<meta name="theme-color" content="#0f2a57">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sobre Nosotros · Hidromáticos J-SAN">
+<meta property="og:description" content="Propósito, misión y visión del taller familiar especialista en transmisiones automáticas. Desde 2013 en Miranda, Venezuela.">
+<meta property="og:image" content="assets/og-jsan.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f2a57; --navy-deep:#0a1e40; --navy-panel:#16346b;
+  --blue:#2159c3; --blue-hover:#1a48a3;
+  --sky:#eef4fb; --sky-line:#d7e3f4;
+  --white:#fff; --muted:#55607a; --muted-dark:#a8b6d4;
+  --gold:#c9a227; --gold-soft:#e9c25c;
+  --radius:16px;
+  --font-display:'Barlow Condensed',sans-serif; --font-body:'Barlow',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overflow-x:clip}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{font-family:var(--font-body);background:var(--white);color:var(--navy);line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{width:min(1080px,92%);margin-inline:auto}
+
+/* TOPBAR */
+.topbar{background:var(--navy-deep);color:#c6d3ec;font-size:.82rem;border-bottom:2px solid var(--gold)}
+.topbar .wrap{display:flex;justify-content:space-between;gap:1rem;padding:.45rem 0;flex-wrap:wrap}
+.topbar b{color:#fff}.topbar a{color:#c6d3ec;text-decoration:none}.topbar a:hover{color:var(--gold-soft)}
+
+/* HEADER */
+header.site{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--sky-line);box-shadow:0 1px 14px rgba(15,42,87,.06)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:.65rem 0}
+.brand{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.brand img{height:52px;width:auto}
+.brand-name{font-family:var(--font-display);font-weight:700;font-size:1.32rem;line-height:1;color:var(--navy)}
+.brand-sub{display:block;font-size:.67rem;font-weight:600;letter-spacing:.15em;color:var(--blue);text-transform:uppercase;margin-top:.18rem}
+.nav-links{display:flex;gap:1.5rem;list-style:none;align-items:center}
+.nav-links a{text-decoration:none;font-weight:600;font-size:.95rem;color:var(--navy)}
+.nav-links a:hover,.nav-links a.activo{color:var(--blue)}
+.nav-links a.activo{border-bottom:2px solid var(--gold);padding-bottom:.2rem}
+.btn{display:inline-flex;align-items:center;gap:.55rem;font-weight:700;text-decoration:none;border-radius:999px;padding:.78rem 1.5rem;font-size:.97rem;border:1.5px solid transparent;cursor:pointer;transition:all .15s ease}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(33,89,195,.28)}
+.btn-primary:hover{background:var(--blue-hover)}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}.btn-gold:hover{background:var(--gold-soft)}
+.btn-white{background:#fff;color:var(--navy)}.btn-white:hover{background:var(--gold);color:var(--navy-deep)}
+.btn-sm{padding:.5rem 1.05rem;font-size:.88rem}
+
+/* HERO */
+.hero-sobre{padding:4.4rem 0 4rem;background:radial-gradient(circle at 88% 8%, rgba(201,162,39,.10), transparent 42%),linear-gradient(180deg,#fff,var(--sky) 135%)}
+.hero-sobre .kicker{font-size:.74rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);display:inline-flex;gap:.55rem;align-items:center;margin-bottom:1rem}
+.hero-sobre .kicker::before{content:"";width:24px;height:2px;background:var(--gold)}
+.hero-grid{display:grid;grid-template-columns:auto 1fr;gap:2.6rem;align-items:center}
+.hero-escudo img{width:min(240px,52vw);filter:drop-shadow(0 20px 34px rgba(10,30,64,.2))}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(2.7rem,5.4vw,4.4rem);line-height:.98;text-transform:uppercase;text-wrap:balance}
+h1 .hl{color:var(--blue)}
+.hero-lede{margin-top:1.1rem;color:var(--muted);max-width:36rem;font-size:1.1rem}
+
+/* BLOQUES PMV */
+.bloques{padding:4.6rem 0;display:flex;flex-direction:column;gap:0}
+.bloque{display:grid;grid-template-columns:220px 1fr;gap:3rem;padding:3.4rem 0;border-top:1px solid var(--sky-line);align-items:start}
+.bloque:first-child{border-top:none;padding-top:.6rem}
+.bl-num{position:sticky;top:110px}
+.bl-num small{font-size:.72rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.35rem}
+.bl-num h2{font-family:var(--font-display);font-weight:700;font-size:clamp(2.2rem,4vw,3.2rem);text-transform:uppercase;line-height:1;color:var(--navy)}
+.bl-frase{font-family:var(--font-display);font-weight:600;font-size:clamp(1.45rem,2.6vw,2.05rem);line-height:1.22;color:var(--navy);text-wrap:pretty;position:relative;padding-left:1.4rem;border-left:3px solid var(--gold)}
+.bl-texto{margin-top:1.15rem;color:var(--muted);max-width:42rem;font-size:1.04rem;text-wrap:pretty}
+
+/* VISIÓN en navy */
+.vis-banda{background:linear-gradient(180deg,var(--navy),var(--navy-deep));border-radius:22px;padding:3.4rem clamp(1.4rem,4vw,3.4rem);margin-top:.6rem;color:#fff}
+.vis-banda .bl-num small{color:var(--gold-soft)}
+.vis-banda .bl-num h2{color:#fff}
+.vis-banda .bl-frase{border-left-color:var(--gold-soft);color:#fff}
+.vis-banda .bl-texto{color:var(--muted-dark)}
+
+/* VALORES */
+.valores{padding:3.8rem 0;border-top:1px solid var(--sky-line)}
+.v-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.6rem}
+.v-pill{border:1.5px solid var(--sky-line);background:#fff;border-radius:999px;padding:.55rem 1.25rem;font-weight:600;color:var(--navy);font-size:.95rem;display:inline-flex;align-items:center;gap:.5rem}
+.v-pill::before{content:"★";color:var(--gold);font-size:.78rem}
+
+/* CTA */
+.cta-final{padding:3.6rem 0;background:linear-gradient(180deg,var(--navy),var(--navy-deep));border-top:3px solid var(--gold)}
+.cta-inner{display:flex;justify-content:space-between;gap:1.6rem;flex-wrap:wrap;align-items:center}
+.cta-inner h2{font-family:var(--font-display);font-weight:700;font-size:clamp(1.9rem,3.6vw,2.7rem);text-transform:uppercase;color:#fff;line-height:1.04;max-width:30rem;text-wrap:balance}
+.cta-inner p{color:var(--muted-dark);margin-top:.4rem}
+.cta-btns{display:flex;gap:.8rem;flex-wrap:wrap}
+
+/* FOOTER */
+footer{background:var(--navy-deep);color:var(--muted-dark);padding:2.8rem 0 2rem;font-size:.9rem;border-top:1px solid rgba(255,255,255,.08)}
+.foot-grid{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:2.4rem;margin-bottom:1.8rem;align-items:start}
+.foot-logo{background:#fff;border-radius:14px;padding:.6rem;width:92px}
+footer h4{color:#fff;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.09em;font-size:1.02rem;margin-bottom:.7rem}
+footer ul{list-style:none}footer li{padding:.2rem 0}
+footer a{color:var(--muted-dark);text-decoration:none}footer a:hover{color:var(--gold-soft)}
+.foot-legal{border-top:1px solid rgba(255,255,255,.14);padding-top:1.2rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.78rem}
+
+/* NAV MOVIL */
+.menu-toggle{display:none;width:44px;height:44px;border:1.5px solid var(--sky-line);background:#fff;border-radius:12px;cursor:pointer;place-items:center;flex:none}
+.menu-toggle svg{width:22px;height:22px;stroke:var(--navy);fill:none}
+.mobile-nav{position:fixed;inset:0;z-index:80;background:rgba(10,30,64,.55);opacity:0;pointer-events:none;transition:opacity .2s ease;overflow:hidden}
+.mobile-nav.open{opacity:1;pointer-events:auto}
+.mobile-panel{position:absolute;top:0;right:0;width:min(330px,88vw);height:100%;background:#fff;padding:1.4rem 1.6rem;display:flex;flex-direction:column;transform:translateX(102%);transition:transform .25s ease;box-shadow:-20px 0 50px rgba(10,30,64,.28);overflow-y:auto}
+.mobile-nav.open .mobile-panel{transform:none}
+.mobile-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem}
+.mobile-head img{height:42px}
+.cerrar-m{border:none;background:var(--sky);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:1.05rem;color:var(--navy)}
+.mobile-panel a.m-link{padding:.9rem .3rem;text-decoration:none;font-weight:700;color:var(--navy);border-bottom:1px solid var(--sky-line);font-size:1.06rem;display:flex;justify-content:space-between;align-items:center}
+.mobile-panel a.m-link::after{content:"→";color:var(--gold)}
+
+@media (max-width:960px){
+  .menu-toggle{display:grid}
+  .nav-links{display:none}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-escudo img{width:180px}
+  .bloque{grid-template-columns:1fr;gap:1.1rem;padding:2.6rem 0}
+  .bl-num{position:static}
+  .vis-banda{padding:2.4rem 1.4rem}
+  .foot-grid{grid-template-columns:1fr}
+}
+@media (max-width:560px){.topbar span:first-child{display:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span><b>Oficina:</b> Urb. Monte Cristo, Calle 10, Miranda</span>
+    <span><a href="tel:+582122351931">(0212) 235.1931</a> · <a href="tel:+584242320424">0424-232.0424</a></span>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-jsan.webp" alt="Escudo de Hidromáticos J-SAN, C.A.">
+      <span><span class="brand-name">HIDROMÁTICOS J-SAN</span><span class="brand-sub">Líderes en Transmisiones · Est. 2013</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#servicios">Servicios</a></li>
+      <li><a href="jsan-ecommerce.html">🛒 Tienda</a></li>
+      <li><a href="index.html#sedes">Ubicación</a></li>
+      <li><a class="activo" href="sobre-nosotros.html">Nosotros</a></li>
+      <li><a href="index.html#faq">Preguntas</a></li>
+    </ul>
+    <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false"><svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a class="btn btn-primary btn-sm" target="_blank" rel="noopener" href="https://wa.me/584242320424?text=Hola%20J-SAN%2C%20quiero%20consultar%20por%20una%20falla%20en%20mi%20caja%20autom%C3%A1tica">WhatsApp</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero-sobre">
+  <div class="wrap hero-grid">
+    <div class="hero-escudo"><img src="assets/logo-jsan.webp" alt="Escudo corporativo de Hidromáticos J-SAN"></div>
+    <div>
+      <span class="kicker">Quiénes somos</span>
+      <h1>Más que un taller, <span class="hl">una familia</span> que entiende transmisiones</h1>
+      <p class="hero-lede">Desde 2013 mantenemos en movimiento a Caracas y Miranda. Esta es la razón por la que existimos y hacia dónde vamos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROPÓSITO / MISIÓN / VISIÓN -->
+<section class="bloques">
+  <div class="wrap">
+
+    <article class="bloque">
+      <div class="bl-num"><small>N° 01</small><h2>Propósito</h2></div>
+      <div>
+        <p class="bl-frase">Mantener en movimiento a las familias y empresas venezolanas con total seguridad y confianza.</p>
+        <p class="bl-texto">En JSAN, C.A. creemos que un vehículo es más que un medio de transporte; es una herramienta de trabajo y un conector de familias. Nuestro propósito es garantizar la tranquilidad de cada cliente al volante, ofreciendo soluciones mecánicas honestas y definitivas, respaldadas por nuestros valores familiares.</p>
+      </div>
+    </article>
+
+    <article class="bloque">
+      <div class="bl-num"><small>N° 02</small><h2>Misión</h2></div>
+      <div>
+        <p class="bl-frase">Brindar soluciones especializadas de máxima calidad en el diagnóstico, mantenimiento y reparación de transmisiones automáticas.</p>
+        <p class="bl-texto">Desde 2013, combinamos nuestra profunda experiencia técnica en hidromáticos con la dedicación de una empresa familiar. Nos comprometemos a ofrecer a cada cliente un trato transparente, diagnósticos precisos y un servicio de excelencia que asegure el rendimiento óptimo y la vida útil de sus vehículos.</p>
+      </div>
+    </article>
+
+    <div class="vis-banda">
+      <article class="bloque" style="border-top:none;padding:0">
+        <div class="bl-num"><small>N° 03</small><h2>Visión</h2></div>
+        <div>
+          <p class="bl-frase">Consolidarnos como el taller mecánico de referencia indiscutible en Venezuela en el área de hidromáticos.</p>
+          <p class="bl-texto">Aspiramos a liderar el sector automotriz manteniendo la esencia de nuestros orígenes familiares, siendo reconocidos por nuestra constante actualización técnica, la calidad impecable de nuestras reparaciones y la confianza inquebrantable de múltiples generaciones de clientes.</p>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- VALORES -->
+<section class="valores">
+  <div class="wrap">
+    <span class="kicker" style="font-size:.74rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);display:inline-flex;gap:.55rem;align-items:center">Lo que nos sostiene</span>
+    <h2 style="font-family:var(--font-display);font-weight:700;font-size:clamp(1.9rem,3.6vw,2.7rem);text-transform:uppercase;line-height:1.04;margin-top:.6rem">Valores familiares, estándares profesionales</h2>
+    <div class="v-row">
+      <span class="v-pill">Disciplina</span>
+      <span class="v-pill">Honestidad</span>
+      <span class="v-pill">Puntualidad</span>
+      <span class="v-pill">Profesionalismo</span>
+      <span class="v-pill">Ética profesional</span>
+      <span class="v-pill">Liderazgo</span>
+      <span class="v-pill">Servicio de calidad</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="wrap cta-inner">
+    <div>
+      <h2>¿Lista tu caja para revisión? Conócenos en persona</h2>
+      <p>Escríbenos o visita el taller: te atendemos como familia.</p>
+    </div>
+    <div class="cta-btns">
+      <a class="btn btn-white" target="_blank" rel="noopener" href="https://wa.me/584242320424?text=Hola%20J-SAN%2C%20quiero%20consultar%20por%20una%20falla%20en%20mi%20caja%20autom%C3%A1tica">Consultar por WhatsApp</a>
+      <a class="btn btn-gold" href="index.html#sedes">Ver ubicaciones</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-logo"><img src="assets/logo-jsan.webp" alt="Escudo Hidromáticos J-SAN"></div>
+      <div>
+        <h4>Hidromáticos J-SAN, C.A.</h4>
+        <p>Importadores de motores, cajas y repuestos automotrices.<br>Taller: Calle La Floresta, Local PB N°9, Turumo, Miranda.<br>RIF: J-40348320-5</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="tel:+582122351931">(0212) 235.1931</a></li>
+          <li><a href="tel:+584242320424">0424-232.0424</a></li>
+          <li><a href="mailto:hidromaticosjsan@gmail.com">hidromaticosjsan@gmail.com</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="sobre-nosotros.html">Sobre nosotros</a></li>
+          <li><a href="jsan-ecommerce.html">Tienda</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <span>Hidromáticos J-SAN, C.A. — Todos los derechos reservados</span>
+      <span id="anio"></span>
+    </div>
+  </div>
+</footer>
+
+<!-- NAV MÓVIL -->
+<nav class="mobile-nav" id="mobile-nav" aria-label="Menú móvil">
+  <div class="mobile-panel">
+    <div class="mobile-head">
+      <img src="assets/logo-jsan.webp" alt="J-SAN">
+      <button class="cerrar-m" id="cerrar-menu" aria-label="Cerrar menú">✕</button>
+    </div>
+    <a class="m-link" href="index.html">Inicio</a>
+    <a class="m-link" href="index.html#servicios">Servicios</a>
+    <a class="m-link" href="jsan-ecommerce.html">🛒 Tienda</a>
+    <a class="m-link" href="sobre-nosotros.html">Nosotros</a>
+    <a class="m-link" href="index.html#sedes">Ubicación</a>
+    <a class="btn btn-primary" style="justify-content:center;margin-top:1.2rem" target="_blank" rel="noopener" href="https://wa.me/584242320424?text=Hola%20J-SAN%2C%20quiero%20consultar%20por%20una%20falla%20en%20mi%20caja%20autom%C3%A1tica">Escribir por WhatsApp</a>
+  </div>
+</nav>
+
+<script>
+const mnav=document.getElementById('mobile-nav'),mtog=document.getElementById('menu-toggle');
+function mopen(f){mnav.classList.toggle('open',f);mtog.setAttribute('aria-expanded',f)}
+mtog.onclick=()=>mopen(true);
+document.getElementById('cerrar-menu').onclick=()=>mopen(false);
+mnav.addEventListener('click',e=>{if(e.target===mnav||e.target.classList.contains('m-link'))mopen(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')mopen(false)});
+document.getElementById('anio').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
