@@ -1,0 +1,96 @@
+---
+// Sección "Repuestos originales de EE.UU." — marcas americanas sobre patrón world-dots
+import { SITE, waLink } from '../data/site';
+
+const MARCAS_USA = [
+  {
+    nombre: 'Sonnax',
+    slug: 'sonnax',
+    desc: 'Piezas duras y kits de precisión para transmisiones automáticas.',
+    url: 'https://www.sonnax.com/',
+  },
+  {
+    nombre: 'TransGo',
+    slug: 'transgo',
+    desc: 'Kits correctores de válvulas: el estándar del reparador profesional.',
+    url: 'https://transgo.com/',
+  },
+  {
+    nombre: 'Transtec',
+    slug: 'transtec',
+    desc: 'Kits master y sellos originales para reconstrucción completa.',
+    url: 'https://transtec.com/',
+  },
+  {
+    nombre: 'Precision Intl',
+    slug: 'precision',
+    desc: 'Convertidores de par y componentes de motor importados.',
+    url: 'https://www.precisionintl.com/',
+  },
+];
+
+const logo = (slug: string) => `/assets/marcas-usa/${slug}.png`;
+---
+
+<section id="marcas-usa" class="usa-section">
+  <div class="world-dots" aria-hidden="true"></div>
+  <div class="usa-inner">
+    <div class="kick"><span class="sq"></span><span>Calidad importada</span></div>
+    <h2>Trabajamos con las <em>mejores marcas americanas</em></h2>
+    <p class="usa-lead">
+      Siempre repuestos originales. Cada reconstrucción que sale de J-SAN lleva componentes de las mismas marcas
+      que usan los especialistas de Estados Unidos.
+    </p>
+
+    <div class="usa-grid">
+      {MARCAS_USA.map((m) => (
+        <a class="usa-card" href={m.url} target="_blank" rel="noopener" aria-label={`${m.nombre} — sitio oficial`}>
+          <img src={logo(m.slug)} alt={`Logo ${m.nombre}`} loading="lazy" width="220" height="70" />
+          <p>{m.desc}</p>
+          <em>{m.nombre.toLowerCase()} ↗</em>
+        </a>
+      ))}
+    </div>
+
+    <div style="margin-top:2rem">
+      <a
+        class="btn-o"
+        style="display:inline-flex;margin-top:0"
+        target="_blank"
+        rel="noopener"
+        href={waLink('Hola J-SAN, quiero cotizar un trabajo con repuestos originales americanos')}
+      >
+        Cotizar con repuestos originales →
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ===== PATRÓN MAPAMUNDI EN PUNTOS (recreado en código) ===== */
+  .usa-section{position:relative;background:#fff;color:#16181d;border-bottom:2px solid var(--line);overflow:hidden}
+  .world-dots{
+    position:absolute;inset:0;
+    background-color:#ffffff;
+    background-image:radial-gradient(rgba(22,24,29,.14) 1.6px, transparent 1.6px);
+    background-size:18px 18px;
+    -webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><filter id='b'><feGaussianBlur stdDeviation='6'/></filter><rect width='240' height='120' fill='white' filter='url(%23b)' opacity='0'/><g fill='white'><ellipse cx='38' cy='38' rx='26' ry='30'/><path d='M60 52 Q80 40 95 55 Q105 65 92 74 L70 78 Z'/><path d='M108 28 Q130 20 150 32 Q160 45 148 52 Q128 58 112 48 Z'/><path d='M118 62 Q138 58 146 72 Q142 86 124 84 Q112 76 118 62 Z'/><ellipse cx='168' cy='34' rx='20' ry='14'/><ellipse cx='196' cy='88' rx='12' ry='9'/></g></svg>") center/cover no-repeat;
+    mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><filter id='b'><feGaussianBlur stdDeviation='6'/></filter><rect width='240' height='120' fill='white' filter='url(%23b)' opacity='0'/><g fill='white'><ellipse cx='38' cy='38' rx='26' ry='30'/><path d='M60 52 Q80 40 95 55 Q105 65 92 74 L70 78 Z'/><path d='M108 28 Q130 20 150 32 Q160 45 148 52 Q128 58 112 48 Z'/><path d='M118 62 Q138 58 146 72 Q142 86 124 84 Q112 76 118 62 Z'/><ellipse cx='168' cy='34' rx='20' ry='14'/><ellipse cx='196' cy='88' rx='12' ry='9'/></g></svg>") center/cover no-repeat;
+  }
+  .usa-inner{position:relative;padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
+  .usa-inner .kick span:last-child,.usa-lead{color:#5c5f66}
+  .usa-inner h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4.4vw,3.6rem);line-height:.98;text-transform:uppercase;max-width:24ch;margin:.6rem 0 1rem}
+  .usa-inner h2 em{color:var(--orange);font-style:normal}
+  .usa-lead{max-width:44rem;font-size:.98rem;line-height:1.6}
+  .usa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:2.2rem}
+  .usa-card{
+    background:#fff;border:2px solid #e3e5e9;padding:1.6rem 1.2rem;display:flex;flex-direction:column;gap:.8rem;align-items:center;text-align:center;
+    transition:border-color .15s ease,transform .15s ease
+  }
+  .usa-card:hover{border-color:var(--orange);transform:translateY(-3px)}
+  .usa-card img{height:56px;width:auto;object-fit:contain}
+  .usa-card p{color:#5c5f66;font-size:.85rem;line-height:1.45;flex:1}
+  .usa-card em{font-style:normal;font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--orange-deep);border-bottom:2px solid var(--orange)}
+  @media (max-width:1100px){.usa-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.usa-grid{grid-template-columns:1fr}}
+</style>

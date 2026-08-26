@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Topbar from '../components/Topbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import MarcasUsa from '../components/MarcasUsa.astro';
 import { SITE } from '../data/site';
 
 const title = 'Nosotros · Hidromáticos J-SAN — Taller familiar de transmisiones desde 2013';
@@ -78,6 +79,9 @@ const VALORES = [
       ))}
     </div>
   </section>
+
+  <!-- Estándares: los repuestos que usamos (misma sección blanca, coherencia con el home) -->
+  <MarcasUsa />
 
   <section class="final" id="contacto" style="padding-top:clamp(2.6rem,6vh,4rem);padding-bottom:clamp(2.6rem,6vh,4rem)">
     <div class="kick"><span class="sq"></span><span>Contacto</span></div>
