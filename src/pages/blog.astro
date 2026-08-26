@@ -1,0 +1,259 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../data/site';
+
+const title = 'Blog & Guías Técnicas · Hidromáticos J-SAN — Mecánica sin tecnicismos';
+const description =
+  'Guías claras sobre cajas automáticas: por qué patina tu caja, qué es el servicio ATF, señales del convertidor de par y más. Por los especialistas de Hidromáticos J-SAN, Caracas.';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const jsonLdBlog = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: `Blog de ${SITE.shortName}`,
+  description: description,
+  url: new URL('/blog/', SITE.url).href,
+  blogPost: posts.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.data.title,
+    description: p.data.description,
+    datePublished: p.data.pubDate.toISOString().split('T')[0],
+    author: { '@type': 'Organization', name: SITE.name },
+    url: new URL(`/blog/${p.id}/`, SITE.url).href,
+  })),
+};
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout title={title} description={description} path="/blog/" jsonLdExtra={jsonLdBlog} topbarTagline="Blog · Conocimiento Mecánico">
+  <main class="blog-page">
+    <div class="wrap">
+      <!-- HEADER BLOG -->
+      <div class="blog-hero">
+        <span class="kicker">Aprende antes de gastar</span>
+        <h1>Guías de <em>transmisiones</em>, explicadas claro</h1>
+        <p class="blog-lead">
+          Lo que más de una década reparando cajas automáticas en Caracas nos enseñó, resumido para dueños de vehículos.
+        </p>
+      </div>
+
+      <!-- GRID DE ARTÍCULOS -->
+      <div class="blog-grid">
+        {posts.map((p) => (
+          <article class="post-card">
+            <div class="post-header">
+              <span class="post-kicker">{p.data.kicker}</span>
+              <span class="post-time">{p.data.readingTime} min lectura</span>
+            </div>
+            <h2>
+              <a href={`/blog/${p.id}/`}>{p.data.title}</a>
+            </h2>
+            <p class="post-desc">{p.data.description}</p>
+            <div class="post-footer">
+              <span class="post-date">{fmt(p.data.pubDate)}</span>
+              <a class="post-link" href={`/blog/${p.id}/`}>
+                Leer guía completa →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- BANNER DE ASESORÍA DIRECTA -->
+      <div class="blog-cta-box">
+        <div>
+          <h3>¿Tu carro presenta una falla y no sabes qué es?</h3>
+          <p>Escríbenos por WhatsApp con los síntomas y te guiamos con honestidad antes de cambiar repuestos a ciegas.</p>
+        </div>
+        <a class="btn btn-primary" href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent('Hola J-SAN, estuve leyendo el blog y quiero consultar por una falla en mi carro')}`} target="_blank" rel="noopener">
+          Consultar con un especialista →
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .blog-page {
+    padding: 4.2rem 0 5.4rem;
+    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+  }
+
+  .blog-hero {
+    max-width: 48rem;
+    margin-bottom: 3.4rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1.02;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .blog-lead {
+    color: var(--muted);
+    font-size: 1.12rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+    max-width: 42rem;
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+    margin-bottom: 3.6rem;
+  }
+
+  .post-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 26px rgba(15, 42, 87, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 38px rgba(15, 42, 87, 0.12);
+  }
+
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .post-kicker {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  .post-time {
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .post-card h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.55rem;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.75rem;
+  }
+
+  .post-card h2 a {
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .post-card h2 a:hover {
+    color: var(--blue);
+  }
+
+  .post-desc {
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.55;
+    flex: 1;
+    margin-bottom: 1.6rem;
+  }
+
+  .post-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--sky-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .post-date {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .post-link {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-decoration: none;
+    transition: transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .post-link:hover {
+    transform: translateX(4px);
+    text-decoration: underline;
+  }
+
+  .blog-cta-box {
+    background: linear-gradient(180deg, var(--navy), var(--navy-deep));
+    border-radius: 20px;
+    padding: 2.8rem 3rem;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 16px 36px rgba(10, 30, 64, 0.18);
+    border-top: 3px solid var(--gold);
+  }
+
+  .blog-cta-box h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.7rem;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .blog-cta-box p {
+    color: var(--muted-dark);
+    font-size: 0.98rem;
+    max-width: 36rem;
+  }
+
+  @media (max-width: 960px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .blog-cta-box {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 2rem 1.8rem;
+    }
+  }
+</style>
