@@ -5,7 +5,7 @@ import { SITE, waLink } from '../data/site';
 const MARCAS_USA = [
   {
     nombre: 'Sonnax',
-    slug: 'sonnax',
+    slug: 'sonnax-dark',
     desc: 'Piezas duras y kits de precisión para transmisiones automáticas.',
     url: 'https://www.sonnax.com/',
   },
@@ -29,6 +29,9 @@ const MARCAS_USA = [
   },
 ];
 
+// Intercalado blanco/negro/blanco/negro: tarjetas alternadas para máximo contraste
+const FONDOS = ['blanca', 'negra', 'blanca', 'negra'];
+
 const logo = (slug: string) => `/assets/marcas-usa/${slug}.png`;
 ---
 
@@ -43,8 +46,14 @@ const logo = (slug: string) => `/assets/marcas-usa/${slug}.png`;
     </p>
 
     <div class="usa-grid">
-      {MARCAS_USA.map((m) => (
-        <a class="usa-card" href={m.url} target="_blank" rel="noopener" aria-label={`${m.nombre} — sitio oficial`}>
+      {MARCAS_USA.map((m, i) => (
+        <a
+          class:list={['usa-card', FONDOS[i] === 'negra' && 'usa-card--negra']}
+          href={m.url}
+          target="_blank"
+          rel="noopener"
+          aria-label={`${m.nombre} — sitio oficial`}
+        >
           <img src={logo(m.slug)} alt={`Logo ${m.nombre}`} loading="lazy" width="220" height="70" />
           <p>{m.desc}</p>
           <em>{m.nombre.toLowerCase()} ↗</em>
@@ -91,6 +100,11 @@ const logo = (slug: string) => `/assets/marcas-usa/${slug}.png`;
   .usa-card img{height:56px;width:auto;object-fit:contain}
   .usa-card p{color:#5c5f66;font-size:.85rem;line-height:1.45;flex:1}
   .usa-card em{font-style:normal;font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--orange-deep);border-bottom:2px solid var(--orange)}
+  /* tarjetas NEGRAS intercaladas (logo blanco brilla ahí) */
+  .usa-card--negra{background:#16181d;border-color:#16181d;color:#fff}
+  .usa-card--negra:hover{border-color:var(--orange)}
+  .usa-card--negra p{color:#b9bcc3}
+  .usa-card--negra em{color:var(--orange);border-bottom-color:var(--orange)}
   @media (max-width:1100px){.usa-grid{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:520px){.usa-grid{grid-template-columns:1fr}}
 </style>
