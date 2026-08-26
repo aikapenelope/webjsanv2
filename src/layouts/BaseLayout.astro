@@ -43,8 +43,21 @@ const jsonLdLocal: Record<string, unknown> = {
     addressRegion: 'Miranda',
     addressCountry: 'VE',
   },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 10.4965,
+    longitude: -66.8378,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '08:00',
+      closes: '17:00',
+    },
+  ],
   areaServed: ['Caracas', 'Miranda', 'Los Teques', 'Venezuela'],
-  sameAs: [SITE.redes.facebook, SITE.redes.threads],
+  sameAs: Object.values(SITE.redes),
 };
 
 const scriptsJsonLd = [jsonLdLocal, ...(jsonLdExtra ? (Array.isArray(jsonLdExtra) ? jsonLdExtra : [jsonLdExtra]) : [])];
@@ -64,12 +77,21 @@ const scriptsJsonLd = [jsonLdLocal, ...(jsonLdExtra ? (Array.isArray(jsonLdExtra
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
+    <!-- Geotags para posicionamiento local (GEO / Local Search) -->
+    <meta name="geo.region" content="VE-M" />
+    <meta name="geo.placename" content="Caracas, Miranda, Venezuela" />
+    <meta name="geo.position" content="10.4965;-66.8378" />
+    <meta name="ICBM" content="10.4965, -66.8378" />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.shortName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`Hidromáticos J-SAN, C.A. — Especialistas en cajas automáticas en Caracas`} />
     <meta property="og:locale" content="es_VE" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

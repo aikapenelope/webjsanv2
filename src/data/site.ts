@@ -19,6 +19,7 @@ export const SITE = {
   horario: 'Lunes a sábado · previa cita por WhatsApp',
   redes: {
     facebook: 'https://www.facebook.com/HidromaticosJSan/',
+    instagram: 'https://www.instagram.com/hidromaticosjs/',
     threads: 'https://www.threads.net/@hidromaticosjs',
   },
 } as const;
