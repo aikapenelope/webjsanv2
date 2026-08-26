@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Topbar from '../components/Topbar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE, waLink } from '../data/site';
+
+const title = 'Videos · Hidromáticos J-SAN — Trabajos reales del taller';
+const description =
+  'Videos de trabajos reales: diagnóstico con scanner, reparaciones de cajas automáticas y consejos del especialista. Hidromáticos J-SAN, Caracas.';
+
+// Estructura lista: agregar videos aquí (id de YouTube o embed de IG) — la página los renderiza sola.
+type Video = { tipo: 'youtube' | 'instagram'; id: string; kicker: string; titulo: string; texto: string };
+const VIDEOS: Video[] = [
+  // Ejemplo YouTube: { tipo:'youtube', id:'VIDEO_ID', kicker:'DIAGNÓSTICO', titulo:'Así escaneamos tu caja', texto:'...' }
+  // Ejemplo IG reel: { tipo:'instagram', id:'URL_COMPLETA_DEL_REEL', kicker:'REPARACIÓN', titulo:'...', texto:'...' }
+];
+
+const jsonLdVideos = VIDEOS.filter((v) => v.tipo === 'youtube').map((v) => ({
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: v.titulo,
+  description: v.texto,
+  thumbnailUrl: [`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`],
+  uploadDate: SITE.fundacion + '-01-01',
+  embedUrl: `https://www.youtube.com/embed/${v.id}`,
+}));
+---
+
+<BaseLayout title={title} description={description} path="/videos/" jsonLdExtra={jsonLdVideos.length ? jsonLdVideos : undefined}>
+  <Topbar tagline="Videos · Est. 2013" />
+
+  <div class="page-title">
+    <div class="kick"><span class="sq"></span><span>El taller por dentro</span></div>
+    <h1>Trabajos <em>reales</em>, sin filtros</h1>
+    <p class="demo-note" style="margin-top:1rem">
+      Diagnósticos, reparaciones y consejos del especialista. Mismo criterio que aplicamos con tu carro: mostrar las cosas como son.
+    </p>
+  </div>
+
+  {VIDEOS.length > 0 ? (
+    <div class="v-grid">
+      {VIDEOS.map((v) => (
+        <article class="v-cell">
+          <div class="v-frame">
+            {v.tipo === 'youtube' ? (
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${v.id}`}
+                title={v.titulo}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            ) : (
+              <iframe
+                src={`${v.id}/embed`}
+                title={v.titulo}
+                loading="lazy"
+                scrolling="no"
+                frameborder="0"
+              ></iframe>
+            )}
+          </div>
+          <i>{v.kicker}</i>
+          <h3>{v.titulo}</h3>
+          <p>{v.texto}</p>
+        </article>
+      ))}
+    </div>
+  ) : (
+    <section style="padding-block:clamp(2.6rem,6vh,4rem)">
+      <div class="mapa-fake">
+        <div>
+          <b>Primeros videos en camino</b>
+          <p>Estamos preparando contenido del taller. ¿Quieres que te avisemos? Escríbenos.</p>
+          <a
+            class="btn-o"
+            style="display:inline-flex;margin-top:0"
+            target="_blank"
+            rel="noopener"
+            href={waLink('Hola J-SAN, quiero que me avisen cuando suban videos al canal')}
+          >
+            AVISARME POR WHATSAPP →
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <SiteFooter />
+</BaseLayout>

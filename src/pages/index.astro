@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Sidebar from '../components/Sidebar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SITE, MARCAS, waLink } from '../data/site';
+import SocialGrid from '../components/SocialGrid.astro';
+import { SITE, MARCAS, RESENAS, waLink } from '../data/site';
 
 const WA_FALLA = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
 const WA_AGENDAR = waLink('Hola J-SAN, quiero agendar un escaneo para mi carro');
@@ -44,7 +45,7 @@ const SERVICIOS = [
     titulo: 'Repuestos & Importación',
     items: [
       'Discos, bandas y solenoides originales y alternativos',
-      'Importación directa de motores y cajas',
+      'Importación directa de cajas',
       'Búsqueda de piezas difíciles bajo pedido',
       'Garantía escrita y post-venta',
     ],
@@ -58,32 +59,8 @@ const PROCESO = [
   { n: '4', t: 'Entregamos', p: 'Reparación con repuestos importados y carro listo para la calle.' },
 ];
 
-const RESENAS = [
-  {
-    iniciales: 'LS',
-    nombre: 'Lisbeth Sierra',
-    meta: '“Rápidos y confiables”',
-    texto:
-      'Llevé mi camioneta con un sonido extraño, y muy rápido detectaron qué lo causaba y se pudo solucionar. Les recomiendo ampliamente.',
-  },
-  {
-    iniciales: 'CR',
-    nombre: 'Carlos Rodríguez',
-    meta: 'Chevrolet Aveo · Reparación de caja',
-    texto:
-      'Me reconstruyeron la caja del Aveo y quedó como nueva. Presupuesto claro desde el primer día y cumplieron con el tiempo dicho.',
-  },
-  {
-    iniciales: 'MF',
-    nombre: 'María Fernández',
-    meta: 'Ford Explorer · Servicio ATF',
-    texto:
-      'Le hicieron el servicio completo a la Explorer de la empresa y el trato fue de primera, muy serios con el trabajo.',
-  },
-];
-
 const MQ =
-  'Especialista en cajas automáticas ◆ Importadores de motores y repuestos ◆ Escaneo computarizado ◆ Presupuesto antes de trabajar ◆ Servicio ATF ◆ Convertidor de par ◆ ';
+  'Especialista en cajas automáticas ◆ Importadores de cajas y repuestos ◆ Escaneo computarizado ◆ Presupuesto antes de trabajar ◆ Servicio ATF ◆ Convertidor de par ◆ ';
 
 // Logos de marcas como SVG crudo embebido en build (mantiene currentColor para el hover)
 const iconos = import.meta.glob('../assets/marcas/*.svg', {
@@ -91,13 +68,28 @@ const iconos = import.meta.glob('../assets/marcas/*.svg', {
   import: 'default',
   eager: true,
 }) as Record<string, string>;
-const icono = (slug: string) =>
-  iconos[`../assets/marcas/${slug}.svg`] ?? '';
+const icono = (slug: string) => iconos[`../assets/marcas/${slug}.svg`] ?? '';
+
+const jsonLdFAQ = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: SERVICIOS.flatMap((s) =>
+    s.items.slice(0, 2).map((it) => ({
+      '@type': 'Question',
+      name: `¿Hacen ${it.toLowerCase().replace(/\.$/, '')}?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `Sí. Hidromáticos J-SAN en Caracas ofrece: ${it.replace(/\.$/, '')}. Consulta por WhatsApp al +58 424-232.0424.`,
+      },
+    }))
+  ),
+};
 ---
 
 <BaseLayout
   title="Hidromáticos J-SAN · Especialistas en Cajas Automáticas — Caracas"
   path="/"
+  jsonLdExtra={jsonLdFAQ}
 >
   <div class="shell">
     <Sidebar />
@@ -107,16 +99,15 @@ const icono = (slug: string) =>
       <div class="hero">
         <div class="hero-top">
           <a class="tb-mob" href="/" aria-label="Inicio J-SAN" style="display:none;align-items:center;gap:.55rem">
-            <img src="/assets/logo-jsan.webp" alt="Escudo J-SAN" style="width:40px;height:auto" /><b style="font-family:var(--font-display);font-weight:400;font-size:1rem;letter-spacing:.05em">J-SAN</b>
+            <img src="/assets/logo-jsan.webp" alt="Escudo J-SAN" style="width:40px;height:auto;background:var(--panel-2);border:2px solid var(--line-strong);padding:.35rem" /><b style="font-family:var(--font-display);font-weight:400;font-size:1rem;letter-spacing:.05em">J-SAN</b>
           </a>
           <span class="tag">Caracas · Miranda · Venezuela</span>
           <button class="burger" id="burger" aria-label="Abrir menú"><span></span></button>
-          <span class="tel">0424 <em>·</em> 232.0424</span>
         </div>
 
         <div class="hero-mid">
           <div class="h-num"><span class="sq"></span><span>Taller especializado · Est. 2013</span></div>
-          <h1>Cajas automáticas<br /><span class="stroke">sin miedo</span><br />a que te <span class="solid-o">vean</span></h1>
+          <h1>Tu caja automática<br /><span class="stroke">en manos de</span><br /><span class="solid-o">líderes</span></h1>
           <p class="hero-sub">
             Diagnóstico con scanner antes de abrir tu caja. Presupuesto claro por WhatsApp y repuestos importados cuando la reparación lo exige.
           </p>
@@ -126,13 +117,10 @@ const icono = (slug: string) =>
           </div>
         </div>
 
-        <img
-          class="hero-escudo"
-          src="/assets/logo-jsan.webp"
-          alt="Escudo de Hidromáticos J-SAN, C.A."
-          width="230"
-          height="213"
-        />
+        <!-- ESCUDO XL sobre bloque naranja -->
+        <div class="escudo-bloque" aria-hidden="true">
+          <img src="/assets/logo-jsan.webp" alt="" width="430" height="398" loading="eager" />
+        </div>
 
         <div class="mq" aria-hidden="true">
           <div class="mq-track">
@@ -146,7 +134,7 @@ const icono = (slug: string) =>
       <div class="stats">
         <div class="stat"><b>12<em>+</em></b><span>Años de experiencia</span></div>
         <div class="stat"><b>16</b><span>Marcas que atendemos</span></div>
-        <div class="stat"><b>5<em>★</em></b><span>Calificación en Google</span></div>
+        <div class="stat"><b>4.6<em>★</em></b><span>Calificación en Google</span></div>
         <div class="stat"><b>100<em>%</em></b><span>Presupuesto aprobado antes de trabajar</span></div>
       </div>
 
@@ -208,34 +196,54 @@ const icono = (slug: string) =>
         </div>
       </section>
 
-      <!-- CLIENTES / RESEÑAS -->
+      <!-- CARRUSEL DE RESEÑAS (auto, pausa on hover) -->
       <section id="clientes">
         <div class="sec-head">
           <div>
             <div class="kick"><span class="sq"></span><span>Lo que dicen</span></div>
             <h2>Clientes que <em>vuelven</em></h2>
           </div>
+          <p>Reseñas reales de nuestra ficha de Google ★ 4.6 (35 opiniones).</p>
         </div>
-        <div class="t-grid">
-          {RESENAS.map((r) => (
-            <article class="t-card">
-              <span class="t-stars">★★★★★</span>
-              <p>{r.texto}</p>
-              <div class="t-by">
-                <span class="sqv">{r.iniciales}</span>
-                <div><b>{r.nombre}</b><span>{r.meta}</span></div>
-              </div>
-            </article>
-          ))}
+        <div class="carousel" aria-label="Reseñas de clientes">
+          <div class="car-track">
+            {[0, 1].map(() =>
+              RESENAS.map((r) => (
+                <article class="car-card">
+                  <span class="t-stars">★★★★★</span>
+                  <p>{r.texto}</p>
+                  <div class="t-by">
+                    <span class="sqv">{r.iniciales}</span>
+                    <div><b>{r.nombre}</b><span>{r.meta}</span></div>
+                    <span class="t-src">{r.fuente}</span>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
         </div>
         <div class="opinion">
           <div>
             <b>Valoramos tu opinión</b>
-            <p>Tu recomendación ayuda a otro venezolano a encontrar un taller de confianza. Cuéntanos cómo fue tu experiencia.</p>
+            <p>Tu recomendación ayuda a otro venezolano a encontrar un taller de confianza.</p>
           </div>
-          <a class="cta-b" style="border-color:var(--orange-deep)" href="/resenas/">★ Déjanos tu opinión</a>
+          <div class="f-btns" style="margin:0">
+            <a
+              class="cta-b"
+              style="border-color:var(--orange-deep);margin-top:0"
+              target="_blank"
+              rel="noopener"
+              href="https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela"
+            >
+              ★ Dejar reseña en Google
+            </a>
+            <a class="btn-line" style="margin-top:0;display:inline-flex" href="/resenas/">Ver todas las reseñas →</a>
+          </div>
         </div>
       </section>
+
+      <!-- SOCIAL / UBICACIÓN -->
+      <SocialGrid />
 
       <!-- NOSOTROS -->
       <section class="nos-teaser" id="nosotros">
@@ -286,7 +294,6 @@ const icono = (slug: string) =>
 <style>
   /* logo móvil visible solo <=1020px (la sidebar desaparece), sobre plinto metálico */
   .tb-mob{display:none!important}
-  .tb-mob img{background:var(--panel-2);border:2px solid var(--line-strong);padding:.35rem}
   @media (max-width:1020px){
     .tb-mob{display:flex!important}
   }

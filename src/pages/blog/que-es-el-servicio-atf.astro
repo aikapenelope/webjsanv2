@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Topbar from '../../components/Topbar.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { SITE, waLink } from '../../data/site';
+
+const title = 'Servicio ATF: el cambio de aceite que salva transmisiones | Hidromáticos J-SAN';
+const description =
+  'Qué es el servicio ATF, cada cuánto hacerlo, cómo saber si tu aceite está quemado y por qué cuesta 20 veces menos que una reconstrucción de caja.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: 'Servicio ATF: el cambio de aceite que salva transmisiones',
+  datePublished: '2026-08-15',
+  author: { '@type': 'Organization', name: SITE.name },
+};
+---
+
+<BaseLayout title={title} description={description} path="/blog/que-es-el-servicio-atf/" jsonLdExtra={jsonLd}>
+  <Topbar tagline="Blog · Guías J-SAN" />
+  <article style="max-width:52rem;padding:clamp(2rem,5vh,3.4rem) clamp(1.2rem,3vw,2.6rem)">
+    <div class="kick"><span class="sq"></span><span>Mantenimiento · 15 ago 2026</span></div>
+    <h1 style="font-size:clamp(2.2rem,5vw,3.6rem)">Servicio ATF: el mantenimiento que <em>salva cajas</em></h1>
+    <p class="demo-note" style="margin-top:1.2rem">
+      Si el motor es el corazón, la caja automática es la transmisión de fuerza — y el ATF es su sangre. Aquí lo que debes saber.
+    </p>
+
+    <h2>¿Qué hace el ATF?</h2>
+    <p>
+      El Automatic Transmission Fluid hace tres trabajos a la vez: transmite la presión hidráulica que mueve tu carro,
+      lubrica engranajes y bandas, y disipa el calor. Un ATF degradado falla en las tres — y ahí empieza el desgaste en cadena.
+    </p>
+
+    <h2>Cada cuánto cambiarlo</h2>
+    <p>
+      En Venezuela, con tráfico parado y calor, recomendamos <strong>cada 40.000 km o 2 años</strong> (lo que pase primero).
+      Si el carro trabaja cargado o remolcando, antes. Es el servicio con mejor relación costo-beneficio de todo el vehículo:
+      un servicio ATF cuesta una fracción de una reconstrucción.
+    </p>
+
+    <h2>Señales de aceite quemado</h2>
+    <p>
+      Color café oscuro o negro, olor a quemado (como frenos usados), o partículas en la varilla. Si tu ATF se ve así,
+      el reloj ya está corriendo contra tus discos internos.
+    </p>
+
+    <h2>Ojo con el "flush" milagroso</h2>
+    <p>
+      Desconfía de quien te prometa "revivir" una caja solo con lavado de fluido. Si hay patineo real, el problema es
+      interno. El servicio ATF es mantenimiento preventivo — no cura enfermedades avanzadas.
+    </p>
+
+    <div class="opinion" style="margin-top:2.4rem">
+      <div><b>¿Cuánto tiene tu carro sin servicio ATF?</b>
+      <p>Pregúntanos por WhatsApp: te confirmamos el intervalo según tu modelo y uso.</p></div>
+      <a class="cta-a" target="_blank" rel="noopener" href={waLink('Hola J-SAN, quiero cotizar el servicio ATF para mi carro')}>
+        Cotizar mi servicio ATF →
+      </a>
+    </div>
+  </article>
+  <SiteFooter />
+</BaseLayout>

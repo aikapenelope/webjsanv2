@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Topbar from '../components/Topbar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../data/site';
+
+const title = 'Blog · Hidromáticos J-SAN — Guías de transmisiones automáticas';
+const description =
+  'Guías claras sobre cajas automáticas: por qué patina tu caja, qué es el servicio ATF, señales del convertidor de par y más. Por el equipo de Hidromáticos J-SAN, Caracas.';
+
+// Posts iniciales redactados para arrancar el blog (SEO local).
+const POSTS = [
+  {
+    slug: '/blog/por-que-patina-mi-caja-automatica/',
+    kicker: 'GUÍA BÁSICA',
+    titulo: '¿Por qué patina mi caja automática?',
+    resumen:
+      'El patineo —el motor revoluciona y el carro no responde— casi nunca es casualidad. Te explicamos las 5 causas más comunes y cuáles puedes detectar tú mismo antes de traerlo.',
+    fecha: '2026-08-20',
+    mins: 4,
+  },
+  {
+    slug: '/blog/que-es-el-servicio-atf/',
+    kicker: 'MANTENIMIENTO',
+    titulo: 'Servicio ATF: el cambio de aceite que salva transmisiones',
+    resumen:
+      'El aceite ATF es la sangre de tu caja automática. Cada cuánto cambiarlo, cómo saber si está quemado y por qué un servicio a tiempo cuesta 20 veces menos que una reconstrucción.',
+    fecha: '2026-08-15',
+    mins: 5,
+  },
+  {
+    slug: '/blog/senales-del-convertidor-de-par/',
+    kicker: 'DIAGNÓSTICO',
+    titulo: '5 señales de que tu convertidor de par está fallando',
+    resumen:
+      'Vibraciones al frenar, tirones a baja velocidad o calentamiento excesivo: así habla el convertidor de par cuando algo anda mal. No lo ignores.',
+    fecha: '2026-08-10',
+    mins: 4,
+  },
+];
+
+const jsonLdBlog = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: `Blog de ${SITE.shortName}`,
+  url: new URL('/blog/', SITE.url).href,
+  blogPost: POSTS.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.titulo,
+    datePublished: p.fecha,
+    author: { '@type': 'Organization', name: SITE.name },
+    url: new URL(p.slug, SITE.url).href,
+  })),
+};
+
+const fmt = (iso: string) =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout title={title} description={description} path="/blog/" jsonLdExtra={jsonLdBlog}>
+  <Topbar tagline="Conocimiento · Est. 2013" />
+
+  <div class="page-title">
+    <div class="kick"><span class="sq"></span><span>Aprende antes de gastar</span></div>
+    <h1>Guías de <em>transmisiones</em>, sin tecnicismos</h1>
+    <p class="demo-note" style="margin-top:1rem">
+      Lo que 12 años arreglando cajas nos enseñó, explicado para dueños de carros — no para mecánicos.
+    </p>
+  </div>
+
+  <div class="c-grid" style="margin-top:1.8rem">
+    {POSTS.map((p) => (
+      <article class="c-cell">
+        <i>{p.kicker}</i>
+        <h3>{p.titulo}</h3>
+        <p>{p.resumen}</p>
+        <p style="font-size:.76rem;color:var(--grey-dark);margin:.6rem 0 1rem">{fmt(p.fecha)} · {p.mins} min de lectura</p>
+        <a class="btn-o" style="display:inline-flex;margin-top:0;padding:.7rem 1.2rem;font-size:.78rem" href={p.slug}>
+          LEER GUÍA →
+        </a>
+      </article>
+    ))}
+  </div>
+
+  <SiteFooter />
+</BaseLayout>
