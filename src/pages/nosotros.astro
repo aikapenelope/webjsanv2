@@ -15,6 +15,10 @@ const VALORES = [
   { ico: 'reloj', t: 'Puntualidad', s: 'Tu tiempo vale como tu carro' },
   { ico: 'llave', t: 'Mano de obra excelente', s: 'Especialistas, no improvisados' },
 ];
+
+// Mismo patrón world-dots de la sección de marcas americanas
+const WORLD_DOTS =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'><filter id='b'><feGaussianBlur stdDeviation='6'/></filter><g fill='white'><ellipse cx='38' cy='38' rx='26' ry='30'/><path d='M60 52 Q80 40 95 55 Q105 65 92 74 L70 78 Z'/><path d='M108 28 Q130 20 150 32 Q160 45 148 52 Q128 58 112 48 Z'/><path d='M118 62 Q138 58 146 72 Q142 86 124 84 Q112 76 118 62 Z'/><ellipse cx='168' cy='34' rx='20' ry='14'/><ellipse cx='196' cy='88' rx='12' ry='9'/></g></svg>\")";
 ---
 
 <BaseLayout title={title} description={description} path="/nosotros/">
@@ -28,7 +32,9 @@ const VALORES = [
     </p>
   </div>
 
-  <div class="pmv-full">
+  <!-- PROPÓSITO / MISIÓN / VISIÓN sobre fondo mapamundi blanco -->
+  <div class="pmv-full pmv-full--claro">
+    <div class="world-dots" aria-hidden="true" style={`-webkit-mask-image:${WORLD_DOTS} center/cover no-repeat;mask-image:${WORLD_DOTS} center/cover no-repeat`}></div>
     <div class="pmv-b">
       <div class="pn"><i>N° 01</i><h2>Propósito</h2></div>
       <div>
@@ -40,7 +46,7 @@ const VALORES = [
         </p>
       </div>
     </div>
-    <div class="pmv-b" style="background:var(--panel)">
+    <div class="pmv-b">
       <div class="pn"><i>N° 02</i><h2>Misión</h2></div>
       <div>
         <p class="pf">Brindar soluciones especializadas de máxima calidad en el diagnóstico, mantenimiento y reparación de transmisiones automáticas.</p>
@@ -82,7 +88,6 @@ const VALORES = [
   <section class="final" id="contacto" style="padding-top:clamp(2.6rem,6vh,4rem);padding-bottom:clamp(2.6rem,6vh,4rem)">
     <div class="kick"><span class="sq"></span><span>Contacto</span></div>
     <h2>¿Tu caja está patinando?</h2>
-    <span class="f-phone">0424 <em>232.0424</em></span>
     <div class="f-btns">
       <a class="fb-dark" target="_blank" rel="noopener" href={`https://wa.me/${SITE.whatsapp}`}>Escribir por WhatsApp</a>
       <a class="fb-outline" href="/contacto/">Ver todos los canales →</a>
@@ -91,3 +96,20 @@ const VALORES = [
 
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  /* Variante CLARA del PMV: fondo blanco + world-dots (mismo lenguaje visual que MarcasUsa) */
+  .pmv-full--claro{position:relative;background:#fff;color:#16181d;border-bottom:2px solid var(--line);overflow:hidden}
+  .world-dots{
+    position:absolute;inset:0;background-color:#fff;
+    background-image:radial-gradient(rgba(22,24,29,.13) 1.6px,transparent 1.6px);
+    background-size:18px 18px;pointer-events:none;
+  }
+  .pmv-b{position:relative;display:grid;grid-template-columns:200px 1fr;gap:2rem;padding:2.6rem clamp(1.2rem,3vw,2.6rem);border-top:2px solid #e3e5e9}
+  .pmv-b:first-of-type{border-top:none}
+  .pmv-b .pn i{font-style:normal;font-family:var(--font-display);font-size:.8rem;letter-spacing:.2em;color:var(--orange-deep);display:block;margin-bottom:.5rem}
+  .pmv-b .pn h2{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4vw,3rem);text-transform:uppercase;line-height:1;color:#16181d}
+  .pmv-b .pf{font-family:var(--font-display);font-weight:400;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.15;text-transform:uppercase;color:#16181d;border-left:4px solid var(--orange);padding-left:1.2rem;text-wrap:balance}
+  .pmv-b .pt{color:#5c5f66;margin-top:1.1rem;max-width:52rem;font-size:.98rem;line-height:1.65}
+  @media (max-width:900px){.pmv-b{grid-template-columns:1fr;gap:1rem}}
+</style>

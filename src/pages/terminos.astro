@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Topbar from '../components/Topbar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../data/site';
+
+const title = 'Términos y Condiciones · Hidromáticos J-SAN';
+const description =
+  'Términos y condiciones del servicio de diagnóstico, reparación e instalación de transmisiones automáticas de Hidromáticos J-SAN, C.A., Caracas.';
+---
+
+<BaseLayout title={title} description={description} path="/terminos/">
+  <Topbar tagline="Legal · Est. 2013" />
+
+  <article class="legal">
+    <div class="kick"><span class="sq"></span><span>Documento legal</span></div>
+    <h1 style="font-size:clamp(2.2rem,5vw,3.8rem)">Términos y <em>Condiciones</em></h1>
+    <p class="demo-note" style="margin-top:1rem">Última actualización: agosto 2026</p>
+
+    <section>
+      <h2>1. Aceptación de los términos</h2>
+      <p>
+        Al solicitar, autorizar o recibir servicios de <strong>{SITE.name}</strong> (en adelante, "J-SAN"), el cliente acepta
+        íntegramente estos Términos y Condiciones. La entrega del vehículo para diagnóstico o reparación constituye la firma
+        del presente acuerdo.
+      </p>
+
+      <h2>2. Servicios</h2>
+      <p>
+        J-SAN presta servicios especializados de diagnóstico electrónico, mantenimiento, reparación, reconstrucción,
+        instalación y cambio de transmisiones automáticas ("cajas automáticas"), así como venta de repuestos relacionados.
+        Todo trabajo se realiza bajo presupuesto previo presentado al cliente.
+      </p>
+
+      <h2>3. Presupuestos y aprobaciones</h2>
+      <ul>
+        <li>Ningún trabajo inicia sin la aprobación expresa del cliente sobre un presupuesto escrito.</li>
+        <li>El presupuesto se envía por WhatsApp, correo electrónico o se firma en nuestras instalaciones.</li>
+        <li>Si durante el trabajo se descubren fallas adicionales no visibles en el diagnóstico inicial (daños internos, piezas duras comprometidas), J-SAN lo comunicará de inmediato; el trabajo continúa únicamente con nueva autorización del cliente.</li>
+        <li>Los presupuestos tienen validez de quince (15) días calendario por variaciones en el costo de importación de repuestos.</li>
+      </ul>
+
+      <h2>4. Diagnóstico</h2>
+      <p>
+        El servicio de diagnóstico tiene costo separado, se informa antes de realizarse y es independiente de la decisión
+        final de reparación del cliente. El diagnóstico incluye escaneo computarizado y prueba de manejo cuando aplique.
+      </p>
+
+      <h2>5. Repuestos</h2>
+      <ul>
+        <li>J-SAN trabaja con repuestos originales y de marcas reconocidas del mercado americano (Sonnax, TransGo, Transtec, Precision International, entre otras).</li>
+        <li>Cuando el cliente suministra sus propios repuestos, la garantía del trabajo cubre únicamente la mano de obra.</li>
+        <li>Los repuestos solicitados por encargo requieren abono y su importación está sujeta a disponibilidad internacional y tiempos de aduana ajenos a J-SAN.</li>
+      </ul>
+
+      <h2>6. Garantía</h2>
+      <ul>
+        <li>Reconstrucción completa de caja: garantía escrita de seis (6) meses o 10.000 km (lo que ocurra primero).</li>
+        <li>Reparaciones parciales y servicios: garantía escrita de tres (3) meses.</li>
+        <li>La garantía queda anulada si el vehículo fue manipulado por terceros, sufrió accidente, uso indebido, sobrecarga, o si no se realizaron los mantenimientos indicados.</li>
+        <li>La garantía cubre mano de obra y repuestos instalados por J-SAN; no cubre remolques, vehículos de sustitución ni pérdidas consecuentes.</li>
+      </ul>
+
+      <h2>7. Pagos</h2>
+      <ul>
+        <li>Todo pago se registra con recibo numerado.</li>
+        <li>Los trabajos de reconstrucción requieren un abono inicial para iniciar la compra de repuestos.</li>
+        <li>El vehículo se entrega contra pago total del saldo. Vencidos treinta (30) días posteriores al aviso de entrega sin que el cliente retire el vehículo ni coordine el pago, se aplicará un cargo diario por almacenamiento informado previamente.</li>
+      </ul>
+
+      <h2>8. Plazos de entrega</h2>
+      <p>
+        Los plazos son estimados y dependen de la complejidad de la falla y la disponibilidad de repuestos. J-SAN notificará
+        cualquier cambio relevante. La demora imputable a la importación de piezas no genera descuentos ni penalidades.
+      </p>
+
+      <h2>9. Responsabilidad sobre el vehículo</h2>
+      <ul>
+        <li>El cliente debe retirar pertenencias de valor antes de dejar el vehículo.</li>
+        <li>J-SAN no responde por objetos personales dejados en el interior del carro.</li>
+        <li>Vehículos no reclamados después de noventa (90) días del aviso de entrega, sin respuesta del cliente, podrán ser gestionados conforme a la ley para cubrir costos acumulados.</li>
+      </ul>
+
+      <h2>10. Prueba de manejo</h2>
+      <p>
+        El cliente autoriza pruebas de manejo del vehículo dentro del proceso de diagnóstico y verificación post-reparación,
+        realizadas por personal de J-SAN y limitadas a las distancias necesarias para tales fines.
+      </p>
+
+      <h2>11. Contenido del sitio web</h2>
+      <p>
+        La información de este sitio es orientativa y no constituye cotización vinculante. Las imágenes de trabajos y videos
+        publicados corresponden a casos reales atendidos y no garantizan resultados idénticos en cada vehículo.
+      </p>
+
+      <h2>12. Propiedad intelectual</h2>
+      <p>
+        Las menciones a marcas de fabricantes de repuestos (Sonnax®, TransGo®, Transtec®, Precision International® u otras)
+        se realizan únicamente para identificar la calidad y procedencia de los componentes utilizados. Dichas marcas
+        pertenecen a sus respectivos titulares y no implican patrocinio ni asociación.
+      </p>
+
+      <h2>13. Ley aplicable</h2>
+      <p>
+        Estos términos se rigen por las leyes de la República Bolivariana de Venezuela. Cualquier controversia será
+        dirimida ante los tribunales competentes del Área Metropolitana de Caracas.
+      </p>
+
+      <h2>14. Contacto</h2>
+      <p>
+        Dudas sobre este documento: {SITE.email} · WhatsApp {SITE.whatsappDisplay} · Oficina {SITE.phoneOficina1Display}.
+        Sede: Urb. Monte Cristo, Calle 10, Miranda · Caracas.
+      </p>
+    </section>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  /* Página legal: blanco + naranja, lectura limpia */
+  .legal{
+    background:#fff;color:#16181d;
+    max-width:52rem;margin:0 auto;padding:clamp(2.4rem,6vh,4rem) clamp(1.2rem,3vw,2.6rem);
+  }
+  .legal h2{
+    font-family:var(--font-display);font-weight:400;font-size:1.35rem;text-transform:uppercase;
+    letter-spacing:.02em;margin:2.2rem 0 .7rem;padding-left:.9rem;border-left:4px solid var(--orange);
+  }
+  .legal p{color:#3c3f45;line-height:1.7;font-size:.95rem}
+  .legal ul{margin:.4rem 0 1rem 1.2rem;color:#3c3f45;line-height:1.7;font-size:.93rem}
+  .legal li{padding:.22rem 0;list-style:square;color:var(--orange-deep)}
+  .legal li::marker{color:var(--orange)}
+  .legal strong{color:#16181d}
+</style>

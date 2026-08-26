@@ -1,5 +1,11 @@
 ---
 import '../../src/styles/global.css';
+// Fuentes self-hosted (recomendación oficial Astro via Context7): cero requests externos, sin FOIT
+import '@fontsource/anton/400.css';
+import '@fontsource/space-grotesk/400.css';
+import '@fontsource/space-grotesk/500.css';
+import '@fontsource/space-grotesk/600.css';
+import '@fontsource/space-grotesk/700.css';
 import { SITE, NAV, waLink } from '../data/site';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 
@@ -70,12 +76,7 @@ const scriptsJsonLd = [jsonLdLocal, ...(jsonLdExtra ? (Array.isArray(jsonLdExtra
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Fuentes self-hosted vía Fontsource (import en frontmatter): cero render-blocking -->
 
     {scriptsJsonLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
   </head>

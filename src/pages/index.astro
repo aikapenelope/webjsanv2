@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Sidebar from '../components/Sidebar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SocialGrid from '../components/SocialGrid.astro';
+import MarcasUsa from '../components/MarcasUsa.astro';
 import { SITE, MARCAS, RESENAS, waLink } from '../data/site';
 
 const WA_FALLA = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
@@ -201,6 +202,9 @@ const jsonLdFAQ = {
           ))}
         </div>
       </section>
+
+      <!-- MARCAS USA — repuestos originales (sección blanca, contraste) -->
+      <MarcasUsa />
 
       <!-- CARRUSEL DE RESEÑAS (auto, pausa on hover) -->
       <section id="clientes">

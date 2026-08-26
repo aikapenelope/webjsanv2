@@ -13,9 +13,10 @@ import { NAV, SITE, waLink } from '../data/site';
     {NAV.map((n) => <a href={n.href}><i>{n.num}</i> {n.label}</a>)}
   </nav>
   <div class="sb-foot">
+    <!-- badge corporativo: Autopartes J-SAN (sin link, presencia de marca) -->
+    <span class="sb-badge" title="División de autopartes">AUTOPARTES J-SAN</span>
     <a class="btn-o" target="_blank" rel="noopener" href={waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática')}>
       WhatsApp directo
     </a>
-    <a class="btn-line" href={`tel:+${SITE.whatsapp}`}>{SITE.whatsappDisplay}</a>
   </div>
 </aside>
