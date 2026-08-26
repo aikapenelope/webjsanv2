@@ -1,0 +1,318 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ReviewCarousel from '../components/ReviewCarousel.astro';
+import { RESENAS, SOCIAL } from '../data/site';
+
+const title = 'Reseñas & Opiniones · Hidromáticos J-SAN — ★ 4.6 en Google Maps';
+const description =
+  'Opiniones y calificaciones reales de clientes de Hidromáticos J-SAN en Caracas (★ 4.6 con 35 reseñas en Google Maps). Conoce experiencias de reparación de cajas automáticas.';
+
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+
+const jsonLdResenas = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Servicio de transmisión automática — Hidromáticos J-SAN',
+  brand: { '@type': 'Brand', name: 'Hidromáticos J-SAN' },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.6',
+    reviewCount: '35',
+    bestRating: '5',
+    worstRating: '1',
+  },
+  review: RESENAS.map((r) => ({
+    '@type': 'Review',
+    author: { '@type': 'Person', name: r.nombre },
+    reviewBody: r.texto,
+    reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+  })),
+};
+---
+
+<BaseLayout title={title} description={description} path="/resenas/" jsonLdExtra={jsonLdResenas} topbarTagline="Clientes & Calificaciones">
+  <main class="resenas-page">
+    <div class="wrap">
+      <!-- HEADER RESEÑAS -->
+      <div class="resenas-hero">
+        <span class="kicker">Lo que dicen de nosotros</span>
+        <h1>Clientes que <em>recomiendan y vuelven</em></h1>
+        <p class="resenas-lead">
+          Puntuación verificada de <strong>★ 4.6 con más de 35 opiniones</strong> en nuestro perfil de Google Business en Caracas.
+        </p>
+      </div>
+
+      <!-- BADGE SCORE RESUMEN -->
+      <div class="score-banner">
+        <div class="score-main">
+          <span class="score-num">4.6</span>
+          <div>
+            <div class="score-stars">★★★★★</div>
+            <span class="score-label">Promedio en Google Maps</span>
+          </div>
+        </div>
+        <div class="score-cta">
+          <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
+            Escribir una reseña en Google ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARRUSEL FLUIDO -->
+    <div class="resenas-carousel-wrap">
+      <ReviewCarousel />
+    </div>
+
+    <div class="wrap">
+      <!-- GRID DE TODAS LAS RESEÑAS -->
+      <div class="reviews-full-grid">
+        {RESENAS.map((r) => (
+          <article class="r-card">
+            <div class="r-header">
+              <span class="r-stars">★★★★★</span>
+              <span class="r-badge">{r.fuente}</span>
+            </div>
+            <p class="r-quote">“{r.texto}”</p>
+            <div class="r-author">
+              <span class="r-avatar">{r.iniciales}</span>
+              <div>
+                <b>{r.nombre}</b>
+                <small>{r.meta}</small>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- BOX DE INVITACIÓN -->
+      <div class="opinion-box">
+        <div>
+          <h3>⭐ ¿Ya atendiste tu vehículo en J-SAN?</h3>
+          <p>Toma menos de un minuto: abre el perfil de J-SAN en Google Maps y cuéntanos cómo fue tu experiencia con el diagnóstico y la reparación. Tu recomendación ayuda a otro conductor a elegir bien.</p>
+        </div>
+        <div class="opinion-btns">
+          <a class="btn btn-gold" href={mapsUrl} target="_blank" rel="noopener">
+            Dejar mi reseña ★
+          </a>
+          <a class="btn btn-ghost" href={mapsUrl} target="_blank" rel="noopener">
+            Ver las 35 reseñas en Google ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .resenas-page {
+    padding: 4.4rem 0 5.4rem;
+    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+  }
+
+  .resenas-hero {
+    max-width: 48rem;
+    margin-bottom: 2.8rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 4.1rem);
+    line-height: 0.98;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .resenas-lead {
+    color: var(--muted);
+    font-size: 1.12rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+    max-width: 40rem;
+  }
+
+  /* SCORE BANNER */
+  .score-banner {
+    background: var(--navy);
+    border-radius: 20px;
+    padding: 2.2rem 2.6rem;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    border-top: 4px solid var(--gold);
+    box-shadow: 0 14px 34px rgba(10, 30, 64, 0.18);
+    margin-bottom: 2.8rem;
+    flex-wrap: wrap;
+  }
+
+  .score-main {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+  }
+
+  .score-num {
+    font-family: var(--font-display);
+    font-size: 3.6rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--gold);
+  }
+
+  .score-stars {
+    color: var(--gold);
+    letter-spacing: 0.2rem;
+    font-size: 1.4rem;
+  }
+
+  .score-label {
+    font-size: 0.92rem;
+    color: var(--muted-dark);
+  }
+
+  .resenas-carousel-wrap {
+    margin-bottom: 3.6rem;
+  }
+
+  /* GRID FULL */
+  .reviews-full-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6rem;
+    margin-bottom: 3.6rem;
+  }
+
+  .r-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-top: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 24px rgba(15, 42, 87, 0.05);
+  }
+
+  .r-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.9rem;
+  }
+
+  .r-stars {
+    color: var(--gold);
+    font-size: 1.05rem;
+    letter-spacing: 0.12rem;
+  }
+
+  .r-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+  }
+
+  .r-quote {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    flex: 1;
+    margin-bottom: 1.4rem;
+  }
+
+  .r-author {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .r-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold-soft);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    flex: none;
+  }
+
+  .r-author b {
+    display: block;
+    color: var(--navy);
+    font-size: 0.95rem;
+  }
+
+  .r-author small {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  /* OPINION BOX */
+  .opinion-box {
+    background: #ffffff;
+    border: 2px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 12px 30px rgba(15, 42, 87, 0.06);
+    flex-wrap: wrap;
+  }
+
+  .opinion-box h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.65rem;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.4rem;
+  }
+
+  .opinion-box p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    max-width: 36rem;
+  }
+
+  .opinion-btns {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 960px) {
+    .reviews-full-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .opinion-box {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.8rem;
+    }
+  }
+</style>

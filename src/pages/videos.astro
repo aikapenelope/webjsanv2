@@ -1,0 +1,301 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { waLink } from '../data/site';
+
+const title = 'Videos & Reels · Hidromáticos J-SAN — Trabajos reales en taller';
+const description =
+  'Videos y reels reales del taller: diagnósticos de cajas automáticas, reparaciones, escaneos computarizados y el día a día de Hidromáticos J-SAN en Caracas.';
+
+// Video destacado de YouTube
+const YT = {
+  id: 'cabwaOuhG-U',
+  titulo: 'Hidromáticos J-SAN en acción — Especialistas en Caracas',
+  texto:
+    'Un recorrido por lo que hacemos: especialistas en cajas automáticas, importadores de transmisiones y repuestos, y presupuesto claro antes de trabajar. Así atendemos en Miranda desde 2013.',
+};
+
+// Reels verticales reales de Instagram
+const VERTICALES = [
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/embed', link: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DcWIww6OWs_/embed', link: 'https://www.instagram.com/reel/DcWIww6OWs_/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DcBynXMhn5r/embed', link: 'https://www.instagram.com/reel/DcBynXMhn5r/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Db3Ux9xOX6N/embed', link: 'https://www.instagram.com/reel/Db3Ux9xOX6N/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dbqk7LROnMl/embed', link: 'https://www.instagram.com/reel/Dbqk7LROnMl/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dbqk2uMOucv/embed', link: 'https://www.instagram.com/reel/Dbqk2uMOucv/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DbqkE6pOcAM/embed', link: 'https://www.instagram.com/reel/DbqkE6pOcAM/' },
+] as const;
+
+const jsonLdVideo = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: YT.titulo,
+  description: YT.texto,
+  thumbnailUrl: [`https://i.ytimg.com/vi/${YT.id}/hqdefault.jpg`],
+  uploadDate: '2026-01-01',
+  embedUrl: `https://www.youtube-nocookie.com/embed/${YT.id}`,
+};
+
+const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consultar por mi vehículo');
+---
+
+<BaseLayout title={title} description={description} path="/videos/" jsonLdExtra={jsonLdVideo} topbarTagline="Multimedia & Casos Reales">
+  <main class="videos-page">
+    <div class="wrap">
+      <!-- HEADER VIDEOS -->
+      <div class="videos-hero">
+        <span class="kicker">El taller por dentro</span>
+        <h1>Trabajos <em>reales</em>, sin filtros</h1>
+        <p class="videos-lead">
+          Lo que ves es lo que somos: diagnósticos serios, reparaciones bien hechas y un taller con las puertas abiertas.
+        </p>
+      </div>
+
+      <!-- FEATURED YOUTUBE -->
+      <div class="yt-feature-card">
+        <div class="yt-frame-wrap">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${YT.id}`}
+            title={YT.titulo}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="yt-info">
+          <span class="yt-tag">DESTACADO · YOUTUBE</span>
+          <h2>{YT.titulo}</h2>
+          <p>{YT.texto}</p>
+          <div class="yt-actions">
+            <a
+              class="btn btn-primary btn-sm"
+              href={`https://www.youtube.com/watch?v=${YT.id}`}
+              target="_blank"
+              rel="noopener"
+            >
+              Ver en YouTube ↗
+            </a>
+            <a class="btn btn-ghost btn-sm" href={waVideos} target="_blank" rel="noopener">
+              Consultar por mi caso →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- REELS EN REDES -->
+      <section class="reels-section">
+        <div class="sec-head">
+          <span class="kicker">Recientes en redes</span>
+          <h2>Directo de Instagram &amp; Redes Sociales</h2>
+          <p>Síguenos en nuestras cuentas oficiales para ver transmisiones abiertas, diagnósticos y entregas de vehículos.</p>
+        </div>
+
+        <div class="reels-grid">
+          {VERTICALES.map((v, i) => (
+            <article class="reel-card">
+              <div class="reel-frame">
+                <iframe
+                  src={v.src}
+                  title={`Reel de Instagram N° ${i + 1} — Hidromáticos J-SAN`}
+                  loading="lazy"
+                  allowfullscreen
+                ></iframe>
+              </div>
+              <div class="reel-footer">
+                <span class="reel-label">INSTAGRAM · REEL</span>
+                <a class="reel-link" href={v.link} target="_blank" rel="noopener">
+                  Abrir en Instagram ↗
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .videos-page {
+    padding: 4.4rem 0 5.4rem;
+    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+  }
+
+  .videos-hero {
+    max-width: 48rem;
+    margin-bottom: 3rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 0.98;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .videos-lead {
+    color: var(--muted);
+    font-size: 1.12rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+    max-width: 40rem;
+  }
+
+  /* YOUTUBE FEATURE */
+  .yt-feature-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: 20px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
+    margin-bottom: 4rem;
+    align-items: center;
+  }
+
+  .yt-frame-wrap {
+    aspect-ratio: 16 / 9;
+    background: #000;
+    width: 100%;
+    height: 100%;
+  }
+
+  .yt-frame-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .yt-info {
+    padding: 2.6rem 2.4rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .yt-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .yt-info h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.8rem;
+  }
+
+  .yt-info p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    margin-bottom: 1.6rem;
+  }
+
+  .yt-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  /* REELS SECTION */
+  .reels-section {
+    padding-top: 1.8rem;
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .sec-head h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.6rem;
+    font-size: 1.02rem;
+  }
+
+  .reels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+  }
+
+  .reel-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(15, 42, 87, 0.06);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reel-frame {
+    aspect-ratio: 9 / 16;
+    background: var(--sky);
+    width: 100%;
+  }
+
+  .reel-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .reel-footer {
+    padding: 1rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .reel-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--navy);
+  }
+
+  .reel-link {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  .reel-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 960px) {
+    .yt-feature-card {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

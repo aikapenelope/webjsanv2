@@ -1,0 +1,250 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, SOCIAL, waLink } from '../data/site';
+
+const title = `Contacto · ${SITE.shortName} — Teléfonos, WhatsApp y Sede en Caracas`;
+const description =
+  'Canales de atención directa de Hidromáticos J-SAN, C.A.: WhatsApp, teléfonos de oficina y taller en Monte Cristo, Caracas. Atención de lunes a sábado con cita previa.';
+
+const waFalla = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
+const waAgendar = waLink('Hola J-SAN, quiero agendar un diagnóstico con scanner para mi carro');
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+---
+
+<BaseLayout title={title} description={description} path="/contacto/" topbarTagline="Contacto Directo · Est. 2013">
+  <main class="contacto-page">
+    <div class="wrap">
+      <!-- HEADER CONTACTO -->
+      <div class="contacto-hero">
+        <span class="kicker">Estamos para servirte</span>
+        <h1>Hablemos de <em>tu vehículo</em></h1>
+        <p class="contacto-lead">
+          Escríbenos por WhatsApp con el modelo y año de tu carro y te respondemos con el primer paso de diagnóstico sin rodeos.
+        </p>
+      </div>
+
+      <!-- GRID DE 4 CANALES -->
+      <div class="canales-grid">
+        <div class="canal-card">
+          <span class="canal-tag">CANAL 01 — MÁS RÁPIDO</span>
+          <h3>WhatsApp Directo</h3>
+          <p>Manda una foto o un video del síntoma o luz de tablero. Respondemos en horario de trabajo.</p>
+          <a class="canal-link" href={waFalla} target="_blank" rel="noopener">
+            {SITE.whatsappDisplay} ↗
+          </a>
+        </div>
+
+        <div class="canal-card">
+          <span class="canal-tag">CANAL 02 — OFICINA &amp; TALLER</span>
+          <h3>Teléfonos Fijos</h3>
+          <p>Líneas de atención en Caracas para llamadas convencionales y recepción de citas.</p>
+          <div class="canal-phones">
+            <a class="canal-link" href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+            <a class="canal-link" href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+          </div>
+        </div>
+
+        <div class="canal-card">
+          <span class="canal-tag">CANAL 03 — COTIZACIONES</span>
+          <h3>Correo Electrónico</h3>
+          <p>Para cotizaciones corporativas, flotas de empresas e importaciones especiales.</p>
+          <a class="canal-link canal-email" href={`mailto:${SITE.email}`}>
+            {SITE.email} ↗
+          </a>
+        </div>
+
+        <div class="canal-card">
+          <span class="canal-tag canal-tag-gold">HORARIO CONTINUO</span>
+          <h3>Lunes a Sábado</h3>
+          <p>Atención con cita previa agendada por WhatsApp para garantizar diagnóstico sin esperas.</p>
+          <a class="canal-link" href={waAgendar} target="_blank" rel="noopener">
+            AGENDAR ESCANEO →
+          </a>
+        </div>
+      </div>
+
+      <!-- UBICACIÓN Y MAPA -->
+      <div class="mapa-card">
+        <div class="mapa-info">
+          <span class="kicker">Sede Principal</span>
+          <h2>Taller &amp; Oficina en Monte Cristo</h2>
+          <p class="mapa-dir">
+            <strong>Dirección:</strong> {SITE.sede}.
+          </p>
+          <p class="mapa-horario">
+            <strong>Horario de atención:</strong> {SITE.horario}.
+          </p>
+          <div class="mapa-actions">
+            <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
+              Abrir ubicación en Google Maps ↗
+            </a>
+            <a class="btn btn-ghost" href={`tel:${SITE.phoneOficina1}`}>
+              Llamar a recepción
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .contacto-page {
+    padding: 4.4rem 0 5.4rem;
+    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+  }
+
+  .contacto-hero {
+    max-width: 48rem;
+    margin-bottom: 3.4rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 5.2vw, 4.2rem);
+    line-height: 0.98;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .contacto-lead {
+    color: var(--muted);
+    font-size: 1.12rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+    max-width: 40rem;
+  }
+
+  .canales-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.6rem;
+    margin-bottom: 3.6rem;
+  }
+
+  .canal-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 2.2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 28px rgba(15, 42, 87, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .canal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px rgba(15, 42, 87, 0.12);
+  }
+
+  .canal-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .canal-tag-gold {
+    color: var(--gold);
+  }
+
+  .canal-card h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .canal-card p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    flex: 1;
+    margin-bottom: 1.4rem;
+  }
+
+  .canal-phones {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .canal-link {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+    font-weight: 700;
+    color: var(--blue);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .canal-link:hover {
+    color: var(--blue-hover);
+    text-decoration: underline;
+  }
+
+  .canal-email {
+    font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+    word-break: break-all;
+  }
+
+  /* MAPA CARD */
+  .mapa-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 14px 34px rgba(15, 42, 87, 0.08);
+  }
+
+  .mapa-info h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    margin: 0.6rem 0 1rem;
+  }
+
+  .mapa-dir,
+  .mapa-horario {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+  }
+
+  .mapa-dir strong,
+  .mapa-horario strong {
+    color: var(--navy);
+  }
+
+  .mapa-actions {
+    margin-top: 1.8rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .canales-grid {
+      grid-template-columns: 1fr;
+    }
+    .mapa-card {
+      padding: 2rem 1.6rem;
+    }
+  }
+</style>
