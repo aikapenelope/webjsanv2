@@ -353,6 +353,11 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
   .hero-top .tag{display:none}
   .valores-grid{grid-template-columns:1fr}
 }
+/* Accesibilidad: respeta usuarios con movimiento reducido */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+
 /* pantallas ultranchas: el teléfono sale (WhatsApp vive en el menú) */
 @media (max-width:360px){
   .hero-top .tel{display:none}
