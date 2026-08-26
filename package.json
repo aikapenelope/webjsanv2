@@ -1,0 +1,24 @@
+{
+  "name": "webjsanv2",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource/barlow": "^5.2.5",
+    "@fontsource/barlow-condensed": "^5.2.5",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^5.4.2",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.7.3"
+  }
+}
