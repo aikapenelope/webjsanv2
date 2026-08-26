@@ -1,0 +1,212 @@
+---
+import { SITE, SOCIAL, waLink } from '../data/site';
+
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión en el taller de Monte Cristo');
+---
+
+<section id="sedes" class="locations-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Ubicación y Atención</span>
+      <h2>Visítanos en nuestra sede de Caracas</h2>
+      <p>Instalaciones equipadas para escaneo electrónico, diagnóstico en fosa y servicio completo de transmisión.</p>
+    </div>
+
+    <div class="loc-grid">
+      <div class="loc-card">
+        <span class="loc-tag">SEDE PRINCIPAL</span>
+        <h3>Taller &amp; Oficina Monte Cristo</h3>
+        <address>
+          <strong>Dirección:</strong> {SITE.sede}.
+        </address>
+        <div class="loc-meta">
+          <p><strong>Horario:</strong> {SITE.horario}</p>
+          <p>
+            <strong>Teléfonos:</strong> <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a> · <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+          </p>
+        </div>
+        <div class="loc-actions">
+          <a class="btn btn-primary btn-sm" href={mapsUrl} target="_blank" rel="noopener">
+            Abrir en Google Maps ↗
+          </a>
+          <a class="btn btn-ghost btn-sm" href={waAgendar} target="_blank" rel="noopener">
+            Agendar cita previa →
+          </a>
+        </div>
+      </div>
+
+      <div class="loc-info-card">
+        <span class="loc-tag loc-tag-gold">LOGÍSTICA &amp; ENVÍOS</span>
+        <h3>Atención a nivel nacional</h3>
+        <p class="loc-info-desc">
+          ¿Estás fuera de Caracas? Recibimos y enviamos cuerpos de válvulas, convertidores de par (turbinas) y cajas completas reconstruidas a toda Venezuela mediante las principales empresas de encomienda (MRW, Tealca, Zoom).
+        </p>
+        <ul class="loc-bullets">
+          <li><b>Embalaje seguro:</b> protección industrial contra golpes y derrames.</li>
+          <li><b>Asesoría a distancia:</b> diagnóstico previo vía WhatsApp con fotos y videos.</li>
+          <li><b>Garantía nacional:</b> soporte técnico y respaldo en repuestos.</li>
+        </ul>
+        <div class="loc-actions">
+          <a class="btn btn-primary btn-sm" href={waLink('Hola J-SAN, quiero consultar por un envío de repuesto / caja al interior del país')} target="_blank" rel="noopener">
+            Consultar envíos nacionales →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .locations-sec {
+    padding: 4.8rem 0;
+    background: #ffffff;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.6rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 1.03;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .loc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6rem;
+  }
+
+  .loc-card,
+  .loc-info-card {
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    padding: 2.2rem;
+    background: linear-gradient(180deg, #ffffff, var(--sky));
+    box-shadow: 0 10px 28px rgba(15, 42, 87, 0.06);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .loc-card:hover,
+  .loc-info-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.12);
+  }
+
+  .loc-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: var(--navy);
+    border-radius: 999px;
+    padding: 0.32rem 0.85rem;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .loc-tag-gold {
+    background: var(--gold);
+    color: var(--navy-deep);
+  }
+
+  .loc-card h3,
+  .loc-info-card h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.65rem;
+    text-transform: uppercase;
+    margin: 1rem 0 0.8rem;
+    color: var(--navy);
+  }
+
+  .loc-card address {
+    font-style: normal;
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+
+  .loc-card address strong {
+    color: var(--navy);
+  }
+
+  .loc-meta {
+    font-size: 0.92rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .loc-meta a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .loc-meta a:hover {
+    text-decoration: underline;
+  }
+
+  .loc-info-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 1.2rem;
+  }
+
+  .loc-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.4rem;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+
+  .loc-bullets li::before {
+    content: "✓";
+    color: var(--green);
+    font-weight: 900;
+    margin-right: 0.45rem;
+  }
+
+  .loc-bullets b {
+    color: var(--navy);
+  }
+
+  .loc-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .loc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

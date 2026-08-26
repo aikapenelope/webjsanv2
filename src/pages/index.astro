@@ -1,26 +1,69 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../data/site';
+import Hero from '../components/Hero.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import ServicesSection from '../components/ServicesSection.astro';
+import ProcessCards from '../components/ProcessCards.astro';
+import BrandsMarquee from '../components/BrandsMarquee.astro';
+import MarcasUsa from '../components/MarcasUsa.astro';
+import ReviewsSection from '../components/ReviewsSection.astro';
+import LocationsSection from '../components/LocationsSection.astro';
+import FaqAccordion, { FAQS } from '../components/FaqAccordion.astro';
+import FinalCta from '../components/FinalCta.astro';
 
-const title = `${SITE.shortName} · Especialistas en Cajas Automáticas — Caracas`;
+const title = 'Hidromáticos J-SAN · Especialistas en Cajas Automáticas — Caracas';
+const description =
+  'Reparación y reconstrucción de cajas automáticas y motores en Caracas. Escaneo computarizado, repuestos importados y garantía escrita. Desde 2013 en Miranda, Venezuela.';
+
+const jsonLdFaq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+};
 ---
 
-<BaseLayout title={title} path="/">
-  <main class="wrap" style="padding: 4rem 0;">
-    <span class="eyebrow">★ Caracas · Miranda · Desde 2013</span>
-    <h1 style="font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 4.2rem); text-transform: uppercase; line-height: 1;">
-      Tu caja automática en manos de <span style="color: var(--blue);">líderes</span>
-    </h1>
-    <p style="color: var(--muted); margin-top: 1rem; max-width: 36rem; font-size: 1.1rem;">
-      Reparación de cajas automáticas y motores en Caracas. Escaneo computarizado, presupuesto claro antes de trabajar y repuestos importados.
-    </p>
-    <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-      <a href={`https://wa.me/${SITE.whatsapp}`} class="btn btn-primary" target="_blank" rel="noopener">
-        Consultar falla por WhatsApp
-      </a>
-      <a href="#servicios" class="btn btn-ghost">
-        Ver servicios
-      </a>
-    </div>
+<BaseLayout
+  title={title}
+  description={description}
+  path="/"
+  jsonLdExtra={jsonLdFaq}
+>
+  <main>
+    <!-- HERO SECTION CON ESCUDO & BADGE FLOTANTE -->
+    <Hero />
+
+    <!-- FRANJA DE CONFIANZA INSTITUCIONAL -->
+    <TrustStrip />
+
+    <!-- SERVICIOS NUMERADOS & CATEGORÍAS -->
+    <ServicesSection />
+
+    <!-- PROCESO EN 4 PASOS EN FONDO OSCURO -->
+    <ProcessCards />
+
+    <!-- MARQUESINA INFINITA DE 16 MARCAS AUTOMOTRICES -->
+    <BrandsMarquee />
+
+    <!-- REPUESTOS IMPORTADOS USA (SONNAX, TRANSGO, TRANSTEC) -->
+    <MarcasUsa />
+
+    <!-- TESTIMONIOS & CARRUSEL DE RESEÑAS GOOGLE ★4.6 -->
+    <ReviewsSection />
+
+    <!-- SEDE MONTE CRISTO & ENVÍOS NACIONALES -->
+    <LocationsSection />
+
+    <!-- PREGUNTAS FRECUENTES ACCESIBLES -->
+    <FaqAccordion />
+
+    <!-- CTA FINAL DE CONVERSIÓN -->
+    <FinalCta />
   </main>
 </BaseLayout>

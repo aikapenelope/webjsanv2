@@ -1,0 +1,286 @@
+---
+import { waLink } from '../data/site';
+
+const SERVICIOS = [
+  {
+    num: '01',
+    titulo: 'Diagnóstico & Electrónica',
+    desc: 'Escaneo computarizado DTC, prueba de ruta diagnóstica y reparación de módulos TCM y sensores.',
+    items: [
+      { b: 'Escaneo y detección de fallas:', t: 'lectura computarizada de códigos DTC.' },
+      { b: 'Prueba de manejo diagnóstica', t: 'con el especialista a bordo.' },
+      { b: 'Reparación de TCM y módulos:', t: 'unidades de control de transmisión.' },
+      { b: 'Chequeo de cableados y sensores:', t: 'velocidad, presión y temperatura.' },
+    ],
+  },
+  {
+    num: '02',
+    titulo: 'Reparación & Reconstrucción',
+    desc: 'Overhaul completo, kit master americano, cuerpo de válvulas, solenoides y convertidor de par.',
+    items: [
+      { b: 'Reparación de cajas automáticas', t: 'de todas las marcas del parque venezolano.' },
+      { b: 'Reconstrucción completa (overhaul):', t: 'kit master, discos de fricción y bandas.' },
+      { b: 'Cuerpo de válvulas y solenoides:', t: 'reparación, calibración y cambio.' },
+      { b: 'Convertidor de par:', t: 'reparación, reemplazo y balanceo dinámico.' },
+      { b: 'Piezas duras:', t: 'tambores, planetarios, bombas de aceite y engranajes.' },
+    ],
+  },
+  {
+    num: '03',
+    titulo: 'Mantenimiento & Cambios',
+    desc: 'Servicio de fluido ATF, sustitución completa de transmisión y mecánica automotriz especializada.',
+    items: [
+      { b: 'Servicio de aceite y filtro ATF:', t: 'el mantenimiento clave que previene desgastes prematuros.' },
+      { b: 'Cambio completo de caja:', t: 'unidad usada seleccionada, recondicionada o nueva.' },
+      { b: 'Servicio especializado en motores:', t: 'reparación integral y ajuste preventivo.' },
+      { b: 'Mecánica automotriz en general:', t: 'frenos, tren delantero y suspensión.' },
+    ],
+  },
+  {
+    num: '04',
+    titulo: 'Repuestos & Importación',
+    desc: 'Componentes originales de EE.UU. (Sonnax, TransGo, Transtec) e importación directa bajo pedido.',
+    items: [
+      { b: 'Repuestos originales y alternativos:', t: 'discos, sellos, bandas, filtros y solenoides.' },
+      { b: 'Importación directa de cajas:', t: 'transmisiones listas para montar.' },
+      { b: 'Búsqueda de piezas difíciles:', t: 'localización de repuestos discontinuados.' },
+      { b: 'Garantía escrita y respaldo:', t: 'asistencia post-servicio y acompañamiento.' },
+    ],
+  },
+];
+---
+
+<section id="servicios" class="services-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Lo que hacemos</span>
+      <h2>Todo lo que necesita tu transmisión, en un solo taller</h2>
+      <p>Del escaneo computarizado a la reconstrucción completa, pasando por repuestos importados. Nada se repara sin que apruebes el presupuesto.</p>
+    </div>
+
+    <!-- LISTA EDITORIAL NUMERADA -->
+    <div class="svc-list">
+      {SERVICIOS.map((s) => (
+        <a
+          class="svc-item"
+          href={waLink(`Hola J-SAN, quiero consultar sobre el servicio de ${s.titulo}`)}
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="svc-num">{s.num}</span>
+          <div class="svc-title-col">
+            <h3>{s.titulo}</h3>
+          </div>
+          <div class="svc-desc-col">
+            <p>{s.desc}</p>
+          </div>
+          <span class="svc-arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </div>
+
+    <!-- CATEGORÍAS COMPLETAS -->
+    <div class="svc-grid">
+      {SERVICIOS.map((cat) => (
+        <div class="svc-cat">
+          <h3>
+            <i>{cat.num}</i>
+            <span>{cat.titulo}</span>
+          </h3>
+          <ul>
+            {cat.items.map((it) => (
+              <li>
+                <b>{it.b}</b>&nbsp;<span>{it.t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .services-sec {
+    padding: 4.6rem 0;
+    background: #ffffff;
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.6rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 1.03;
+    text-transform: uppercase;
+    color: var(--navy);
+    text-wrap: balance;
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.9rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  /* LISTA EDITORIAL */
+  .svc-list {
+    border-top: 1px solid var(--sky-line);
+    margin-bottom: 3.2rem;
+  }
+
+  .svc-item {
+    display: grid;
+    grid-template-columns: 5.5rem 1.4fr 2.4fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.7rem 1rem;
+    margin: 0 -1rem;
+    border-bottom: 1px solid var(--sky-line);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: background 0.15s ease;
+  }
+
+  .svc-item:hover {
+    background: var(--sky);
+  }
+
+  .svc-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.9rem;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+
+  .svc-item h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--navy);
+    transition: color 0.15s ease;
+  }
+
+  .svc-item:hover h3 {
+    color: var(--blue);
+  }
+
+  .svc-item p {
+    color: var(--muted);
+    font-size: 0.97rem;
+    line-height: 1.5;
+  }
+
+  .svc-arrow {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--blue);
+    opacity: 0.35;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .svc-item:hover .svc-arrow {
+    opacity: 1;
+    transform: translateX(6px);
+  }
+
+  /* GRID CATEGORÍAS */
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+
+  .svc-cat {
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    padding: 1.8rem 1.9rem;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 42, 87, 0.05);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .svc-cat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.11);
+  }
+
+  .svc-cat h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.45rem;
+    text-transform: uppercase;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .svc-cat h3 i {
+    font-style: normal;
+    color: #8f6f12;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    background: rgba(201, 162, 39, 0.14);
+    border-radius: 8px;
+    padding: 0.3rem 0.55rem;
+    line-height: 1;
+    flex: none;
+  }
+
+  .svc-cat ul {
+    list-style: none;
+  }
+
+  .svc-cat li {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.45rem 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    align-items: baseline;
+    line-height: 1.45;
+  }
+
+  .svc-cat li::before {
+    content: "★";
+    color: var(--gold);
+    font-size: 0.75rem;
+    flex: none;
+  }
+
+  .svc-cat li b {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  @media (max-width: 960px) {
+    .svc-item {
+      grid-template-columns: 3.4rem 1fr;
+      grid-template-rows: auto auto;
+      gap: 0.5rem;
+    }
+
+    .svc-item p {
+      grid-column: 2;
+    }
+
+    .svc-arrow {
+      display: none;
+    }
+
+    .svc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

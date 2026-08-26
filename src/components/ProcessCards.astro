@@ -1,0 +1,144 @@
+---
+const PASOS = [
+  {
+    n: '01',
+    t: 'Traes el carro',
+    p: 'Nos cuentas qué sentiste: patineo, golpe o luz encendida. Lo anotamos todo con detalle.',
+  },
+  {
+    n: '02',
+    t: 'Escaneamos',
+    p: 'Scanner computarizado de última generación + revisión del especialista. Sabrás qué falla de verdad.',
+  },
+  {
+    n: '03',
+    t: 'Apruebas',
+    p: 'Cotización clara por WhatsApp con desglose de repuestos y mano de obra. Nada se toca sin tu visto bueno.',
+  },
+  {
+    n: '04',
+    t: 'Entregamos',
+    p: 'Reparación con repuestos originales importados, prueba de manejo y garantía escrita.',
+  },
+];
+---
+
+<section id="proceso" class="process-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Cómo trabajamos</span>
+      <h2>Diagnóstico claro, sin sorpresas en la cuenta</h2>
+      <p>4 pasos transparentes desde que entras por el portón hasta que sales con tu carro en garantía.</p>
+    </div>
+
+    <div class="steps">
+      {PASOS.map((paso) => (
+        <article class="step">
+          <i>PASO {paso.n}</i>
+          <h3>{paso.t}</h3>
+          <p>{paso.p}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .process-sec {
+    padding: 4.8rem 0;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #ffffff;
+    border-top: 1px solid var(--navy-deep);
+  }
+
+  .process-sec .sec-head {
+    max-width: 46rem;
+    margin-bottom: 2.8rem;
+  }
+
+  .process-sec .kicker {
+    color: var(--gold-soft);
+  }
+
+  .process-sec .kicker::before {
+    background: var(--gold);
+  }
+
+  .process-sec h2 {
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.03;
+    text-transform: uppercase;
+  }
+
+  .process-sec .sec-head p {
+    color: var(--muted-dark);
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+  }
+
+  .step {
+    background: var(--navy-panel);
+    padding: 2rem 1.6rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.2s ease;
+  }
+
+  .step:hover {
+    background: rgba(22, 52, 107, 0.9);
+  }
+
+  .step i {
+    font-style: normal;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: var(--gold-soft);
+    letter-spacing: 0.14em;
+    display: block;
+    margin-bottom: 0.8rem;
+  }
+
+  .step h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    color: #ffffff;
+    letter-spacing: 0.02em;
+  }
+
+  .step p {
+    font-size: 0.92rem;
+    color: var(--muted-dark);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 960px) {
+    .steps {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

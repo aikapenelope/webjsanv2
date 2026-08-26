@@ -1,0 +1,64 @@
+---
+const STRIP_ITEMS = [
+  'Más de 12 años de experiencia',
+  'Líderes en transmisiones',
+  'Repuestos importados originales',
+  'Presupuesto antes de trabajar',
+];
+---
+
+<div class="strip" role="region" aria-label="Garantías de servicio">
+  <div class="wrap">
+    {STRIP_ITEMS.map((item) => (
+      <div>{item}</div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .strip {
+    background: var(--navy);
+    color: #fff;
+    border-top: 3px solid var(--gold);
+    border-bottom: 1px solid var(--navy-deep);
+  }
+
+  .strip .wrap {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 1.15rem 0;
+    flex-wrap: wrap;
+  }
+
+  .strip div {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .strip div::before {
+    content: "★";
+    color: var(--gold);
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 768px) {
+    .strip .wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .strip .wrap {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

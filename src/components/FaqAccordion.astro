@@ -1,0 +1,137 @@
+---
+export const FAQS = [
+  {
+    q: '¿Por qué patina mi caja automática?',
+    a: 'El patinaje (cuando el motor se acelera pero el carro no avanza con fuerza) generalmente se debe a nivel bajo o degradado de aceite ATF, desgaste en los discos de fricción del kit master, pérdida de presión hidráulica por sellos tostados o fallas en los solenoides de cambio. En J-SAN realizamos un escaneo previo para determinar si es un problema hidráulico menor o exige reconstrucción.',
+  },
+  {
+    q: '¿Qué incluye el diagnóstico y cómo funciona?',
+    a: 'Incluye escaneo computarizado de la computadora de transmisión (TCM) y motor, lectura e interpretación de códigos de falla DTC, revisión de nivel y estado físico del aceite ATF, y prueba de manejo con el especialista a bordo cuando el vehículo puede rodar con seguridad. Todo diagnóstico se informa con claridad antes de iniciar cualquier reparación.',
+  },
+  {
+    q: '¿Cuánto tiempo toma la reparación de una transmisión?',
+    a: 'Un mantenimiento preventivo (cambio de fluido ATF y filtro) se realiza en pocas horas previa cita. Un diagnóstico electrónico toma de 1 a 2 horas. Una reconstrucción completa (overhaul) toma generalmente entre 3 y 6 días hábiles, dependiendo del modelo de caja y la disponibilidad de componentes duros.',
+  },
+  {
+    q: '¿Qué garantía ofrece Hidromáticos J-SAN?',
+    a: 'Ofrecemos garantía por escrito: 6 meses o 10.000 km (lo que ocurra primero) en reconstrucciones completas de cajas con repuestos suministrados por nosotros, y 3 meses en reparaciones parciales o mantenimientos. Todos los términos se detallan de forma clara en la orden de servicio.',
+  },
+  {
+    q: '¿Trabajan con repuestos suministrados por el cliente?',
+    a: 'Sí, podemos instalar los repuestos que traigas. En ese caso, nuestra garantía cubre exclusivamente la mano de obra calificada del ensamblaje. Sin embargo, recomendamos utilizar nuestros componentes importados de marcas americanas líderes (Sonnax, TransGo, Transtec) para garantizar máxima durabilidad y respaldo integral.',
+  },
+  {
+    q: '¿Atienden vehículos de otros estados de Venezuela?',
+    a: 'Sí. Constantemente recibimos convertidores de par (turbinas), cuerpos de válvulas y cajas automáticas completas enviadas por clientes y talleres desde el interior del país a través de empresas de encomienda. Las reparamos, probamos y enviamos debidamente embaladas con garantía.',
+  },
+];
+---
+
+<section id="faq" class="faq-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Respuestas claras</span>
+      <h2>Preguntas frecuentes</h2>
+      <p>Resolvemos las dudas más habituales sobre fallas, presupuestos, repuestos y garantías.</p>
+    </div>
+
+    <div class="faq-list">
+      {FAQS.map((faq) => (
+        <details class="faq-item">
+          <summary>
+            <span>{faq.q}</span>
+          </summary>
+          <div class="faq-body">
+            <p>{faq.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-sec {
+    padding: 4.8rem 0;
+    background: #ffffff;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.6rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 1.03;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .faq-list {
+    max-width: 54rem;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--sky-line);
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.35rem 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--navy);
+    user-select: none;
+    transition: color 0.15s ease;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary:hover {
+    color: var(--blue);
+  }
+
+  .faq-item summary::after {
+    content: "+";
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--gold);
+    transition: transform 0.2s ease, color 0.2s ease;
+    flex: none;
+    line-height: 1;
+  }
+
+  .faq-item[open] summary::after {
+    transform: rotate(45deg);
+    color: var(--blue);
+  }
+
+  .faq-body {
+    padding-bottom: 1.4rem;
+  }
+
+  .faq-body p {
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    max-width: 48rem;
+  }
+</style>
