@@ -2,89 +2,135 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Topbar from '../components/Topbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SITE, waLink } from '../data/site';
+import { SITE, SOCIAL, waLink } from '../data/site';
 
 const title = 'Videos · Hidromáticos J-SAN — Trabajos reales del taller';
 const description =
-  'Videos de trabajos reales: diagnóstico con scanner, reparaciones de cajas automáticas y consejos del especialista. Hidromáticos J-SAN, Caracas.';
+  'Videos y reels reales del taller: trabajos de cajas automáticas, diagnóstico y el día a día de J-SAN. Síguenos en YouTube, Instagram y Facebook.';
 
-// Estructura lista: agregar videos aquí (id de YouTube o embed de IG) — la página los renderiza sola.
-type Video = { tipo: 'youtube' | 'instagram'; id: string; kicker: string; titulo: string; texto: string };
-const VIDEOS: Video[] = [
-  // Ejemplo YouTube: { tipo:'youtube', id:'VIDEO_ID', kicker:'DIAGNÓSTICO', titulo:'Así escaneamos tu caja', texto:'...' }
-  // Ejemplo IG reel: { tipo:'instagram', id:'URL_COMPLETA_DEL_REEL', kicker:'REPARACIÓN', titulo:'...', texto:'...' }
-];
+// ⭐ FEATURED YouTube
+const YT = {
+  id: 'cabwaOuhG-U',
+  titulo: 'Hidromáticos J-SAN en acción',
+  texto:
+    'Un recorrido por lo que hacemos: especialista en cajas automáticas, importadores de cajas y repuestos, y presupuesto claro antes de trabajar. Así atendemos en Caracas desde 2013.',
+};
 
-const jsonLdVideos = VIDEOS.filter((v) => v.tipo === 'youtube').map((v) => ({
+// 📱 Verticales recientes (reels propios de Instagram)
+// Nota: el reel de Facebook no permite embed (FB lo bloquea); se enlaza desde los botones sociales.
+const VERTICALES = [
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/embed', link: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DcWIww6OWs_/embed', link: 'https://www.instagram.com/reel/DcWIww6OWs_/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DcBynXMhn5r/embed', link: 'https://www.instagram.com/reel/DcBynXMhn5r/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Db3Ux9xOX6N/embed', link: 'https://www.instagram.com/reel/Db3Ux9xOX6N/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dbqk7LROnMl/embed', link: 'https://www.instagram.com/reel/Dbqk7LROnMl/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dbqk2uMOucv/embed', link: 'https://www.instagram.com/reel/Dbqk2uMOucv/' },
+  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DbqkE6pOcAM/embed', link: 'https://www.instagram.com/reel/DbqkE6pOcAM/' },
+] as const;
+
+const jsonLdVideo = {
   '@context': 'https://schema.org',
   '@type': 'VideoObject',
-  name: v.titulo,
-  description: v.texto,
-  thumbnailUrl: [`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`],
-  uploadDate: SITE.fundacion + '-01-01',
-  embedUrl: `https://www.youtube.com/embed/${v.id}`,
-}));
+  name: YT.titulo,
+  description: YT.texto,
+  thumbnailUrl: [`https://i.ytimg.com/vi/${YT.id}/hqdefault.jpg`],
+  uploadDate: '2026-01-01',
+  embedUrl: `https://www.youtube-nocookie.com/embed/${YT.id}`,
+};
 ---
 
-<BaseLayout title={title} description={description} path="/videos/" jsonLdExtra={jsonLdVideos.length ? jsonLdVideos : undefined}>
+<BaseLayout title={title} description={description} path="/videos/" jsonLdExtra={jsonLdVideo}>
   <Topbar tagline="Videos · Est. 2013" />
 
   <div class="page-title">
     <div class="kick"><span class="sq"></span><span>El taller por dentro</span></div>
     <h1>Trabajos <em>reales</em>, sin filtros</h1>
     <p class="demo-note" style="margin-top:1rem">
-      Diagnósticos, reparaciones y consejos del especialista. Mismo criterio que aplicamos con tu carro: mostrar las cosas como son.
+      Lo que ves es lo que somos: diagnósticos serios, trabajos bien hechos y un taller que no le teme a la cámara.
     </p>
   </div>
 
-  {VIDEOS.length > 0 ? (
-    <div class="v-grid">
-      {VIDEOS.map((v) => (
-        <article class="v-cell">
-          <div class="v-frame">
-            {v.tipo === 'youtube' ? (
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${v.id}`}
-                title={v.titulo}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-            ) : (
-              <iframe
-                src={`${v.id}/embed`}
-                title={v.titulo}
-                loading="lazy"
-                scrolling="no"
-                frameborder="0"
-              ></iframe>
-            )}
+  <!-- FEATURED YOUTUBE -->
+  <div class="v-feature">
+    <div class="v-feature-frame">
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${YT.id}`}
+        title={YT.titulo}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+    <div class="v-feature-info">
+      <i>DESTACADO · YOUTUBE</i>
+      <h2 style="font-family:var(--font-display);font-weight:400;font-size:clamp(1.6rem,2.6vw,2.2rem);text-transform:uppercase">{YT.titulo}</h2>
+      <p style="color:var(--grey);font-size:.95rem">{YT.texto}</p>
+      <div class="f-btns" style="margin-top:.6rem">
+        <a
+          class="cta-a"
+          style="padding:.85rem 1.4rem;font-size:.82rem"
+          target="_blank"
+          rel="noopener"
+          href={`https://www.youtube.com/watch?v=${YT.id}`}
+        >
+          Ver en YouTube ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- REELS RECIENTES -->
+  <section style="margin-top:clamp(2rem,5vh,3.4rem)">
+    <div class="kick"><span class="sq"></span><span>Recientes en redes</span></div>
+    <h2 style="font-family:var(--font-display);font-weight:400;font-size:clamp(1.9rem,4vw,3rem);text-transform:uppercase;margin-bottom:1.4rem">
+      Directo de <em>Instagram y Facebook</em>
+    </h2>
+    <div class="vs-grid">
+      {VERTICALES.map((v) => (
+        <article class="vs-cell">
+          <div class="vs-frame">
+            <iframe
+              src={v.src}
+              title={v.tipo === 'instagram' ? 'Reel de Instagram — Hidromáticos J-SAN' : 'Reel de Facebook — Hidromáticos J-SAN'}
+              loading="lazy"
+              scrolling="no"
+              frameborder="0"
+              allowfullscreen
+            ></iframe>
           </div>
-          <i>{v.kicker}</i>
-          <h3>{v.titulo}</h3>
-          <p>{v.texto}</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+            <i>{v.tipo === 'instagram' ? 'INSTAGRAM · REEL' : 'FACEBOOK · REEL'}</i>
+            <a
+              href={v.link}
+              target="_blank"
+              rel="noopener"
+              style="font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--orange)"
+            >
+              Abrir ↗
+            </a>
+          </div>
         </article>
       ))}
     </div>
-  ) : (
-    <section style="padding-block:clamp(2.6rem,6vh,4rem)">
-      <div class="mapa-fake">
-        <div>
-          <b>Primeros videos en camino</b>
-          <p>Estamos preparando contenido del taller. ¿Quieres que te avisemos? Escríbenos.</p>
-          <a
-            class="btn-o"
-            style="display:inline-flex;margin-top:0"
-            target="_blank"
-            rel="noopener"
-            href={waLink('Hola J-SAN, quiero que me avisen cuando suban videos al canal')}
-          >
-            AVISARME POR WHATSAPP →
-          </a>
-        </div>
+
+    <!-- CTA seguir / visitar -->
+    <div class="opinion" style="margin-top:2.4rem;padding:2rem">
+      <div>
+        <b style="font-size:1.2rem">¿Te gusta lo que ves?</b>
+        <p>Síguenos para ver cada trabajo apenas sale del taller — y cuando tu caja necesite ayuda, ya sabes dónde estamos.</p>
       </div>
-    </section>
-  )}
+      <div class="vs-follow" style="margin:0">
+        {SOCIAL.filter((s) => s.icono !== 'mapa').map((s) => (
+          <a class="cta-b" style="padding:.85rem 1.3rem;font-size:.78rem" target="_blank" rel="noopener" href={s.url}>
+            {s.nombre} ↗
+          </a>
+        ))}
+        <a class="cta-a" style="padding:.85rem 1.3rem;font-size:.78rem" target="_blank" rel="noopener" href={waLink('Hola J-SAN, vi sus videos y quiero consultar por mi carro')}>
+          Consultar mi falla →
+        </a>
+      </div>
+    </div>
+  </section>
 
   <SiteFooter />
 </BaseLayout>

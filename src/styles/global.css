@@ -60,9 +60,10 @@ a{color:inherit;text-decoration:none}
 /* HERO */
 .hero{min-height:92dvh;display:flex;flex-direction:column;justify-content:space-between;border-bottom:2px solid var(--line);position:relative;overflow:hidden}
 .hero-top,.hero-mid,.mq{position:relative;z-index:2}
-/* escudo XL sobre bloque naranja */
-.escudo-bloque{position:absolute;right:clamp(1rem,5vw,4.6rem);bottom:16%;width:clamp(240px,30vw,430px);background:var(--orange);padding:clamp(1rem,1.8vw,1.7rem);box-shadow:0 24px 60px rgba(0,0,0,.55);z-index:1}
-.escudo-bloque img{width:100%;height:auto}
+/* escudo XL CENTRADO dentro de su halo naranja difuminado */
+.escudo-wrap{position:absolute;right:clamp(.4rem,3.5vw,3.2rem);bottom:clamp(2rem,9vh,5rem);width:clamp(380px,46vw,680px);aspect-ratio:1;z-index:1;display:grid;place-items:center;pointer-events:none}
+.escudo-wrap::before{content:"";position:absolute;inset:-12%;background:radial-gradient(circle,rgba(255,90,0,.34) 0%,rgba(255,90,0,.13) 42%,transparent 70%)}
+.escudo-wrap img{position:relative;width:76%;height:auto;filter:drop-shadow(0 26px 60px rgba(0,0,0,.65))}
 .hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem clamp(1.2rem,3vw,2.6rem);border-bottom:2px solid var(--line)}
 .hero-top .tag{font-size:.72rem;font-weight:600;letter-spacing:.24em;color:var(--grey);text-transform:uppercase}
 .hero-top .tel{font-family:var(--font-display);font-size:1.05rem;letter-spacing:.05em;color:var(--white)}
@@ -76,6 +77,7 @@ a{color:inherit;text-decoration:none}
 .h-num .sq{width:14px;height:14px;background:var(--orange)}
 .h-num span{font-size:.74rem;font-weight:600;letter-spacing:.26em;color:var(--grey);text-transform:uppercase}
 h1{font-family:var(--font-display);font-weight:400;text-transform:uppercase;line-height:.92;letter-spacing:.01em;font-size:clamp(3.2rem,9.5vw,8.2rem);text-wrap:balance}
+@media (max-width:560px){h1{font-size:clamp(2.7rem,12.5vw,3.6rem)}}
 h1 .stroke{color:transparent;-webkit-text-stroke:2px var(--white)}
 h1 .solid-o{color:var(--orange)}
 .hero-sub{max-width:36rem;color:var(--grey);margin-top:1.6rem;font-size:1.05rem}
@@ -160,7 +162,9 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
 .opinion b{color:var(--white);display:block;font-size:1.05rem;margin-bottom:.2rem}
 
 /* CARRUSEL de reseñas (auto, CSS-only) */
-.carousel{overflow:hidden;border:2px solid var(--line);background:var(--black);position:relative}
+.carousel{overflow:hidden;border:2px solid var(--line);background:var(--black);position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .car-track{display:flex;width:max-content;animation:car 55s linear infinite}
 .carousel:hover .car-track,.carousel:focus-within .car-track{animation-play-state:paused}
 @keyframes car{to{transform:translateX(-50%)}}
@@ -181,7 +185,7 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
 .s-card em{font-style:normal;margin-top:auto;font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--orange);padding-bottom:.2rem}
 .s-card:hover em{border-color:var(--black)}
 
-/* VIDEOS: grid tipo contacto */
+/* VIDEOS: featured + grid moderno de verticales */
 .v-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--line);border-block:2px solid var(--line)}
 .v-cell{background:var(--panel);padding:1.8rem clamp(1.2rem,3vw,2.2rem);display:flex;flex-direction:column;gap:1rem}
 .v-frame{position:relative;padding-top:56.25%;background:var(--black);border:2px solid var(--line-strong)}
@@ -189,6 +193,30 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
 .v-cell i{font-style:normal;font-family:var(--font-display);color:var(--orange);font-size:.75rem;letter-spacing:.18em;display:block}
 .v-cell h3{font-family:var(--font-display);font-weight:400;font-size:1.45rem;text-transform:uppercase}
 .v-cell p{color:var(--grey);font-size:.92rem}
+
+/* featured YouTube */
+.v-feature{display:grid;grid-template-columns:1.5fr 1fr;border:2px solid var(--line-strong);margin-top:1.8rem;background:var(--panel)}
+.v-feature-frame{position:relative;padding-top:56.25%;background:var(--black)}
+.v-feature-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.v-feature-info{padding:clamp(1.6rem,3vw,2.6rem);display:flex;flex-direction:column;gap:.9rem;justify-content:center;border-left:2px solid var(--line)}
+.v-feature-info i{font-style:normal;font-family:var(--font-display);color:var(--orange);font-size:.75rem;letter-spacing:.18em}
+
+/* grid de verticales (reels) */
+.vs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line);border-block:2px solid var(--line)}
+.vs-cell{background:var(--panel);padding:1rem;display:flex;flex-direction:column;gap:.8rem}
+.vs-frame{position:relative;padding-top:150%;background:var(--black);border:2px solid var(--line-strong)}
+.vs-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vs-cell i{font-style:normal;font-family:var(--font-display);color:var(--orange);font-size:.66rem;letter-spacing:.16em}
+.vs-cell b{font-family:var(--font-display);font-weight:400;font-size:.95rem;text-transform:uppercase;line-height:1.2;color:var(--white)}
+.vs-follow{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.6rem}
+@media (max-width:1100px){.vs-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:900px){
+  .v-grid{grid-template-columns:1fr}
+  .v-feature{grid-template-columns:1fr}
+  .v-feature-info{border-left:none;border-top:2px solid var(--line)}
+  .vs-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:480px){.vs-grid{grid-template-columns:1fr}}
 
 /* NOSOTROS TEASER + PMV */
 .nos-teaser{background:var(--panel);border-top:2px solid var(--line);border-bottom:2px solid var(--line)}
@@ -287,8 +315,9 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
   .shell{grid-template-columns:1fr}
   .sidebar{display:none}
   .burger{display:grid}
-  /* escudo XL pasa a marca de agua discreta en móvil */
-  .escudo-bloque{opacity:.14;right:-60px;bottom:8%;pointer-events:none}
+  /* escudo+halo pasan a marca de agua discreta en móvil */
+  .escudo-wrap{opacity:.15;right:-90px;bottom:6%;pointer-events:none}
+  .escudo-wrap::before{display:none}
   /* header móvil ordenado: logo a la izquierda, hamburguesa a la derecha */
   .hero-top{justify-content:flex-start}
   .hero-top .burger{margin-left:auto}
@@ -333,4 +362,13 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
 /* pantallas ultranchas: el teléfono sale (WhatsApp vive en el menú) */
 @media (max-width:360px){
   .hero-top .tel{display:none}
+}
+
+/* TAP TARGETS ≥40px en móvil (accesibilidad táctil) */
+@media (max-width:900px){
+  .btn-o,.btn-line,.cta-a,.cta-b{padding-block:1rem}
+  .acc summary{padding-block:1.7rem}
+  .mnav-links a{padding-block:.6rem}
+  .tb-right .btn-line,.tb-right .btn-o{padding:.75rem .9rem}
+  .sb-nav a{display:none}
 }
