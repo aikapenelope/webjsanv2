@@ -1,0 +1,78 @@
+---
+import { SITE, waLink } from '../data/site';
+
+const waFinal = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
+---
+
+<section class="final-cta" aria-label="Llamado a la acción final">
+  <div class="wrap final-inner">
+    <div class="final-text">
+      <h2>¿Sientes que tu caja patina, golpea o tiene una fuga?</h2>
+      <p>Escríbenos ahora con la marca, modelo y año de tu carro. Te asesoramos sin compromiso.</p>
+    </div>
+    <div class="final-actions">
+      <a class="btn btn-primary" href={waFinal} target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3s.8-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .6-.2 1.1Z"/>
+        </svg>
+        <span>Chatear por WhatsApp ({SITE.whatsappDisplay})</span>
+      </a>
+      <a class="btn btn-ghost" href={`tel:${SITE.phoneOficina1}`}>
+        Llamar a oficina: {SITE.phoneOficina1Display}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final-cta {
+    background: var(--navy);
+    border-top: 3px solid var(--gold);
+    padding: 4.4rem 0;
+    color: #ffffff;
+  }
+
+  .final-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.4rem;
+    flex-wrap: wrap;
+  }
+
+  .final-text {
+    max-width: 36rem;
+  }
+
+  .final-text h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 3.8vw, 2.9rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .final-text p {
+    margin-top: 0.8rem;
+    font-size: 1.08rem;
+    color: var(--muted-dark);
+    line-height: 1.5;
+  }
+
+  .final-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .final-actions {
+      width: 100%;
+    }
+    .final-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

@@ -1,0 +1,141 @@
+---
+import { RESENAS } from '../data/site';
+---
+
+<div class="carousel-container" aria-label="Carrusel de reseñas de clientes">
+  <div class="car-track">
+    {[0, 1].map(() =>
+      RESENAS.map((r) => (
+        <article class="car-card">
+          <span class="t-stars" aria-label="Calificación 5 de 5 estrellas">★★★★★</span>
+          <p class="car-text">“{r.texto}”</p>
+          <div class="car-by">
+            <span class="car-avatar">{r.iniciales}</span>
+            <div class="car-author">
+              <b>{r.nombre}</b>
+              <small>{r.meta}</small>
+            </div>
+            <span class="car-src">{r.fuente}</span>
+          </div>
+        </article>
+      ))
+    )}
+  </div>
+</div>
+
+<style>
+  .carousel-container {
+    overflow: hidden;
+    padding: 1.4rem 0;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  .car-track {
+    display: flex;
+    gap: 1.4rem;
+    width: max-content;
+    animation: carLoop 46s linear infinite;
+  }
+
+  .carousel-container:hover .car-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes carLoop {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .car-card {
+    width: clamp(280px, 32vw, 360px);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-top: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.5rem;
+    box-shadow: 0 8px 24px rgba(15, 42, 87, 0.06);
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .car-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(15, 42, 87, 0.12);
+  }
+
+  .t-stars {
+    color: var(--gold);
+    letter-spacing: 0.15rem;
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .car-text {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    flex: 1;
+    text-wrap: pretty;
+  }
+
+  .car-by {
+    margin-top: 1.2rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--sky-line);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .car-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold-soft);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 0.92rem;
+    flex: none;
+  }
+
+  .car-author {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .car-author b {
+    display: block;
+    color: var(--navy);
+    font-size: 0.93rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .car-author small {
+    font-size: 0.76rem;
+    color: var(--muted);
+    display: block;
+  }
+
+  .car-src {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+</style>

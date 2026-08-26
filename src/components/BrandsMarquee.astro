@@ -1,0 +1,140 @@
+---
+import { MARCAS } from '../data/site';
+
+// Carga eagerly todos los SVGs para inyectarlos en línea y permitir transiciones CSS nativas
+const marcasSvg = import.meta.glob('../assets/marcas/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+const getSvg = (marca: string) => marcasSvg[`../assets/marcas/${marca}.svg`] ?? '';
+---
+
+<section id="marcas" class="marcas-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Compatibilidad multimarca</span>
+      <h2>Atendemos las marcas líderes del mercado</h2>
+      <p>Dominamos las transmisiones automáticas, CVT y secuenciales de fabricantes americanos, asiáticos y europeos.</p>
+    </div>
+  </div>
+
+  <div class="marquee-wrap" aria-label="Carrusel de marcas atendidas">
+    <div class="marquee-track">
+      {[0, 1].map(() =>
+        MARCAS.map((m) => (
+          <div class="mq-item" title={`Especialistas en ${m}`}>
+            <span class="mq-icon" set:html={getSvg(m)} />
+            <span class="mq-label">{m}</span>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .marcas-sec {
+    padding: 4.4rem 0 2rem;
+    background: #ffffff;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .sec-head {
+    max-width: 46rem;
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.03;
+    text-transform: uppercase;
+    color: var(--navy);
+    text-wrap: balance;
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .marquee-wrap {
+    overflow: hidden;
+    padding: 2.2rem 0;
+    border-top: 1px solid var(--sky-line);
+    border-bottom: 1px solid var(--sky-line);
+    background: var(--sky);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 3.4rem;
+    width: max-content;
+    animation: mq 38s linear infinite;
+  }
+
+  .marquee-wrap:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .mq-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #94a1be;
+    text-decoration: none;
+    flex: none;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .mq-item:hover {
+    color: var(--blue);
+    transform: scale(1.05);
+  }
+
+  .mq-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mq-icon :global(svg) {
+    width: 36px;
+    height: 36px;
+    fill: currentColor;
+  }
+
+  .mq-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .mq-item:hover .mq-label {
+    color: var(--blue);
+  }
+
+  @media (max-width: 768px) {
+    .marquee-track {
+      gap: 2.2rem;
+    }
+    .mq-icon :global(svg) {
+      width: 28px;
+      height: 28px;
+    }
+    .mq-label {
+      font-size: 1.1rem;
+    }
+  }
+</style>

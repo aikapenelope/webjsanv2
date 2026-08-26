@@ -1,0 +1,187 @@
+---
+import ReviewCarousel from './ReviewCarousel.astro';
+import { SOCIAL } from '../data/site';
+
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+---
+
+<section class="reviews-sec" id="resenas">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Testimonios reales</span>
+      <h2>Clientes que confían y vuelven</h2>
+      <p>
+        Puntuación promedio de <strong>★ 4.6 en Google Maps</strong> basada en opiniones de conductores y empresas de Caracas y Miranda.
+      </p>
+    </div>
+
+    <!-- CITA DESTACADA EDITORIAL -->
+    <div class="quote-stage">
+      <blockquote>
+        <p>
+          Me reconstruyeron la caja del Aveo y quedó como nueva. Presupuesto claro desde el primer día y cumplieron con el tiempo dicho.
+        </p>
+      </blockquote>
+      <div class="quote-by">
+        <div class="avatar">CR</div>
+        <div>
+          <b>Carlos Rodríguez</b>
+          <span>Chevrolet Aveo · Reconstrucción completa de caja</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARRUSEL INFINITO -->
+  <div class="reviews-carousel-wrap">
+    <ReviewCarousel />
+  </div>
+
+  <div class="wrap">
+    <div class="testi-cta">
+      <div>
+        <b>¿Atendiste tu vehículo en Hidromáticos J-SAN?</b>
+        <p>Tu opinión en Google Maps ayuda a otros conductores a encontrar un taller transparente y responsable.</p>
+      </div>
+      <div class="testi-cta-btns">
+        <a class="btn btn-gold btn-sm" href={mapsUrl} target="_blank" rel="noopener">
+          Dejar mi reseña en Google ★
+        </a>
+        <a class="btn btn-ghost btn-sm" href="/resenas/">
+          Ver todas las reseñas →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .reviews-sec {
+    padding: 4.8rem 0;
+    background: #ffffff;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.6rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3.1rem);
+    line-height: 1.03;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .quote-stage {
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-left: 5px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 2.4rem 2.2rem;
+    margin-bottom: 2.4rem;
+    box-shadow: 0 10px 30px rgba(15, 42, 87, 0.05);
+  }
+
+  blockquote p {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+    line-height: 1.25;
+    color: var(--navy);
+    text-wrap: pretty;
+  }
+
+  blockquote p::before {
+    content: "“";
+    color: var(--gold);
+  }
+
+  blockquote p::after {
+    content: "”";
+    color: var(--gold);
+  }
+
+  .quote-by {
+    margin-top: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .quote-by .avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold-soft);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+
+  .quote-by b {
+    display: block;
+    color: var(--navy);
+    font-size: 0.98rem;
+  }
+
+  .quote-by span {
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  .reviews-carousel-wrap {
+    margin: 1.6rem 0 2.4rem;
+  }
+
+  .testi-cta {
+    background: var(--sky);
+    border: 1.5px dashed var(--gold);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+  }
+
+  .testi-cta b {
+    color: var(--navy);
+    font-size: 1.05rem;
+    display: block;
+  }
+
+  .testi-cta p {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-top: 0.25rem;
+    max-width: 32rem;
+  }
+
+  .testi-cta-btns {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .testi-cta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
