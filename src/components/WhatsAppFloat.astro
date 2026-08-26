@@ -1,0 +1,83 @@
+---
+import { waLink } from '../data/site';
+
+interface Props {
+  mensaje?: string;
+}
+
+const { mensaje = 'Hola J-SAN, quiero consultar por una falla en mi caja automática' } = Astro.props;
+const url = waLink(mensaje);
+---
+
+<a
+  class="wa-fab"
+  href={url}
+  target="_blank"
+  rel="noopener"
+  aria-label="Chatear con un especialista de Hidromáticos J-SAN por WhatsApp"
+>
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3s.8-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .6-.2 1.1Z"/>
+  </svg>
+  <span class="wa-tooltip">Consultar falla</span>
+</a>
+
+<style>
+  .wa-fab {
+    position: fixed;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    z-index: 75;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #1faa53;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.45);
+    text-decoration: none;
+    animation: pulso 2.6s infinite;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .wa-fab:hover {
+    background: #178a42;
+    transform: scale(1.06);
+  }
+
+  .wa-fab svg {
+    width: 32px;
+    height: 32px;
+    fill: #fff;
+  }
+
+  .wa-tooltip {
+    position: absolute;
+    right: calc(100% + 12px);
+    background: var(--navy-deep);
+    color: #fff;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(6px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .wa-fab:hover .wa-tooltip {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    .wa-tooltip {
+      display: none;
+    }
+  }
+</style>
