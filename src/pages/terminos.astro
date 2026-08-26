@@ -1,0 +1,280 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, waLink } from '../data/site';
+
+const title = `Términos y Condiciones de Servicio & Garantía · ${SITE.shortName}`;
+const description =
+  'Términos y condiciones del servicio de diagnóstico, reparación, reconstrucción e importación de transmisiones automáticas de Hidromáticos J-SAN, C.A., Caracas.';
+
+const waLegal = waLink('Hola J-SAN, tengo una consulta sobre las garantías y términos de servicio');
+---
+
+<BaseLayout title={title} description={description} path="/terminos/" topbarTagline="Legal & Garantías · Est. 2013">
+  <main class="terminos-page">
+    <div class="wrap terminos-wrap">
+      <!-- BREADCRUMBS -->
+      <nav class="breadcrumbs" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <span class="curr">Términos y Condiciones</span>
+      </nav>
+
+      <header class="terminos-header">
+        <span class="kicker">Documento legal y garantías</span>
+        <h1>Términos y <em>Condiciones</em></h1>
+        <p class="terminos-update">Última actualización: agosto 2026 · Hidromáticos J-SAN, C.A. (RIF: {SITE.rif})</p>
+      </header>
+
+      <article class="legal-body">
+        <section>
+          <h2>1. Aceptación de los términos</h2>
+          <p>
+            Al solicitar, autorizar o recibir servicios de <strong>{SITE.name}</strong> (en adelante, "J-SAN"), el cliente acepta íntegramente estos Términos y Condiciones. La entrega del vehículo o componente mecánico en nuestras instalaciones para diagnóstico o reparación constituye la formalización de este acuerdo.
+          </p>
+        </section>
+
+        <section>
+          <h2>2. Servicios prestados</h2>
+          <p>
+            J-SAN presta servicios especializados de diagnóstico electrónico con scanner, mantenimiento preventivo de fluido ATF, reparación, reconstrucción completa (overhaul), instalación y cambio de transmisiones automáticas, así como comercialización e importación de repuestos relacionados. Todo trabajo se realiza bajo presupuesto previo aprobado.
+          </p>
+        </section>
+
+        <section>
+          <h2>3. Presupuestos y aprobaciones</h2>
+          <ul>
+            <li>Ningún trabajo se inicia sin la aprobación expresa del cliente sobre una cotización escrita.</li>
+            <li>El presupuesto se remite formalmente vía WhatsApp, correo electrónico o por escrito en el taller.</li>
+            <li>Si durante el desarmado se descubren daños internos ocultos (piezas duras fatigadas, tambores fisurados), J-SAN lo comunicará de inmediato; el trabajo solo continuará tras la nueva aprobación del cliente.</li>
+            <li>Las cotizaciones tienen una validez de quince (15) días continuos debido a las fluctuaciones en costos de importación de repuestos.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>4. Servicio de diagnóstico</h2>
+          <p>
+            El diagnóstico especializado tiene un costo independiente, se informa previamente y no obliga al cliente a ejecutar la reparación en nuestras instalaciones. Incluye lectura computarizada de códigos de falla DTC, verificación de presiones hidráulicas e inspección del fluido ATF.
+          </p>
+        </section>
+
+        <section>
+          <h2>5. Repuestos y procedencia</h2>
+          <ul>
+            <li>J-SAN utiliza repuestos originales y de marcas líderes de la industria americana (Sonnax®, TransGo®, Transtec®, Precision International®, entre otras).</li>
+            <li>Si el cliente decide suministrar sus propios repuestos, la garantía del taller cubre exclusivamente la mano de obra del montaje.</li>
+            <li>Los repuestos especiales traídos bajo pedido internacional requieren anticipo y sus plazos dependen de aduanas y logística externa ajena al taller.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>6. Política de garantía por escrito</h2>
+          <ul>
+            <li><strong>Reconstrucción completa de caja (Overhaul):</strong> Garantía escrita de seis (6) meses o 10.000 kilómetros (lo que ocurra primero).</li>
+            <li><strong>Reparaciones parciales y servicios:</strong> Garantía escrita de tres (3) meses.</li>
+            <li><strong>Exclusiones de garantía:</strong> Queda sin efecto si la transmisión fue intervenida por terceros, si el vehículo sufrió siniestros, recalentamiento extremo ajeno al ensamblaje, uso en sobrecarga o si no se realizaron los mantenimientos preventivos indicados.</li>
+            <li>La garantía cubre piezas instaladas por J-SAN y mano de obra; no incluye costos de remolques o grúas ajenas al taller.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>7. Pagos y liquidación</h2>
+          <ul>
+            <li>Todo pago se respalda con comprobante numerado de la empresa.</li>
+            <li>Las reconstrucciones exigen un abono inicial para la reserva y adquisición de repuestos.</li>
+            <li>El vehículo se entrega únicamente contra la cancelación total del saldo pendiente.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>8. Plazos de entrega</h2>
+          <p>
+            Los tiempos son estimados en función de la complejidad de la transmisión y la disponibilidad de componentes. J-SAN mantendrá comunicación constante por WhatsApp sobre el avance de los trabajos.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Resguardo y pertenencias</h2>
+          <p>
+            El cliente debe retirar todos los objetos de valor y documentos del interior del vehículo antes de ingresarlo al taller. J-SAN cuenta con resguardo de seguridad pero no se hace responsable por artículos personales olvidados en la cabina.
+          </p>
+        </section>
+
+        <section>
+          <h2>10. Pruebas de ruta</h2>
+          <p>
+            El cliente autoriza las pruebas de manejo necesarias por parte de los técnicos especialistas de J-SAN para la comprobación diagnóstica y la verificación final post-reparación.
+          </p>
+        </section>
+
+        <section>
+          <h2>11. Carácter de la información web</h2>
+          <p>
+            La información y precios expuestos en este sitio web son referenciales y sujetos a confirmación según el año, motor y modelo exacto de cada automóvil.
+          </p>
+        </section>
+
+        <section>
+          <h2>12. Propiedad intelectual</h2>
+          <p>
+            Las menciones a marcas de repuestos y fabricantes de vehículos se realizan con fines exclusivamente descriptivos y de identificación técnica. Todos los logotipos pertenecen a sus respectivos titulares.
+          </p>
+        </section>
+      </article>
+
+      <!-- CAJA DE CONSULTA LEGAL -->
+      <div class="terminos-cta-box">
+        <div>
+          <h3>¿Tienes alguna duda sobre nuestras garantías o procesos?</h3>
+          <p>Escríbenos directamente y te explicamos en detalle cada punto antes de traer tu carro.</p>
+        </div>
+        <a class="btn btn-primary" href={waLegal} target="_blank" rel="noopener">
+          Consultar con atención al cliente →
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .terminos-page {
+    padding: 3.6rem 0 5.4rem;
+    background: #ffffff;
+  }
+
+  .terminos-wrap {
+    max-width: 52rem;
+  }
+
+  .breadcrumbs {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumbs a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs .curr {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .terminos-header {
+    margin-bottom: 2.8rem;
+    border-bottom: 1px solid var(--sky-line);
+    padding-bottom: 1.8rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin: 0.6rem 0 0.8rem;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .terminos-update {
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* CUERPO LEGAL */
+  .legal-body section {
+    margin-bottom: 2.4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--sky-line);
+  }
+
+  .legal-body section:last-child {
+    border-bottom: none;
+  }
+
+  .legal-body h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--navy);
+    margin-bottom: 0.8rem;
+  }
+
+  .legal-body p {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.65;
+    margin-bottom: 0.8rem;
+  }
+
+  .legal-body strong {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .legal-body ul {
+    margin: 0.8rem 0 0.8rem 1.4rem;
+    color: var(--muted);
+  }
+
+  .legal-body li {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+    padding-left: 0.3rem;
+  }
+
+  .terminos-cta-box {
+    margin-top: 3.4rem;
+    background: var(--sky);
+    border: 2px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 10px 28px rgba(15, 42, 87, 0.06);
+    flex-wrap: wrap;
+  }
+
+  .terminos-cta-box h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.35rem;
+  }
+
+  .terminos-cta-box p {
+    color: var(--muted);
+    font-size: 0.94rem;
+    max-width: 32rem;
+  }
+
+  @media (max-width: 768px) {
+    .terminos-cta-box {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.6rem;
+    }
+  }
+</style>

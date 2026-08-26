@@ -1,0 +1,419 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, waLink } from '../data/site';
+
+const title = `Sobre Nosotros · ${SITE.shortName} — Taller familiar desde ${SITE.fundacion}`;
+const description =
+  'Propósito, misión, visión y valores de Hidromáticos J-SAN, C.A., taller especialista en cajas automáticas en Caracas, Miranda, desde 2013.';
+
+const VALORES = [
+  { t: 'Atención de calidad', s: 'Del primer mensaje a la entrega' },
+  { t: 'Asesoría honesta', s: 'Diagnóstico antes de gastar un dólar' },
+  { t: 'Seriedad absoluta', s: 'Lo que presupuestamos, cumplimos' },
+  { t: 'Puntualidad en entregas', s: 'Tu tiempo vale como tu vehículo' },
+  { t: 'Mano de obra experta', s: 'Especialistas con más de una década' },
+];
+
+const waNosotros = waLink('Hola J-SAN, estuve leyendo su historia y valores en la web y quiero consultar por mi carro');
+---
+
+<BaseLayout title={title} description={description} path="/nosotros/" topbarTagline="Taller Familiar · Est. 2013">
+  <main class="nosotros-page">
+    <!-- HERO SOBRE NOSOTROS -->
+    <section class="hero-nosotros">
+      <div class="wrap hero-grid">
+        <div class="hero-escudo">
+          <img
+            src="/assets/logo-jsan.webp"
+            alt="Escudo de Hidromáticos J-SAN, C.A."
+            width="240"
+            height="222"
+            loading="eager"
+          />
+        </div>
+        <div class="hero-text">
+          <span class="kicker">Familia, no franquicia</span>
+          <h1>Una familia que <em>entiende transmisiones</em></h1>
+          <p class="hero-lead">
+            Desde {SITE.fundacion} mantenemos en movimiento a Caracas y Miranda. Esta es la razón por la que existimos y hacia dónde vamos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUES PMV (PROPÓSITO, MISIÓN, VISIÓN) -->
+    <section class="pmv-section">
+      <div class="wrap">
+        <div class="bloques-pmv">
+          <!-- BLOQUE 1: PROPÓSITO -->
+          <article class="bloque">
+            <div class="bl-num">
+              <small>N° 01</small>
+              <h2>Propósito</h2>
+            </div>
+            <div class="bl-content">
+              <p class="bl-frase">
+                Mantener en movimiento a las familias y empresas venezolanas con total seguridad y confianza.
+              </p>
+              <p class="bl-texto">
+                En J-SAN creemos que un vehículo es más que un medio de transporte; es una herramienta de trabajo diario y un conector de familias. Nuestro propósito es garantizar la tranquilidad de cada conductor al volante, ofreciendo soluciones mecánicas honestas, duraderas y definitivas.
+              </p>
+            </div>
+          </article>
+
+          <!-- BLOQUE 2: MISIÓN -->
+          <article class="bloque">
+            <div class="bl-num">
+              <small>N° 02</small>
+              <h2>Misión</h2>
+            </div>
+            <div class="bl-content">
+              <p class="bl-frase">
+                Brindar soluciones de máxima calidad en el diagnóstico, mantenimiento y reparación de transmisiones automáticas.
+              </p>
+              <p class="bl-texto">
+                Desde {SITE.fundacion}, combinamos nuestra profunda especialización técnica en hidromáticos con la cercanía de una empresa familiar. Nos comprometemos a ofrecer a cada cliente un trato transparente, presupuestos claros y un servicio de excelencia que asegure el rendimiento óptimo y la vida útil de su vehículo.
+              </p>
+            </div>
+          </article>
+
+          <!-- BLOQUE 3: VISIÓN (BANDA NAVY DESTAQUE) -->
+          <article class="vis-banda">
+            <div class="bl-num">
+              <small>N° 03</small>
+              <h2>Visión</h2>
+            </div>
+            <div class="bl-content">
+              <p class="bl-frase">
+                Consolidarnos como el taller mecánico de referencia indiscutible en Venezuela en el área de transmisiones e hidromáticos.
+              </p>
+              <p class="bl-texto">
+                Aspiramos a liderar el sector automotriz manteniendo la esencia de nuestros orígenes familiares, siendo reconocidos por nuestra constante actualización tecnológica con scanners de última generación, la calidad de nuestros repuestos importados y la confianza inquebrantable de múltiples generaciones de clientes.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- VALORES FUNDAMENTALES -->
+    <section class="valores-section">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="kicker">Lo que nos sostiene</span>
+          <h2>Valores familiares, estándares profesionales</h2>
+          <p>Los principios innegociables que guían cada reparación, diagnóstico y entrega en nuestro taller.</p>
+        </div>
+
+        <div class="valores-grid">
+          {VALORES.map((v) => (
+            <div class="valor-card">
+              <span class="v-star" aria-hidden="true">★</span>
+              <b>{v.t}</b>
+              <span>{v.s}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL NOSOTROS -->
+    <section class="cta-nosotros">
+      <div class="wrap cta-inner">
+        <div>
+          <h2>¿Tu vehículo necesita diagnóstico o mantenimiento?</h2>
+          <p>Estamos en Monte Cristo, Caracas. Habla directamente con el equipo que revisará tu caja.</p>
+        </div>
+        <div class="cta-btns">
+          <a class="btn btn-primary" href={waNosotros} target="_blank" rel="noopener">
+            Escribir por WhatsApp →
+          </a>
+          <a class="btn btn-ghost" href="/contacto/">
+            Ver todos los canales de contacto
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .nosotros-page {
+    background: #ffffff;
+  }
+
+  /* HERO */
+  .hero-nosotros {
+    padding: 4.6rem 0 4.2rem;
+    background:
+      radial-gradient(circle at 88% 8%, rgba(201, 162, 39, 0.12), transparent 42%),
+      linear-gradient(180deg, #ffffff, var(--sky) 135%);
+    border-bottom: 1px solid var(--sky-line);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3.2rem;
+    align-items: center;
+  }
+
+  .hero-escudo img {
+    width: min(230px, 48vw);
+    height: auto;
+    filter: drop-shadow(0 20px 34px rgba(10, 30, 64, 0.2));
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 5.2vw, 4.2rem);
+    line-height: 0.98;
+    text-transform: uppercase;
+    color: var(--navy);
+    text-wrap: balance;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .hero-lead {
+    margin-top: 1.1rem;
+    color: var(--muted);
+    max-width: 38rem;
+    font-size: 1.12rem;
+    line-height: 1.6;
+  }
+
+  /* BLOQUES PMV */
+  .pmv-section {
+    padding: 4.8rem 0;
+  }
+
+  .bloques-pmv {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .bloque {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+    padding: 3.4rem 0;
+    border-top: 1px solid var(--sky-line);
+    align-items: start;
+  }
+
+  .bloque:first-child {
+    border-top: none;
+    padding-top: 0.5rem;
+  }
+
+  .bl-num small {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .bl-num h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--navy);
+  }
+
+  .bl-frase {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.45rem, 2.6vw, 2.05rem);
+    line-height: 1.22;
+    color: var(--navy);
+    position: relative;
+    padding-left: 1.4rem;
+    border-left: 4px solid var(--gold);
+    text-wrap: pretty;
+  }
+
+  .bl-texto {
+    margin-top: 1.2rem;
+    color: var(--muted);
+    max-width: 44rem;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  /* VISIÓN BANDA NAVY */
+  .vis-banda {
+    background: linear-gradient(180deg, var(--navy), var(--navy-deep));
+    border-radius: 22px;
+    padding: 3.4rem clamp(1.6rem, 4vw, 3.4rem);
+    margin-top: 1.8rem;
+    color: #ffffff;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+    border-top: 3px solid var(--gold);
+    box-shadow: 0 16px 36px rgba(10, 30, 64, 0.2);
+  }
+
+  .vis-banda .bl-num small {
+    color: var(--gold-soft);
+  }
+
+  .vis-banda .bl-num h2 {
+    color: #ffffff;
+  }
+
+  .vis-banda .bl-frase {
+    border-left-color: var(--gold-soft);
+    color: #ffffff;
+  }
+
+  .vis-banda .bl-texto {
+    color: var(--muted-dark);
+  }
+
+  /* VALORES */
+  .valores-section {
+    padding: 4.4rem 0;
+    border-top: 1px solid var(--sky-line);
+    background: var(--sky);
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.6rem;
+  }
+
+  .sec-head h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3rem);
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .valores-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.2rem;
+  }
+
+  .valor-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-top: 3px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.3rem;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(15, 42, 87, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .v-star {
+    color: var(--gold);
+    font-size: 1.4rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .valor-card b {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    color: var(--navy);
+    display: block;
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+    margin-bottom: 0.4rem;
+  }
+
+  .valor-card span {
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* CTA FINAL */
+  .cta-nosotros {
+    padding: 4.4rem 0;
+    background: linear-gradient(180deg, var(--navy), var(--navy-deep));
+    border-top: 3px solid var(--gold);
+    color: #ffffff;
+  }
+
+  .cta-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .cta-inner h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
+    text-transform: uppercase;
+    color: #ffffff;
+    max-width: 34rem;
+  }
+
+  .cta-inner p {
+    color: var(--muted-dark);
+    margin-top: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .cta-btns {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 1040px) {
+    .valores-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-escudo img {
+      margin-inline: auto;
+    }
+
+    .bloque, .vis-banda {
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .valores-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
