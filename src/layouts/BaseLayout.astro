@@ -15,7 +15,7 @@ interface Props {
 const { title, description = SITE.description, path = '/', jsonLdExtra } = Astro.props;
 
 const canonical = new URL(path, SITE.url).href;
-const ogImage = new URL('/assets/logo-jsan.webp', SITE.url).href;
+const ogImage = new URL('/assets/og-j-san.jpg', SITE.url).href;
 
 const jsonLdLocal: Record<string, unknown> = {
   '@context': 'https://schema.org',
@@ -28,24 +28,15 @@ const jsonLdLocal: Record<string, unknown> = {
   email: SITE.email,
   foundingDate: String(SITE.fundacion),
   taxID: SITE.rif,
-  image: new URL('/assets/logo-jsan.webp', SITE.url).href,
+  image: new URL('/assets/og-j-san.jpg', SITE.url).href,
   priceRange: '$$',
-  address: [
-    {
-      '@type': 'PostalAddress',
-      streetAddress: SITE.direccion.oficina,
-      addressLocality: 'Caracas',
-      addressRegion: 'Miranda',
-      addressCountry: 'VE',
-    },
-    {
-      '@type': 'PostalAddress',
-      streetAddress: SITE.direccion.taller,
-      addressLocality: 'Turumo',
-      addressRegion: 'Miranda',
-      addressCountry: 'VE',
-    },
-  ],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.sede,
+    addressLocality: 'Caracas',
+    addressRegion: 'Miranda',
+    addressCountry: 'VE',
+  },
   areaServed: ['Caracas', 'Miranda', 'Los Teques', 'Venezuela'],
   sameAs: [SITE.redes.facebook, SITE.redes.threads],
 };
@@ -61,6 +52,7 @@ const scriptsJsonLd = [jsonLdLocal, ...(jsonLdExtra ? (Array.isArray(jsonLdExtra
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#ff5a00" />
+    <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href="/assets/favicon.png" />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />

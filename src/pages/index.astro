@@ -146,7 +146,7 @@ const icono = (slug: string) =>
       <div class="stats">
         <div class="stat"><b>12<em>+</em></b><span>Años de experiencia</span></div>
         <div class="stat"><b>16</b><span>Marcas que atendemos</span></div>
-        <div class="stat"><b>2</b><span>Sedes en Miranda</span></div>
+        <div class="stat"><b>5<em>★</em></b><span>Calificación en Google</span></div>
         <div class="stat"><b>100<em>%</em></b><span>Presupuesto aprobado antes de trabajar</span></div>
       </div>
 
@@ -270,7 +270,7 @@ const icono = (slug: string) =>
         <h2>¿Tu caja está patinando?</h2>
         <span class="f-phone">0424 <em>232.0424</em></span>
         <p class="f-note">
-          Oficina: Urb. Monte Cristo, Calle 10, Miranda · Taller: Calle La Floresta, Local 9, Turumo. Lun–Sáb, previa cita por WhatsApp.
+          Sede: Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10, Miranda · Caracas. Lun–Sáb, previa cita por WhatsApp.
         </p>
         <div class="f-btns">
           <a class="fb-dark" target="_blank" rel="noopener" href={WA_AGENDAR}>Agendar escaneo</a>
@@ -284,8 +284,9 @@ const icono = (slug: string) =>
 </BaseLayout>
 
 <style>
-  /* logo móvil visible solo <=1020px (la sidebar desaparece) */
+  /* logo móvil visible solo <=1020px (la sidebar desaparece), sobre plinto metálico */
   .tb-mob{display:none!important}
+  .tb-mob img{background:var(--panel-2);border:2px solid var(--line-strong);padding:.35rem}
   @media (max-width:1020px){
     .tb-mob{display:flex!important}
   }

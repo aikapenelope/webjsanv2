@@ -4,9 +4,9 @@ import Topbar from '../components/Topbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { SITE, waLink } from '../data/site';
 
-const title = 'Contacto · Hidromáticos J-SAN — WhatsApp, teléfonos y sedes en Miranda';
+const title = 'Contacto · Hidromáticos J-SAN — WhatsApp, teléfonos y sede en Miranda';
 const description =
-  'Escríbenos por WhatsApp, llámanos o visítanos: oficina en Monte Cristo y taller en Turumo, Miranda. Atendemos lunes a sábado con cita previa.';
+  'Escríbenos por WhatsApp, llámanos o visítanos en nuestra sede de Monte Cristo, Miranda. Atendemos lunes a sábado con cita previa.';
 
 const WA_FALLA = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
 const WA_AGENDAR = waLink('Hola J-SAN, quiero agendar un escaneo para mi carro');
@@ -55,18 +55,18 @@ const WA_AGENDAR = waLink('Hola J-SAN, quiero agendar un escaneo para mi carro')
 
   <div class="mapa-fake">
     <div>
-      <b>Dos puntos en Miranda</b>
+      <b>Nuestra sede — Monte Cristo</b>
       <p>
-        <strong style="color:var(--orange)">OFICINA:</strong> Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 — frente a
-        Campi Ferretería.<br /><br />
-        <strong style="color:var(--orange)">TALLER:</strong> Calle La Floresta, Local PB N°9, Turumo — por la Universidad Santa María.
+        <strong style="color:var(--orange)">SEDE:</strong> Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 — frente a
+        Campi Ferretería, Miranda · Caracas.<br /><br />
+        {SITE.horario}.
       </p>
       <a
         class="btn-o"
         style="display:inline-flex;margin-top:0"
         target="_blank"
         rel="noopener"
-        href="https://www.google.com/maps/search/?api=1&query=Calle+La+Floresta+Turumo+Miranda+Venezuela"
+        href="https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela"
       >
         ABRIR EN GOOGLE MAPS →
       </a>
