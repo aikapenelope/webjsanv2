@@ -59,10 +59,10 @@ a{color:inherit;text-decoration:none}
 
 /* HERO */
 .hero{min-height:92dvh;display:flex;flex-direction:column;justify-content:space-between;border-bottom:2px solid var(--line);position:relative;overflow:hidden}
-/* halo naranja que ancla el escudo a la paleta */
-.hero::after{content:"";position:absolute;right:clamp(.4rem,3vw,2.8rem);bottom:12%;width:clamp(180px,24vw,340px);height:clamp(180px,24vw,340px);background:radial-gradient(circle,rgba(255,90,0,.18) 0%,rgba(255,90,0,.06) 45%,transparent 70%);pointer-events:none;z-index:0}
 .hero-top,.hero-mid,.mq{position:relative;z-index:2}
-.hero-escudo{z-index:1}
+/* escudo XL sobre bloque naranja */
+.escudo-bloque{position:absolute;right:clamp(1rem,5vw,4.6rem);bottom:16%;width:clamp(240px,30vw,430px);background:var(--orange);padding:clamp(1rem,1.8vw,1.7rem);box-shadow:0 24px 60px rgba(0,0,0,.55);z-index:1}
+.escudo-bloque img{width:100%;height:auto}
 .hero-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem clamp(1.2rem,3vw,2.6rem);border-bottom:2px solid var(--line)}
 .hero-top .tag{font-size:.72rem;font-weight:600;letter-spacing:.24em;color:var(--grey);text-transform:uppercase}
 .hero-top .tel{font-family:var(--font-display);font-size:1.05rem;letter-spacing:.05em;color:var(--white)}
@@ -154,9 +154,41 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
 .t-by .sqv{width:38px;height:38px;background:var(--panel-2);border:2px solid var(--line-strong);display:grid;place-items:center;font-family:var(--font-display);color:var(--orange);font-size:.9rem}
 .t-by b{font-size:.9rem;display:block;color:var(--white)}
 .t-by span{font-size:.76rem;color:var(--grey)}
+.t-src{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-dark)}
 .opinion{margin-top:2.2rem;border:2px dashed var(--orange-deep);padding:1.5rem 1.7rem;display:flex;align-items:center;justify-content:space-between;gap:1.2rem;flex-wrap:wrap}
 .opinion p{color:var(--grey);font-size:.92rem;max-width:30rem}
 .opinion b{color:var(--white);display:block;font-size:1.05rem;margin-bottom:.2rem}
+
+/* CARRUSEL de reseñas (auto, CSS-only) */
+.carousel{overflow:hidden;border:2px solid var(--line);background:var(--black);position:relative}
+.car-track{display:flex;width:max-content;animation:car 55s linear infinite}
+.carousel:hover .car-track,.carousel:focus-within .car-track{animation-play-state:paused}
+@keyframes car{to{transform:translateX(-50%)}}
+.car-card{width:min(420px,82vw);margin:0 1rem;background:var(--panel);border:2px solid var(--line);padding:1.7rem 1.5rem;display:flex;flex-direction:column;gap:.9rem}
+.car-card .t-stars{color:var(--orange);letter-spacing:.18rem;font-size:.95rem}
+.car-card p{color:var(--grey);font-size:.96rem;flex:1;min-height:4.2em}
+
+/* SECCIÓN SOCIAL / UBICACIÓN */
+.social-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line);border:2px solid var(--line)}
+.s-card{background:var(--panel);padding:2.2rem 1.6rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.9rem;transition:background .15s ease,color .15s ease;color:var(--white)}
+.s-card:hover{background:var(--orange);color:var(--black)}
+.s-ico{width:64px;height:64px;display:grid;place-items:center;background:var(--panel-2);border:2px solid var(--line-strong)}
+.s-ico svg{width:34px;height:34px;fill:currentColor}
+.s-card:hover .s-ico{background:rgba(10,10,11,.14);border-color:rgba(10,10,11,.35)}
+.s-card b{font-family:var(--font-display);font-weight:400;font-size:1.25rem;text-transform:uppercase;letter-spacing:.04em}
+.s-card span{font-size:.8rem;color:var(--grey)}
+.s-card:hover span{color:rgba(10,10,11,.72)}
+.s-card em{font-style:normal;margin-top:auto;font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--orange);padding-bottom:.2rem}
+.s-card:hover em{border-color:var(--black)}
+
+/* VIDEOS: grid tipo contacto */
+.v-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--line);border-block:2px solid var(--line)}
+.v-cell{background:var(--panel);padding:1.8rem clamp(1.2rem,3vw,2.2rem);display:flex;flex-direction:column;gap:1rem}
+.v-frame{position:relative;padding-top:56.25%;background:var(--black);border:2px solid var(--line-strong)}
+.v-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.v-cell i{font-style:normal;font-family:var(--font-display);color:var(--orange);font-size:.75rem;letter-spacing:.18em;display:block}
+.v-cell h3{font-family:var(--font-display);font-weight:400;font-size:1.45rem;text-transform:uppercase}
+.v-cell p{color:var(--grey);font-size:.92rem}
 
 /* NOSOTROS TEASER + PMV */
 .nos-teaser{background:var(--panel);border-top:2px solid var(--line);border-bottom:2px solid var(--line)}
@@ -255,9 +287,9 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
   .shell{grid-template-columns:1fr}
   .sidebar{display:none}
   .burger{display:grid}
-  .hero-escudo{opacity:.35}
-  .hero::after{display:none}
-  /* header móvil ordenado: logo a la izquierda, teléfono+menú agrupados a la derecha */
+  /* escudo XL pasa a marca de agua discreta en móvil */
+  .escudo-bloque{opacity:.14;right:-60px;bottom:8%;pointer-events:none}
+  /* header móvil ordenado: logo a la izquierda, hamburguesa a la derecha */
   .hero-top{justify-content:flex-start}
   .hero-top .burger{margin-left:auto}
 }
@@ -271,6 +303,8 @@ section{padding:clamp(3.4rem,7vh,5.5rem) clamp(1.2rem,3vw,2.6rem)}
   .pmv-b{grid-template-columns:1fr;gap:1rem}
   .valores-grid{grid-template-columns:repeat(2,1fr)}
   .c-grid{grid-template-columns:1fr}
+  .v-grid{grid-template-columns:1fr}
+  .social-grid{grid-template-columns:repeat(2,1fr)}
   .tb-brand small{display:none}
   .brand-tiles{grid-template-columns:repeat(3,1fr)}
   .bt{aspect-ratio:auto;min-height:96px;padding:.85rem .35rem}

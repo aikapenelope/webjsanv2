@@ -2,47 +2,21 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Topbar from '../components/Topbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SITE } from '../data/site';
+import { SITE, RESENAS } from '../data/site';
 
-const title = 'Reseñas · Hidromáticos J-SAN — Lo que dicen nuestros clientes';
+const title = 'Reseñas · Hidromáticos J-SAN — ★ 4.6 con 35 opiniones en Google';
 const description =
-  'Lee las reseñas reales de clientes de Hidromáticos J-SAN en Google y déjanos la tuya: tu recomendación ayuda a otro venezolano a encontrar un taller de confianza.';
+  'Lee las reseñas reales de clientes de Hidromáticos J-SAN en Google (★4.6, 35 opiniones) y déjanos la tuya: tu recomendación ayuda a otro venezolano a encontrar un taller de confianza.';
 
-// TODO(Fase 4): reemplazar por placeid real tras el reclamo de Google Business.
-// Enlace profundo oficial para abrir el cuadro de "dejar reseña":
-//   https://search.google.com/local/writereview?placeid=XXXXXXXX
-const LINK_RESENA = '/resenas/#pendiente-placeid'; // placeholder hasta tener placeid
-
-const RESENAS = [
-  {
-    iniciales: 'LS',
-    nombre: 'Lisbeth Sierra',
-    meta: '“Rápidos y confiables”',
-    texto:
-      'Llevé mi camioneta con un sonido extraño, y muy rápido detectaron qué lo causaba y se pudo solucionar. Les recomiendo ampliamente.',
-  },
-  {
-    iniciales: 'CR',
-    nombre: 'Carlos Rodríguez',
-    meta: 'Chevrolet Aveo · Reparación de caja',
-    texto:
-      'Me reconstruyeron la caja del Aveo y quedó como nueva. Presupuesto claro desde el primer día y cumplieron con el tiempo dicho.',
-  },
-  {
-    iniciales: 'MF',
-    nombre: 'María Fernández',
-    meta: 'Ford Explorer · Servicio ATF',
-    texto:
-      'Le hicieron el servicio completo a la Explorer de la empresa y el trato fue de primera, muy serios con el trabajo.',
-  },
-];
+const LINK_MAPS =
+  'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela';
 
 const jsonLdResenas = {
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: 'Servicio de transmisión automática — Hidromáticos J-SAN',
   brand: { '@type': 'Brand', name: 'Hidromáticos J-SAN' },
-  aggregateRating: { '@type': 'AggregateRating', ratingValue: '5', reviewCount: String(RESENAS.length) },
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.6', reviewCount: '35' },
   review: RESENAS.map((r) => ({
     '@type': 'Review',
     author: { '@type': 'Person', name: r.nombre },
@@ -59,48 +33,46 @@ const jsonLdResenas = {
     <div class="kick"><span class="sq"></span><span>Lo que dicen</span></div>
     <h1>Clientes que <em>vuelven</em></h1>
     <p class="demo-note" style="margin-top:1rem">
-      Reseñas reales de quienes confiaron su carro a J-SAN.
+      Reseñas reales de nuestra ficha de Google: <strong>★ 4.6 con 35 opiniones</strong>.
     </p>
   </div>
 
-  <section style="padding-top:clamp(2rem,5vh,3.2rem)">
-    <div class="t-grid">
-      {RESENAS.map((r) => (
-        <article class="t-card">
-          <span class="t-stars">★★★★★</span>
-          <p>{r.texto}</p>
-          <div class="t-by">
-            <span class="sqv">{r.iniciales}</span>
-            <div><b>{r.nombre}</b><span>{r.meta}</span></div>
-          </div>
-        </article>
-      ))}
+  <!-- CARRUSEL AUTO -->
+  <section style="padding-top:clamp(1.6rem,4vh,2.6rem)">
+    <div class="carousel" aria-label="Reseñas de clientes">
+      <div class="car-track">
+        {[0, 1].map(() =>
+          RESENAS.map((r) => (
+            <article class="car-card">
+              <span class="t-stars">★★★★★</span>
+              <p>{r.texto}</p>
+              <div class="t-by">
+                <span class="sqv">{r.iniciales}</span>
+                <div><b>{r.nombre}</b><span>{r.meta}</span></div>
+                <span class="t-src">{r.fuente}</span>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
     </div>
 
-    <!-- BLOQUE GOOGLE — se activa al tener placeid (Fase 4) -->
     <div class="opinion" style="border-style:solid;margin-top:2.4rem;padding:2rem">
       <div>
         <b style="font-size:1.25rem">⭐ Déjanos tu reseña en Google</b>
         <p>
-          Tu recomendación ayuda a otro venezolano a encontrar un taller de confianza. Toma menos de un minuto:
-          abre el perfil de J-SAN en Google Maps y cuéntanos cómo fue tu experiencia.
+          Toma menos de un minuto: abre el perfil de J-SAN en Google Maps y cuéntanos cómo fue tu experiencia.
+          Tu recomendación ayuda a otro venezolano a encontrar un taller de confianza.
         </p>
       </div>
       <div class="f-btns" style="margin:0">
-        <a class="cta-a" href={LINK_RESENA}>Dejar mi reseña ★</a>
-        <a
-          class="cta-b"
-          target="_blank"
-          rel="noopener"
-          href="https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Miranda+Venezuela"
-        >
-          Ver reseñas en Google ↗
-        </a>
+        <a class="cta-a" target="_blank" rel="noopener" href={LINK_MAPS}>Dejar mi reseña ★</a>
+        <a class="cta-b" target="_blank" rel="noopener" href={LINK_MAPS}>Ver las 35 reseñas en Google ↗</a>
       </div>
     </div>
 
     <p style="color:var(--grey-dark);font-size:.78rem;margin-top:1.2rem;max-width:44rem">
-      Próximamente: las reseñas en vivo de Google embebidas aquí mismo (requiere verificación del perfil de empresa).
+      Próximamente: botón directo "escribir reseña" y feed en vivo de Google (requiere verificación del perfil de empresa).
     </p>
   </section>
 
