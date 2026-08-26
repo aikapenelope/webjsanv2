@@ -1,0 +1,139 @@
+---
+import '../styles/global.css';
+import { SITE } from '../data/site';
+import Topbar from '../components/Topbar.astro';
+import Header from '../components/Header.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Ruta canónica relativa, ej: "/nosotros/" */
+  path?: string;
+  /** JSON-LD adicional específico de la página */
+  jsonLdExtra?: object | object[];
+  /** Imagen OpenGraph personalizada */
+  ogImage?: string;
+  /** Tagline opcional para el Topbar */
+  topbarTagline?: string;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  path = '/',
+  jsonLdExtra,
+  ogImage = '/assets/og-jsan.jpg',
+  topbarTagline,
+  hideHeader = false,
+  hideFooter = false,
+} = Astro.props;
+
+const canonical = new URL(path, SITE.url).href;
+const ogImageUrl = new URL(ogImage, SITE.url).href;
+
+const jsonLdLocal: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoRepair',
+  '@id': `${SITE.url}/#negocio`,
+  name: SITE.name,
+  legalName: SITE.name,
+  url: SITE.url,
+  telephone: [SITE.phoneOficina1, SITE.phoneOficina2, `+${SITE.whatsapp}`],
+  email: SITE.email,
+  foundingDate: String(SITE.fundacion),
+  taxID: SITE.rif,
+  image: ogImageUrl,
+  priceRange: '$$',
+  slogan: 'Líderes en Transmisiones',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.sede,
+    addressLocality: 'Caracas',
+    addressRegion: 'Miranda',
+    addressCountry: 'VE',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 10.4965,
+    longitude: -66.8378,
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      opens: '08:00',
+      closes: '17:00',
+    },
+  ],
+  areaServed: ['Caracas', 'Miranda', 'Los Teques', 'Venezuela'],
+  sameAs: Object.values(SITE.redes),
+};
+
+const scriptsJsonLd = [
+  jsonLdLocal,
+  ...(jsonLdExtra ? (Array.isArray(jsonLdExtra) ? jsonLdExtra : [jsonLdExtra]) : []),
+];
+---
+
+<!doctype html>
+<html lang="es-VE">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0f2a57" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Geotags para posicionamiento local en Google Maps y SEO local -->
+    <meta name="geo.region" content="VE-M" />
+    <meta name="geo.placename" content="Caracas, Miranda, Venezuela" />
+    <meta name="geo.position" content="10.4965;-66.8378" />
+    <meta name="ICBM" content="10.4965, -66.8378" />
+
+    <!-- Open Graph / Redes Sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.shortName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hidromáticos J-SAN · Especialistas en Cajas Automáticas en Caracas" />
+    <meta property="og:locale" content="es_VE" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Datos estructurados JSON-LD -->
+    {scriptsJsonLd.map((schema) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body>
+    {!hideHeader && (
+      <>
+        <Topbar tagline={topbarTagline} />
+        <Header activePath={path} />
+      </>
+    )}
+
+    <slot />
+
+    {!hideFooter && <SiteFooter />}
+
+    <WhatsAppFloat />
+  </body>
+</html>
