@@ -8,8 +8,7 @@
 - **WhatsApp:** +58 424-232.0424 (canal principal)
 - **Teléfonos:** (0212) 235.1931 / (0212) 237.7340
 - **Email:** hidromaticosjsan@gmail.com
-- **Oficina:** Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 (frente a Campi Ferretería), Miranda
-- **Taller:** Calle La Floresta, Local PB N°9, Turumo (por la Universidad Santa María), Miranda
+- **Sede única:** Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 (frente a Campi Ferretería), Miranda, Caracas
 - **Horario:** lunes a sábado, con cita previa por WhatsApp
 - **Redes:** facebook.com/HidromaticosJSan · threads.net/@hidromaticosjs
 
@@ -33,4 +32,4 @@ Toyota, Chevrolet, Ford, Hyundai, Nissan, Kia, Mitsubishi, Jeep, Volkswagen, Mer
 - `/` — inicio: servicios, proceso, marcas, reseñas y contacto
 - `/nosotros/` — historia familiar, propósito, misión, visión y valores
 - `/resenas/` — reseñas de clientes y cómo dejar una nueva
-- `/contacto/` — canales de contacto, sedes y horarios
+- `/contacto/` — canales de contacto, sede y horarios

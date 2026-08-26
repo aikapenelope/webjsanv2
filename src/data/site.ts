@@ -14,10 +14,8 @@ export const SITE = {
   phoneOficina2Display: '(0212) 237.7340',
   email: 'hidromaticosjsan@gmail.com',
   fundacion: 2013,
-  direccion: {
-    oficina: 'Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 — frente a Campi Ferretería, Miranda, Caracas',
-    taller: 'Calle La Floresta, Local PB N°9, Turumo — por la Universidad Santa María, Miranda',
-  },
+  sede: 'Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 — frente a Campi Ferretería, Miranda, Caracas',
+  sedeCorta: 'Monte Cristo, Calle 10',
   horario: 'Lunes a sábado · previa cita por WhatsApp',
   redes: {
     facebook: 'https://www.facebook.com/HidromaticosJSan/',
