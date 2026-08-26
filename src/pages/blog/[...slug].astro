@@ -1,0 +1,309 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE, waLink } from '../../data/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const title = `${post.data.title} | ${SITE.shortName}`;
+const description = post.data.description;
+const path = `/blog/${post.id}/`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString().split('T')[0],
+  author: { '@type': 'Organization', name: SITE.name },
+  publisher: {
+    '@type': 'Organization',
+    name: SITE.name,
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL('/assets/logo-jsan.webp', SITE.url).href,
+    },
+  },
+  mainEntityOfPage: new URL(path, SITE.url).href,
+};
+
+const fmtDate = post.data.pubDate.toLocaleDateString('es-VE', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const waPostCta = waLink(
+  `Hola J-SAN, leí su artículo sobre "${post.data.title}". Quiero consultar por una falla en mi carro`
+);
+---
+
+<BaseLayout title={title} description={description} path={path} jsonLdExtra={jsonLd} topbarTagline="Guías Técnicas J-SAN">
+  <main class="article-page">
+    <div class="wrap article-wrap">
+      <!-- BREADCRUMBS -->
+      <nav class="breadcrumbs" aria-label="Ruta de navegación">
+        <a href="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="/blog/">Blog</a>
+        <span aria-hidden="true">/</span>
+        <span class="curr">{post.data.title}</span>
+      </nav>
+
+      <header class="article-header">
+        <div class="article-meta-top">
+          <span class="article-kicker">{post.data.kicker}</span>
+          <span class="article-time">⏱️ {post.data.readingTime} min de lectura</span>
+        </div>
+        <h1>{post.data.title}</h1>
+        <p class="article-lead">{post.data.description}</p>
+        <div class="article-byline">
+          <span>Por <b>{post.data.author}</b></span>
+          <span aria-hidden="true">·</span>
+          <time datetime={post.data.pubDate.toISOString()}>{fmtDate}</time>
+        </div>
+      </header>
+
+      <!-- CONTENIDO PROSE -->
+      <div class="article-body">
+        <Content />
+      </div>
+
+      <!-- CTA CONSULTA ESPECÍFICA -->
+      <div class="article-cta-box">
+        <div class="cta-inner-text">
+          <span class="cta-badge">ASESORÍA EN CARACAS &amp; MIRANDA</span>
+          <h3>¿Tu carro presenta alguna de estas señales?</h3>
+          <p>Mándanos un mensaje o video del síntoma por WhatsApp y te decimos por dónde empezar — con honestidad y sin compromiso.</p>
+        </div>
+        <a class="btn btn-primary" href={waPostCta} target="_blank" rel="noopener">
+          Consultar mi caso por WhatsApp →
+        </a>
+      </div>
+
+      <!-- ENLACE REGRESO -->
+      <div class="article-back">
+        <a href="/blog/" class="btn btn-ghost btn-sm">
+          ← Volver a todas las guías del blog
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .article-page {
+    padding: 3.6rem 0 5.4rem;
+    background: #ffffff;
+  }
+
+  .article-wrap {
+    max-width: 52rem;
+  }
+
+  .breadcrumbs {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumbs a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .breadcrumbs .curr {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .article-header {
+    margin-bottom: 2.8rem;
+    border-bottom: 1px solid var(--sky-line);
+    padding-bottom: 2rem;
+  }
+
+  .article-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.1rem;
+    flex-wrap: wrap;
+  }
+
+  .article-kicker {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+  }
+
+  .article-time {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 1.2rem;
+    text-wrap: balance;
+  }
+
+  .article-lead {
+    font-size: 1.15rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.4rem;
+  }
+
+  .article-byline {
+    font-size: 0.88rem;
+    color: var(--muted);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .article-byline b {
+    color: var(--navy);
+  }
+
+  /* ESTILOS TIPOGRÁFICOS DE PROSE */
+  .article-body {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--navy);
+  }
+
+  .article-body :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--navy);
+    margin: 2.6rem 0 1rem;
+    border-bottom: 2px solid var(--sky-line);
+    padding-bottom: 0.4rem;
+  }
+
+  .article-body :global(h3) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin: 1.8rem 0 0.6rem;
+  }
+
+  .article-body :global(p) {
+    color: var(--muted);
+    margin-bottom: 1.4rem;
+  }
+
+  .article-body :global(strong) {
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .article-body :global(ul),
+  .article-body :global(ol) {
+    margin: 1rem 0 1.6rem 1.4rem;
+    color: var(--muted);
+  }
+
+  .article-body :global(li) {
+    margin-bottom: 0.5rem;
+    padding-left: 0.3rem;
+  }
+
+  .article-body :global(blockquote) {
+    border-left: 4px solid var(--gold);
+    background: var(--sky);
+    padding: 1.2rem 1.6rem;
+    margin: 1.8rem 0;
+    border-radius: 0 12px 12px 0;
+    font-style: italic;
+  }
+
+  .article-cta-box {
+    margin-top: 3.4rem;
+    background: var(--sky);
+    border: 2px solid var(--sky-line);
+    border-top: 5px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 12px 30px rgba(15, 42, 87, 0.06);
+  }
+
+  .cta-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.4rem;
+    display: inline-block;
+  }
+
+  .article-cta-box h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.4rem;
+  }
+
+  .article-cta-box p {
+    color: var(--muted);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    max-width: 32rem;
+  }
+
+  .article-back {
+    margin-top: 2.4rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  @media (max-width: 768px) {
+    .article-cta-box {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.6rem;
+    }
+  }
+</style>
