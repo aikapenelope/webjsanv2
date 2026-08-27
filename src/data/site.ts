@@ -37,14 +37,13 @@ export interface NavItem {
 
 export const NAV: readonly NavItem[] = [
   { num: '01', label: 'Servicios', href: '/#servicios' },
-  { num: '02', label: 'Tienda', href: '/tienda/', badge: '🛒' },
-  { num: '03', label: 'Repuestos', href: '/#repuestos' },
-  { num: '04', label: 'Ubicación', href: '/#sedes' },
-  { num: '05', label: 'Nosotros', href: '/nosotros/' },
-  { num: '06', label: 'Reseñas', href: '/resenas/' },
-  { num: '07', label: 'Videos', href: '/videos/' },
-  { num: '08', label: 'Blog', href: '/blog/' },
-  { num: '09', label: 'Contacto', href: '/contacto/' },
+  { num: '02', label: 'Repuestos', href: '/#repuestos' },
+  { num: '03', label: 'Ubicación', href: '/#sedes' },
+  { num: '04', label: 'Nosotros', href: '/nosotros/' },
+  { num: '05', label: 'Reseñas', href: '/resenas/' },
+  { num: '06', label: 'Videos', href: '/videos/' },
+  { num: '07', label: 'Blog', href: '/blog/' },
+  { num: '08', label: 'Contacto', href: '/contacto/' },
 ];
 
 export interface SocialItem {
