@@ -1,16 +1,14 @@
 ---
-import { MARCAS_USA, waLink } from '../data/site';
-
-const waCotizar = waLink('Hola J-SAN, quiero cotizar un trabajo con repuestos originales americanos');
+import { MARCAS_USA } from '../data/site';
 ---
 
 <section id="repuestos" class="usa-section">
   <div class="wrap">
     <div class="sec-head">
-      <span class="kicker">Calidad importada</span>
-      <h2>Trabajamos con las mejores marcas americanas</h2>
+      <span class="kicker">Calidad de Importación</span>
+      <h2>Componentes originales de las marcas líderes de EE.UU.</h2>
       <p>
-        Siempre repuestos originales. Cada reconstrucción que sale de J-SAN lleva componentes de las mismas marcas que usan los especialistas de Estados Unidos.
+        En cada reparación instalamos repuestos certificados de los mismos fabricantes de equipo original y aftermarket de alto rendimiento en Estados Unidos.
       </p>
     </div>
 
@@ -21,7 +19,7 @@ const waCotizar = waLink('Hola J-SAN, quiero cotizar un trabajo con repuestos or
           href={m.url}
           target="_blank"
           rel="noopener"
-          aria-label={`${m.nombre} — sitio oficial`}
+          aria-label={`${m.nombre} — sitio oficial del fabricante`}
         >
           <div class="usa-card-img">
             <img
@@ -34,15 +32,9 @@ const waCotizar = waLink('Hola J-SAN, quiero cotizar un trabajo con repuestos or
           </div>
           <h3>{m.nombre}</h3>
           <p>{m.desc}</p>
-          <span class="usa-link-label">{m.nombre.toLowerCase()} ↗</span>
+          <span class="usa-link-label">Sitio oficial {m.nombre.toLowerCase()} ↗</span>
         </a>
       ))}
-    </div>
-
-    <div class="usa-cta-wrap">
-      <a class="btn btn-primary" href={waCotizar} target="_blank" rel="noopener">
-        Cotizar con repuestos originales americanos →
-      </a>
     </div>
   </div>
 </section>
@@ -142,11 +134,6 @@ const waCotizar = waLink('Hola J-SAN, quiero cotizar un trabajo con repuestos or
     color: var(--blue);
     border-bottom: 1.5px solid var(--gold);
     padding-bottom: 0.15rem;
-  }
-
-  .usa-cta-wrap {
-    margin-top: 2.8rem;
-    text-align: center;
   }
 
   @media (max-width: 960px) {

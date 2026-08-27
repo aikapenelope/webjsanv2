@@ -1,19 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ReviewCarousel from '../components/ReviewCarousel.astro';
-import { RESENAS, SOCIAL } from '../data/site';
+import { RESENAS, SOCIAL, SITE } from '../data/site';
 
-const title = 'Reseñas & Opiniones · Hidromáticos J-SAN — ★ 4.6 en Google Maps';
+const title = `Reseñas & Opiniones · ${SITE.name} — ★ 4.6 en Google Maps`;
 const description =
-  'Opiniones y calificaciones reales de clientes de Hidromáticos J-SAN en Caracas (★ 4.6 con 35 reseñas en Google Maps). Conoce experiencias de reparación de cajas automáticas.';
+  'Opiniones y calificaciones reales de clientes de HIDROMÁTICOS J.SAN, C.A. en Caracas (★ 4.6 con más de 35 reseñas en Google Maps). Experiencias reales de reparación de cajas automáticas.';
 
-const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? 'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela';
 
 const jsonLdResenas = {
   '@context': 'https://schema.org',
   '@type': 'Product',
-  name: 'Servicio de transmisión automática — Hidromáticos J-SAN',
-  brand: { '@type': 'Brand', name: 'Hidromáticos J-SAN' },
+  name: 'Servicio de transmisión automática — HIDROMÁTICOS J.SAN, C.A.',
+  brand: { '@type': 'Brand', name: 'HIDROMÁTICOS J.SAN, C.A.' },
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '4.6',
@@ -35,10 +35,10 @@ const jsonLdResenas = {
     <div class="wrap">
       <!-- HEADER RESEÑAS -->
       <div class="resenas-hero">
-        <span class="kicker">Lo que dicen de nosotros</span>
+        <span class="kicker">Testimonios Verificados</span>
         <h1>Clientes que <em>recomiendan y vuelven</em></h1>
         <p class="resenas-lead">
-          Puntuación verificada de <strong>★ 4.6 con más de 35 opiniones</strong> en nuestro perfil de Google Business en Caracas.
+          Puntuación promedio de <strong>★ 4.6 con más de 35 opiniones</strong> en nuestro perfil oficial de Google Maps en Caracas.
         </p>
       </div>
 
@@ -48,12 +48,12 @@ const jsonLdResenas = {
           <span class="score-num">4.6</span>
           <div>
             <div class="score-stars">★★★★★</div>
-            <span class="score-label">Promedio en Google Maps</span>
+            <span class="score-label">Promedio de calificación en Google Maps</span>
           </div>
         </div>
         <div class="score-cta">
           <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
-            Escribir una reseña en Google ↗
+            Escribir una reseña en Google Maps ↗
           </a>
         </div>
       </div>
@@ -65,10 +65,10 @@ const jsonLdResenas = {
     </div>
 
     <div class="wrap">
-      <!-- GRID DE TODAS LAS RESEÑAS -->
-      <div class="reviews-full-grid">
-        {RESENAS.map((r) => (
-          <article class="r-card">
+      <!-- GRID DE RESEÑAS CON PAGINACIÓN INTERACTIVA (9 INICIALES + VER MÁS) -->
+      <div class="reviews-full-grid" id="reviews-grid">
+        {RESENAS.map((r, idx) => (
+          <article class:list={['r-card', idx >= 9 && 'r-card-extra']}>
             <div class="r-header">
               <span class="r-stars">★★★★★</span>
               <span class="r-badge">{r.fuente}</span>
@@ -85,18 +85,26 @@ const jsonLdResenas = {
         ))}
       </div>
 
+      <!-- BOTÓN VER MÁS RESEÑAS -->
+      <div class="ver-mas-wrap" id="ver-mas-container">
+        <button class="btn btn-ghost btn-ver-mas" id="btn-ver-mas-resenas">
+          <span>Ver más reseñas ({RESENAS.length - 9} opiniones adicionales)</span>
+          <span class="btn-arrow-down" aria-hidden="true">↓</span>
+        </button>
+      </div>
+
       <!-- BOX DE INVITACIÓN -->
       <div class="opinion-box">
         <div>
           <h3>⭐ ¿Ya atendiste tu vehículo en J-SAN?</h3>
-          <p>Toma menos de un minuto: abre el perfil de J-SAN en Google Maps y cuéntanos cómo fue tu experiencia con el diagnóstico y la reparación. Tu recomendación ayuda a otro conductor a elegir bien.</p>
+          <p>Toma menos de un minuto: entra en Google Maps y cuéntanos cómo fue tu experiencia con el diagnóstico y la reparación. Tu recomendación ayuda a otros conductores de Caracas a elegir un taller serio.</p>
         </div>
         <div class="opinion-btns">
           <a class="btn btn-gold" href={mapsUrl} target="_blank" rel="noopener">
-            Dejar mi reseña ★
+            Dejar mi reseña en Google ★
           </a>
           <a class="btn btn-ghost" href={mapsUrl} target="_blank" rel="noopener">
-            Ver las 35 reseñas en Google ↗
+            Ver todas las opiniones en Google ↗
           </a>
         </div>
       </div>
@@ -187,18 +195,45 @@ const jsonLdResenas = {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.6rem;
-    margin-bottom: 3.6rem;
+    margin-bottom: 2.4rem;
   }
 
   .r-card {
     background: #ffffff;
-    border: 1px solid var(--sky-line);
-    border-top: 3px solid var(--gold);
+    border: 1.5px solid var(--sky-line);
+    border-top: 3.5px solid var(--gold);
     border-radius: var(--radius);
     padding: 1.8rem;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 24px rgba(15, 42, 87, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .r-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.12);
+  }
+
+  /* OCULTAS INICIALMENTE (DESDE LA 10 EN ADELANTE) */
+  .r-card.r-card-extra {
+    display: none;
+  }
+
+  .r-card.r-card-extra.visible {
+    display: flex;
+    animation: fadeInReview 0.35s ease forwards;
+  }
+
+  @keyframes fadeInReview {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .r-header {
@@ -220,9 +255,9 @@ const jsonLdResenas = {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--blue);
-    background: var(--sky);
-    border: 1px solid var(--sky-line);
-    padding: 0.2rem 0.5rem;
+    background: var(--blue-soft);
+    border: 1px solid rgba(45, 88, 147, 0.15);
+    padding: 0.2rem 0.55rem;
     border-radius: 6px;
   }
 
@@ -265,6 +300,33 @@ const jsonLdResenas = {
   .r-author small {
     color: var(--muted);
     font-size: 0.78rem;
+  }
+
+  /* BOTÓN VER MÁS */
+  .ver-mas-wrap {
+    text-align: center;
+    margin: 1.5rem 0 3.8rem;
+  }
+
+  .btn-ver-mas {
+    padding: 0.85rem 2.2rem;
+    font-size: 1rem;
+    border-color: var(--blue);
+    color: var(--blue);
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(45, 88, 147, 0.08);
+  }
+
+  .btn-ver-mas:hover {
+    background: var(--blue);
+    color: #ffffff;
+    border-color: var(--blue);
+  }
+
+  .btn-arrow-down {
+    font-size: 1.2rem;
+    line-height: 1;
+    font-weight: 900;
   }
 
   /* OPINION BOX */
@@ -325,7 +387,7 @@ const jsonLdResenas = {
       flex-direction: column;
       align-items: flex-start;
     }
-    .score-cta, .opinion-btns {
+    .score-cta, .opinion-btns, .btn-ver-mas {
       width: 100%;
     }
     .score-cta .btn, .opinion-btns .btn {
@@ -334,3 +396,25 @@ const jsonLdResenas = {
     }
   }
 </style>
+
+<script>
+  function setupReviewsToggle() {
+    const btn = document.getElementById('btn-ver-mas-resenas');
+    const container = document.getElementById('ver-mas-container');
+    const extraCards = document.querySelectorAll<HTMLElement>('.r-card.r-card-extra');
+
+    if (!btn || extraCards.length === 0) return;
+
+    btn.addEventListener('click', () => {
+      extraCards.forEach((card) => {
+        card.classList.add('visible');
+      });
+      if (container) {
+        container.style.display = 'none';
+      }
+    });
+  }
+
+  setupReviewsToggle();
+  document.addEventListener('astro:page-load', setupReviewsToggle);
+</script>

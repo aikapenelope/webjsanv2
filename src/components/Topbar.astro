@@ -17,10 +17,11 @@ const { tagline = 'Sede Monte Cristo, Calle 10 · Caracas, Miranda' } = Astro.pr
       <span class="tb-tagline tb-hide-mobile">{tagline}</span>
     </div>
     <div class="tb-right">
-      <span class="tb-label">Atención:</span>
+      <span class="tb-label">Taller:</span>
       <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
       <span class="tb-sep" aria-hidden="true">·</span>
-      <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+      <span class="tb-label">WhatsApp:</span>
+      <a class="tb-wa-link" href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">{SITE.whatsappDisplay}</a>
     </div>
   </div>
 </div>
@@ -90,6 +91,11 @@ const { tagline = 'Sede Monte Cristo, Calle 10 · Caracas, Miranda' } = Astro.pr
   .topbar a:hover {
     color: var(--gold-soft);
     text-decoration: underline;
+  }
+
+  .tb-wa-link {
+    color: #4ade80 !important;
+    font-weight: 700 !important;
   }
 
   .tb-sep {
