@@ -7,7 +7,7 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
 <section class="hero" id="inicio">
   <div class="wrap hero-grid">
     <div class="hero-content">
-      <span class="eyebrow">★ Caracas · Miranda · Desde 2013</span>
+      <span class="kicker">Caracas · Miranda · Desde 2013</span>
       <h1>
         Tu caja automática en manos de <span class="hl">líderes</span>
       </h1>
@@ -37,8 +37,9 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
       </div>
       <div class="float-card">
         <span class="dot" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D5893" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 6 9 17l-5-5"/>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D5893" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M8 9h8M8 13h5"/>
           </svg>
         </span>
         <div class="float-text">
@@ -52,10 +53,8 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
 
 <style>
   .hero {
-    padding: 3.8rem 0 4.6rem;
-    background:
-      radial-gradient(circle at 85% 12%, rgba(45, 88, 147, 0.09), transparent 45%),
-      linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+    padding: clamp(2.6rem, 6vw, 4.2rem) 0 clamp(3rem, 7vw, 5rem);
+    background: #ffffff;
     border-bottom: 1px solid var(--sky-line);
     position: relative;
   }
@@ -70,7 +69,7 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
   h1 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2.4rem, 5.4vw, 4.6rem);
+    font-size: clamp(2.4rem, 5.4vw, 4.4rem);
     line-height: 0.98;
     text-transform: uppercase;
     letter-spacing: 0.01em;
@@ -99,48 +98,55 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
 
   .hero-side {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
   }
 
   .emblem-stage {
-    aspect-ratio: 1 / 1.02;
-    border-radius: 24px;
-    background:
-      radial-gradient(circle at 50% 45%, rgba(201, 162, 39, 0.16) 0%, transparent 40%),
-      repeating-radial-gradient(circle at 50% 46%, rgba(45, 88, 147, 0.08) 0 2px, transparent 2px 34px),
-      linear-gradient(180deg, var(--sky), #ffffff);
-    border: 1.5px solid var(--sky-line);
+    aspect-ratio: 1 / 0.92;
+    border-radius: 22px;
+    border: 1px solid var(--sky-line);
     display: grid;
     place-items: center;
     overflow: hidden;
-    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.08);
+    box-shadow: var(--shadow-card);
+    background:
+      repeating-radial-gradient(circle at 50% 47%, rgba(15, 42, 87, 0.055) 0 1.5px, transparent 1.5px 32px),
+      radial-gradient(circle at 50% 42%, rgba(201, 162, 39, 0.08), transparent 60%),
+      linear-gradient(160deg, #f8f6f1 0%, #ece9e1 100%);
   }
 
   .emblem-stage img {
-    width: min(72%, 310px);
+    width: min(68%, 300px);
     height: auto;
-    filter: drop-shadow(0 20px 30px rgba(10, 30, 64, 0.22));
-    transition: transform 0.35s ease;
-  }
-
-  .emblem-stage:hover img {
-    transform: scale(1.04);
+    filter: drop-shadow(0 14px 22px rgba(10, 30, 64, 0.18));
   }
 
   .float-card {
-    position: absolute;
-    bottom: -1.2rem;
-    left: -1.6rem;
     background: #ffffff;
-    border: 1.5px solid var(--sky-line);
-    border-left: 4px solid var(--gold);
-    border-radius: var(--radius);
-    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.12);
+    border: 1px solid var(--sky-line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
     padding: 1rem 1.2rem;
     display: flex;
     gap: 0.9rem;
     align-items: center;
-    max-width: 21rem;
-    animation: floatAnim 4.5s ease-in-out infinite;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .float-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 30%, transparent 72%);
+    opacity: 0.75;
+    pointer-events: none;
   }
 
   .float-card .dot {
@@ -149,6 +155,7 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
     height: 42px;
     border-radius: 10px;
     background: var(--blue-soft);
+    border: 1px solid rgba(45, 88, 147, 0.12);
     display: grid;
     place-items: center;
   }
@@ -168,18 +175,9 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
     line-height: 1.35;
   }
 
-  @keyframes floatAnim {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-6px);
-    }
-  }
-
   @media (max-width: 960px) {
     .hero {
-      padding: 2.8rem 0 3.8rem;
+      padding: 2.6rem 0 3.4rem;
     }
 
     .hero-grid {
@@ -188,26 +186,19 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
     }
 
     .hero-side {
-      max-width: 24rem;
+      max-width: 26rem;
       margin-inline: auto;
       width: 100%;
-    }
-
-    .float-card {
-      position: static;
-      margin-top: 1.2rem;
-      max-width: 100%;
-      animation: none;
     }
   }
 
   @media (max-width: 480px) {
     .hero {
-      padding: 2.2rem 0 3rem;
+      padding: 2.2rem 0 2.8rem;
     }
 
     h1 {
-      font-size: 2.35rem;
+      font-size: 2.3rem;
     }
 
     .hero p.lede {

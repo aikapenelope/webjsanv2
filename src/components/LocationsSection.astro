@@ -2,36 +2,48 @@
 import { SITE, SOCIAL, waLink } from '../data/site';
 
 const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? 'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela';
-const wazeUrl = 'https://waze.com/ul?q=Monte+Cristo+Caracas+Calle+10';
 const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y diagnóstico en su taller de Monte Cristo');
 ---
 
-<section id="sedes" class="locations-sec">
+<section id="sedes" class="locations-sec section section-white">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker">Sede Principal en Caracas</span>
-      <h2>Visítanos en nuestro taller en Monte Cristo</h2>
-      <p>Instalaciones equipadas con elevadores, fosa mecánica y scanner computarizado para atención directa y resguardo seguro de tu carro.</p>
+      <h2 class="sec-title">Visítanos en nuestro taller en Monte Cristo</h2>
+      <p class="sec-lead">Instalaciones equipadas con elevadores, fosa mecánica y scanner computarizado para atención directa y resguardo seguro de tu carro.</p>
     </div>
 
     <div class="loc-card-main">
       <div class="loc-grid-top">
         <div class="loc-info-col">
           <div class="loc-header">
-            <span class="loc-tag">SEDE CENTRAL · MONTE CRISTO</span>
+            <span class="loc-tag">Sede Central · Monte Cristo</span>
             <h3>HIDROMÁTICOS J.SAN, C.A.</h3>
-            <span class="loc-status-pill">● Abierto Lun–Sáb · 8:00 AM a 5:00 PM</span>
+            <span class="loc-status-pill">
+              <span class="loc-status-dot" aria-hidden="true"></span>
+              Abierto Lun–Sáb · 8:00 AM a 5:00 PM
+            </span>
           </div>
 
           <div class="loc-details">
             <div class="loc-detail-box">
-              <span class="loc-label">📍 Dirección Exacta:</span>
+              <span class="loc-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                Dirección Exacta:
+              </span>
               <address>{SITE.sede}</address>
               <span class="loc-ref"><strong>Punto de referencia:</strong> Calle 10, justo frente a Campi Ferretería.</span>
             </div>
 
             <div class="loc-detail-box">
-              <span class="loc-label">📞 Teléfonos de Atención Directa:</span>
+              <span class="loc-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>
+                </svg>
+                Teléfonos de Atención Directa:
+              </span>
               <div class="loc-phones">
                 <div>
                   <small class="phone-tag">Oficina / Taller:</small>
@@ -47,7 +59,12 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
             </div>
 
             <div class="loc-detail-box">
-              <span class="loc-label">🚗 Rutas y Accesos Rápidos:</span>
+              <span class="loc-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/><path d="m16 8-3 6-6 2 3-6 6-2Z"/>
+                </svg>
+                Rutas y Accesos Rápidos:
+              </span>
               <ul class="loc-routes">
                 <li>
                   <b>Desde la Cota Mil:</b> Bajada por Sebucán / Los Dos Caminos hacia la 3ra transversal de Monte Cristo (3 min).
@@ -69,9 +86,6 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
             </a>
             <a class="btn btn-gold btn-sm" href={waAgendar} target="_blank" rel="noopener">
               <span>Agendar cita previa por WhatsApp →</span>
-            </a>
-            <a class="btn btn-ghost btn-sm" href={wazeUrl} target="_blank" rel="noopener">
-              <span>Navegar con Waze ↗</span>
             </a>
           </div>
         </div>
@@ -97,40 +111,26 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
 </section>
 
 <style>
-  .locations-sec {
-    padding: 4.8rem 0;
-    background: #ffffff;
-    border-top: 1px solid var(--sky-line);
-  }
-
-  .sec-head {
-    max-width: 48rem;
-    margin-bottom: 2.6rem;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(2.2rem, 4.4vw, 3.2rem);
-    line-height: 1.02;
-    text-transform: uppercase;
-    color: var(--navy);
-  }
-
-  .sec-head p {
-    color: var(--muted);
-    margin-top: 0.8rem;
-    font-size: 1.06rem;
-    line-height: 1.55;
-  }
-
   .loc-card-main {
-    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 100%);
-    border: 1.5px solid var(--sky-line);
-    border-top: 5px solid var(--gold);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
     border-radius: 20px;
     padding: 2.6rem;
-    box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loc-card-main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 22%, transparent 55%);
+    opacity: 0.6;
+    pointer-events: none;
   }
 
   .loc-grid-top {
@@ -152,16 +152,16 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
   }
 
   .loc-tag {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--gold);
-    background: var(--navy);
+    color: var(--blue);
+    background: var(--blue-soft);
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
     display: inline-block;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
   }
 
   .loc-header h3 {
@@ -178,11 +178,21 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     font-size: 0.76rem;
     font-weight: 700;
     color: var(--green);
-    background: rgba(23, 138, 66, 0.1);
-    border: 1px solid rgba(23, 138, 66, 0.2);
+    background: rgba(23, 138, 66, 0.08);
+    border: 1px solid rgba(23, 138, 66, 0.22);
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .loc-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex: none;
   }
 
   .loc-details {
@@ -205,6 +215,14 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--blue);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .loc-label svg {
+    color: var(--gold);
   }
 
   .loc-detail-box address {

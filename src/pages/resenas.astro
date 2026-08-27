@@ -114,8 +114,8 @@ const jsonLdResenas = {
 
 <style>
   .resenas-page {
-    padding: 4.4rem 0 5.4rem;
-    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+    padding: clamp(2.6rem, 6vw, 4.2rem) 0 clamp(3rem, 7vw, 5.2rem);
+    background: #ffffff;
   }
 
   .resenas-hero {
@@ -148,6 +148,7 @@ const jsonLdResenas = {
   /* SCORE BANNER */
   .score-banner {
     background: var(--navy);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 2.2rem 2.6rem;
     color: #ffffff;
@@ -155,10 +156,21 @@ const jsonLdResenas = {
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
-    border-top: 4px solid var(--gold);
     box-shadow: 0 14px 34px rgba(10, 30, 64, 0.18);
     margin-bottom: 2.8rem;
     flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0) 55%);
   }
 
   .score-main {
@@ -332,16 +344,29 @@ const jsonLdResenas = {
   /* OPINION BOX */
   .opinion-box {
     background: #ffffff;
-    border: 2px solid var(--sky-line);
-    border-top: 4px solid var(--gold);
+    border: 1px solid var(--sky-line);
     border-radius: 20px;
     padding: 2.6rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    box-shadow: 0 12px 30px rgba(15, 42, 87, 0.06);
+    box-shadow: var(--shadow-card);
     flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opinion-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 22%, transparent 55%);
+    opacity: 0.6;
+    pointer-events: none;
   }
 
   .opinion-box h3 {

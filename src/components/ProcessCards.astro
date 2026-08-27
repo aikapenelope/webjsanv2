@@ -27,23 +27,23 @@ const PASOS = [
 ];
 ---
 
-<section id="proceso" class="process-sec">
+<section id="proceso" class="process-sec section section-navy">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker kicker-gold">Metodología de Trabajo</span>
-      <h2>Diagnóstico claro, sin sorpresas en la cuenta</h2>
-      <p>4 pasos transparentes desde que entras por nuestro portón en Monte Cristo hasta que sales con tu transmisión en garantía.</p>
+      <h2 class="sec-title sec-title-light">Diagnóstico claro, sin sorpresas en la cuenta</h2>
+      <p class="sec-lead sec-lead-light">4 pasos transparentes desde que entras por nuestro portón en Monte Cristo hasta que sales con tu transmisión en garantía.</p>
     </div>
 
     <div class="steps-grid">
       {PASOS.map((paso) => (
         <article class="step-card">
-          <div class="step-header">
-            <span class="step-num">PASO {paso.n}</span>
+          <span class="step-num">{paso.n}</span>
+          <div class="step-body">
             <span class="step-tag">{paso.tag}</span>
+            <h3>{paso.t}</h3>
+            <p>{paso.p}</p>
           </div>
-          <h3>{paso.t}</h3>
-          <p>{paso.p}</p>
         </article>
       ))}
     </div>
@@ -51,110 +51,84 @@ const PASOS = [
 </section>
 
 <style>
-  .process-sec {
-    padding: 4.8rem 0;
-    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
-    color: #ffffff;
-    border-top: 1px solid var(--navy-deep);
-  }
-
-  .sec-head {
-    max-width: 48rem;
-    margin-bottom: 2.8rem;
-  }
-
-  .kicker-gold {
-    color: var(--gold-soft);
-  }
-
-  .kicker-gold::before {
-    background: var(--gold);
-  }
-
-  h2 {
-    color: #ffffff;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(2.2rem, 4.4vw, 3.2rem);
-    line-height: 1.02;
-    text-transform: uppercase;
-  }
-
-  .sec-head p {
-    color: var(--muted-dark);
-    margin-top: 0.8rem;
-    font-size: 1.05rem;
-    line-height: 1.55;
-  }
-
   .steps-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.2rem;
+    counter-reset: step;
   }
 
   .step-card {
     background: var(--navy-panel);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-top: 3px solid var(--gold);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius);
-    padding: 1.8rem 1.5rem;
+    padding: 1.6rem 1.4rem 1.5rem;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    gap: 1.1rem;
+    position: relative;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   }
 
   .step-card:hover {
-    transform: translateY(-4px);
-    background: rgba(33, 75, 148, 0.8);
-    border-color: var(--gold-soft);
+    background: rgba(33, 75, 148, 0.55);
+    border-color: rgba(233, 194, 92, 0.4);
+    transform: translateY(-2px);
   }
 
-  .step-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.9rem;
-    flex-wrap: wrap;
+  /* Conector de proceso entre pasos */
+  .step-card:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -0.85rem;
+    width: 0.7rem;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.55;
+    z-index: 1;
   }
 
   .step-num {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 0.88rem;
-    letter-spacing: 0.14em;
-    color: var(--gold);
-    text-transform: uppercase;
+    font-size: 2.6rem;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(233, 194, 92, 0.55);
+    letter-spacing: 0.02em;
+  }
+
+  .step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
   }
 
   .step-tag {
     font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #cad8f3;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.18rem 0.5rem;
-    border-radius: 4px;
+    color: var(--gold-soft);
   }
 
   .step-card h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     text-transform: uppercase;
     color: #ffffff;
-    margin-bottom: 0.5rem;
     letter-spacing: 0.02em;
+    line-height: 1.1;
   }
 
   .step-card p {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     color: var(--muted-dark);
     line-height: 1.5;
-    flex: 1;
+    text-wrap: pretty;
   }
 
   @media (max-width: 990px) {
@@ -162,19 +136,19 @@ const PASOS = [
       grid-template-columns: 1fr 1fr;
       gap: 1.2rem;
     }
+
+    .step-card:not(:last-child)::after {
+      display: none;
+    }
   }
 
   @media (max-width: 560px) {
-    .process-sec {
-      padding: 3.4rem 0;
-    }
-
     .steps-grid {
       grid-template-columns: 1fr;
     }
 
     .step-card {
-      padding: 1.5rem 1.3rem;
+      padding: 1.4rem 1.2rem;
     }
   }
 </style>

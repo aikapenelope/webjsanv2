@@ -128,8 +128,8 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
 
 <style>
   .videos-page {
-    padding: 4.4rem 0 5.4rem;
-    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+    padding: clamp(2.6rem, 6vw, 4.2rem) 0 clamp(3rem, 7vw, 5.2rem);
+    background: #ffffff;
   }
 
   .videos-hero {
@@ -162,13 +162,12 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
   /* YOUTUBE LITE FEATURE */
   .yt-feature-card {
     background: #ffffff;
-    border: 1.5px solid var(--sky-line);
-    border-top: 4px solid var(--gold);
+    border: 1px solid var(--sky-line);
     border-radius: 20px;
     overflow: hidden;
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
+    box-shadow: var(--shadow-card);
     margin-bottom: 4rem;
     align-items: center;
   }

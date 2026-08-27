@@ -27,8 +27,8 @@ const waFinal = waLink('Hola J-SAN, quiero consultar por una falla en mi caja au
 <style>
   .final-cta {
     background: var(--navy);
-    border-top: 3px solid var(--gold);
-    padding: 4.4rem 0;
+    border-top: 1px solid rgba(201, 162, 39, 0.45);
+    padding: clamp(3.2rem, 7vw, 4.8rem) 0;
     color: #ffffff;
   }
 
@@ -47,10 +47,11 @@ const waFinal = waLink('Hola J-SAN, quiero consultar por una falla en mi caja au
   .final-text h2 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2rem, 3.8vw, 2.9rem);
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
     line-height: 1.05;
     text-transform: uppercase;
     color: #ffffff;
+    text-wrap: balance;
   }
 
   .final-text p {
