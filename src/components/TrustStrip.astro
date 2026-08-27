@@ -1,64 +1,100 @@
 ---
 const STRIP_ITEMS = [
   'Más de 12 años de experiencia',
-  'Líderes en transmisiones',
+  'Líderes en transmisiones automáticas',
   'Repuestos importados originales',
-  'Presupuesto antes de trabajar',
+  'Diagnóstico computarizado previo',
+  'Presupuesto claro antes de trabajar',
+  'Garantía escrita por 6 meses',
+  'Taller especialista en Caracas',
 ];
 ---
 
-<div class="strip" role="region" aria-label="Garantías de servicio">
-  <div class="wrap">
-    {STRIP_ITEMS.map((item) => (
-      <div>{item}</div>
+<div class="strip-container" role="region" aria-label="Garantías y credenciales de servicio">
+  <div class="strip-track">
+    {[0, 1].map(() => (
+      <div class="strip-group" aria-hidden="true">
+        {STRIP_ITEMS.map((item) => (
+          <div class="strip-item">
+            <span class="strip-star" aria-hidden="true">★</span>
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
     ))}
   </div>
 </div>
 
 <style>
-  .strip {
+  .strip-container {
     background: var(--navy);
-    color: #fff;
+    color: #ffffff;
     border-top: 3px solid var(--gold);
     border-bottom: 1px solid var(--navy-deep);
+    overflow: hidden;
+    padding: 0.95rem 0;
+    user-select: none;
+    position: relative;
+    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
   }
 
-  .strip .wrap {
+  .strip-track {
     display: flex;
-    justify-content: space-between;
-    gap: 1.2rem;
-    padding: 1.15rem 0;
-    flex-wrap: wrap;
+    width: max-content;
+    animation: stripMarquee 32s linear infinite;
   }
 
-  .strip div {
+  .strip-container:hover .strip-track {
+    animation-play-state: paused;
+  }
+
+  .strip-group {
+    display: flex;
+    align-items: center;
+    gap: 2.8rem;
+    padding-right: 2.8rem;
+    flex-shrink: 0;
+  }
+
+  .strip-item {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1.05rem;
-    letter-spacing: 0.05em;
+    font-size: 1.08rem;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.65rem;
+    white-space: nowrap;
+    color: #f0f4fc;
   }
 
-  .strip div::before {
-    content: "★";
+  .strip-star {
     color: var(--gold);
-    font-size: 0.88rem;
+    font-size: 0.95rem;
+    filter: drop-shadow(0 0 4px rgba(201, 162, 39, 0.4));
   }
 
-  @media (max-width: 768px) {
-    .strip .wrap {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
+  @keyframes stripMarquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
     }
   }
 
-  @media (max-width: 480px) {
-    .strip .wrap {
-      grid-template-columns: 1fr;
+  @media (max-width: 600px) {
+    .strip-container {
+      padding: 0.75rem 0;
+    }
+    .strip-item {
+      font-size: 0.95rem;
+    }
+    .strip-group {
+      gap: 1.8rem;
+      padding-right: 1.8rem;
     }
   }
 </style>

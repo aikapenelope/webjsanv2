@@ -10,8 +10,9 @@ import ReviewsSection from '../components/ReviewsSection.astro';
 import LocationsSection from '../components/LocationsSection.astro';
 import FaqAccordion, { FAQS } from '../components/FaqAccordion.astro';
 import FinalCta from '../components/FinalCta.astro';
+import { SITE } from '../data/site';
 
-const title = 'Hidromáticos J-SAN · Especialistas en Cajas Automáticas — Caracas';
+const title = `${SITE.name} · Especialistas en Cajas Automáticas — Caracas`;
 const description =
   'Reparación y reconstrucción de cajas automáticas y motores en Caracas. Escaneo computarizado, repuestos importados y garantía escrita. Desde 2013 en Miranda, Venezuela.';
 
@@ -39,13 +40,13 @@ const jsonLdFaq = {
     <!-- HERO SECTION CON ESCUDO & BADGE FLOTANTE -->
     <Hero />
 
-    <!-- FRANJA DE CONFIANZA INSTITUCIONAL -->
+    <!-- FRANJA DE CONFIANZA ANIMADA CON MOVIMIENTO CONTINUO -->
     <TrustStrip />
 
-    <!-- SERVICIOS NUMERADOS & CATEGORÍAS -->
+    <!-- SERVICIOS ESPECIALIZADOS DE DIAGNÓSTICO Y RECONSTRUCCIÓN -->
     <ServicesSection />
 
-    <!-- PROCESO EN 4 PASOS EN FONDO OSCURO -->
+    <!-- PROCESO DE TALLER EN 4 PASOS TRANSPARENTES -->
     <ProcessCards />
 
     <!-- MARQUESINA INFINITA DE 16 MARCAS AUTOMOTRICES -->
@@ -57,7 +58,7 @@ const jsonLdFaq = {
     <!-- TESTIMONIOS & CARRUSEL DE RESEÑAS GOOGLE ★4.6 -->
     <ReviewsSection />
 
-    <!-- SEDE MONTE CRISTO & ENVÍOS NACIONALES -->
+    <!-- SEDE MONTE CRISTO (CARACAS) -->
     <LocationsSection />
 
     <!-- PREGUNTAS FRECUENTES ACCESIBLES -->

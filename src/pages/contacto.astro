@@ -247,4 +247,21 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
       padding: 2rem 1.6rem;
     }
   }
+
+  @media (max-width: 600px) {
+    .contacto-page {
+      padding: 3rem 0 4rem;
+    }
+    .canal-card {
+      padding: 1.6rem 1.4rem;
+    }
+    .mapa-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    .mapa-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>

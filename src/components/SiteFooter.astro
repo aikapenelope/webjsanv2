@@ -9,26 +9,26 @@ import { SITE, SOCIAL } from '../data/site';
         <div class="foot-logo">
           <img
             src="/assets/logo-jsan.webp"
-            alt="Escudo Hidromáticos J-SAN"
+            alt="Escudo oficial de HIDROMÁTICOS J.SAN, C.A."
             width="80"
             height="74"
             loading="lazy"
           />
         </div>
-        <p class="foot-brand-sub">
-          <strong>{SITE.name}</strong><br />
-          <span class="foot-rif">RIF: {SITE.rif}</span><br />
-          <em>Líderes en Transmisiones Automáticas · Desde {SITE.fundacion}</em>
-        </p>
+        <div class="foot-brand-sub">
+          <strong class="foot-company-name">{SITE.name}</strong>
+          <span class="foot-rif">RIF: {SITE.rif}</span>
+          <p class="foot-slogan">Líderes en Diagnóstico y Reparación de Transmisiones Automáticas · Desde {SITE.fundacion}</p>
+        </div>
       </div>
 
       <div>
         <h4>Servicios Especializados</h4>
         <ul>
-          <li><a href="/#servicios">Diagnóstico computarizado (Scanner)</a></li>
+          <li><a href="/#servicios">Diagnóstico computarizado (Scanner DTC)</a></li>
           <li><a href="/#servicios">Reparación de cajas automáticas</a></li>
-          <li><a href="/#servicios">Reconstrucción total (Overhaul)</a></li>
-          <li><a href="/#servicios">Servicio de aceite y filtro ATF</a></li>
+          <li><a href="/#servicios">Reconstrucción total (Overhaul Master)</a></li>
+          <li><a href="/#servicios">Mantenimiento de fluido y filtro ATF</a></li>
           <li><a href="/#servicios">Cuerpo de válvulas y solenoides</a></li>
           <li><a href="/tienda/">Catálogo de transmisiones y repuestos</a></li>
         </ul>
@@ -38,24 +38,24 @@ import { SITE, SOCIAL } from '../data/site';
         <h4>Navegación & Empresa</h4>
         <ul>
           <li><a href="/nosotros/">Sobre Nosotros (Propósito & Valores)</a></li>
-          <li><a href="/tienda/">🛒 Tienda y Catálogo</a></li>
+          <li><a href="/tienda/">🛒 Tienda y Catálogo de Cajas</a></li>
           <li><a href="/resenas/">Reseñas de Clientes (Google ★ 4.6)</a></li>
-          <li><a href="/videos/">Videos de Trabajos Reales</a></li>
+          <li><a href="/videos/">Videos y Trabajos en Taller</a></li>
           <li><a href="/blog/">Blog y Guías Mecánicas</a></li>
           <li><a href="/terminos/">Términos de Garantía y Servicio</a></li>
-          <li><a href="/contacto/">Canales de Contacto</a></li>
+          <li><a href="/contacto/">Canales de Contacto Directo</a></li>
         </ul>
       </div>
 
       <div>
-        <h4>Ubicación & Contacto</h4>
+        <h4>Sede Monte Cristo & Contacto</h4>
         <div class="foot-contact-box">
           <p>
-            <strong>Sede Central:</strong><br />
+            <strong>Dirección en Caracas:</strong><br />
             {SITE.sede}
           </p>
           <p>
-            <strong>Teléfonos directos:</strong><br />
+            <strong>Teléfonos de Oficina:</strong><br />
             <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a> · <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a><br />
             WhatsApp: <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">{SITE.whatsappDisplay}</a>
           </p>
@@ -75,9 +75,9 @@ import { SITE, SOCIAL } from '../data/site';
     </div>
 
     <div class="foot-legal">
-      <span>© {SITE.fundacion}–2026 {SITE.name} · RIF: {SITE.rif} · Todos los derechos reservados.</span>
+      <span>© {SITE.fundacion}–2026 <strong>{SITE.name}</strong> · RIF: {SITE.rif} · Todos los derechos reservados.</span>
       <div class="foot-links-legal">
-        <a href="/terminos/">Términos de Servicio & Garantía</a>
+        <a href="/terminos/">Términos de Servicio & Garantías por Escrito</a>
         <span aria-hidden="true">·</span>
         <span>Caracas, Miranda, Venezuela</span>
       </div>
@@ -89,31 +89,31 @@ import { SITE, SOCIAL } from '../data/site';
   footer {
     background: var(--navy-deep);
     color: var(--muted-dark);
-    padding: 3.4rem 0 2.2rem;
+    padding: 3.8rem 0 2.2rem;
     font-size: 0.9rem;
     border-top: 3px solid var(--gold);
   }
 
   .foot-grid {
     display: grid;
-    grid-template-columns: 1.1fr 1fr 1fr 1.3fr;
+    grid-template-columns: 1.2fr 1fr 1fr 1.3fr;
     gap: 2.4rem;
-    margin-bottom: 2.4rem;
+    margin-bottom: 2.6rem;
     align-items: start;
   }
 
   .foot-brand-col {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.1rem;
   }
 
   .foot-logo {
-    background: #fff;
+    background: #ffffff;
     border-radius: 14px;
-    padding: 0.6rem;
-    width: 92px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    padding: 0.65rem;
+    width: 88px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 
   .foot-logo img {
@@ -122,30 +122,48 @@ import { SITE, SOCIAL } from '../data/site';
   }
 
   .foot-brand-sub {
-    font-size: 0.85rem;
-    line-height: 1.45;
+    font-size: 0.86rem;
+    line-height: 1.5;
     color: var(--muted-dark);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
   }
 
-  .foot-brand-sub strong {
-    color: #fff;
-    font-size: 0.95rem;
+  .foot-company-name {
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
   }
 
   .foot-rif {
     color: var(--gold-soft);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.88rem;
+    background: rgba(201, 162, 39, 0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .foot-slogan {
+    color: #b0bfdc;
+    font-size: 0.84rem;
+    margin-top: 0.2rem;
   }
 
   footer h4 {
-    color: #fff;
+    color: #ffffff;
     font-family: var(--font-display);
     text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-size: 1.08rem;
+    letter-spacing: 0.08em;
+    font-size: 1.12rem;
     margin-bottom: 0.9rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 0.45rem;
   }
 
   footer ul {
@@ -153,7 +171,7 @@ import { SITE, SOCIAL } from '../data/site';
   }
 
   footer li {
-    padding: 0.28rem 0;
+    padding: 0.32rem 0;
   }
 
   footer a {
@@ -164,18 +182,19 @@ import { SITE, SOCIAL } from '../data/site';
 
   footer a:hover {
     color: var(--gold-soft);
+    text-decoration: underline;
   }
 
   .foot-contact-box {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    font-size: 0.85rem;
-    line-height: 1.45;
+    gap: 0.8rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
   }
 
   .foot-contact-box strong {
-    color: #fff;
+    color: #ffffff;
   }
 
   .foot-socials {
@@ -183,27 +202,31 @@ import { SITE, SOCIAL } from '../data/site';
     gap: 0.8rem;
     flex-wrap: wrap;
     margin-top: 0.4rem;
-    font-size: 0.82rem;
+    font-size: 0.84rem;
   }
 
   .foot-socials a {
     color: var(--gold-soft);
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .foot-socials a:hover {
-    color: #fff;
+    color: #ffffff;
   }
 
   .foot-legal {
     border-top: 1px solid rgba(255, 255, 255, 0.14);
-    padding-top: 1.4rem;
+    padding-top: 1.6rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
     font-size: 0.82rem;
+  }
+
+  .foot-legal strong {
+    color: #ffffff;
   }
 
   .foot-links-legal {
@@ -215,17 +238,22 @@ import { SITE, SOCIAL } from '../data/site';
   @media (max-width: 1040px) {
     .foot-grid {
       grid-template-columns: 1fr 1fr;
+      gap: 2rem;
     }
   }
 
   @media (max-width: 600px) {
+    footer {
+      padding: 2.8rem 0 1.8rem;
+    }
     .foot-grid {
       grid-template-columns: 1fr;
+      gap: 1.8rem;
     }
     .foot-legal {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.6rem;
+      gap: 0.8rem;
     }
   }
 </style>
