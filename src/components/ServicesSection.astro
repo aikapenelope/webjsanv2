@@ -1,6 +1,4 @@
 ---
-import { waLink } from '../data/site';
-
 const SERVICIOS = [
   {
     num: '01',
@@ -14,8 +12,8 @@ const SERVICIOS = [
       'Prueba de ruta con el técnico especialista a bordo.',
       'Presupuesto escrito y detallado antes de iniciar cualquier labor.',
     ],
-    waMsg: 'Hola J-SAN, quiero solicitar un diagnóstico con scanner para mi carro:',
-    ctaText: 'Agendar diagnóstico previo →',
+    targetUrl: '#diagnostico-guiado',
+    ctaText: 'Ver evaluación de síntomas →',
   },
   {
     num: '02',
@@ -29,8 +27,8 @@ const SERVICIOS = [
       'Apertura, mantenimiento y balanceo dinámico del convertidor de par.',
       'Sustitución de tambores, planetarios y bombas de aceite fatigadas.',
     ],
-    waMsg: 'Hola J-SAN, quiero cotizar la reparación/reconstrucción de mi caja automática:',
-    ctaText: 'Cotizar reconstrucción de caja →',
+    targetUrl: '#proceso',
+    ctaText: 'Conocer pasos de reparación →',
   },
   {
     num: '03',
@@ -44,23 +42,23 @@ const SERVICIOS = [
       'Llenado con fluido específico para cajas automáticas, CVT o DSG.',
       'Servicio preventivo para motores y mecánica automotriz ligera.',
     ],
-    waMsg: 'Hola J-SAN, quiero consultar por el servicio de cambio de aceite y filtro ATF:',
-    ctaText: 'Consultar mantenimiento ATF →',
+    targetUrl: '/blog/que-es-el-servicio-atf/',
+    ctaText: 'Leer guía de servicio ATF →',
   },
   {
     num: '04',
     titulo: 'Repuestos & Importación',
     subtitulo: 'Componentes líderes de la industria americana',
     desc: 'Instalamos componentes de las marcas más prestigiosas de Estados Unidos: Sonnax, TransGo, Transtec y Precision International.',
-    pills: ['Sonnax® & TransGo®', 'Cajas Listas para Montar', 'Importación Directa'],
+    pills: ['Sonnax® & TransGo®', 'Piezas Certificadas', 'Importación Directa'],
     items: [
       'Venta e instalación de solenoides y kits correctores de válvulas.',
-      'Importación directa de transmisiones usadas seleccionadas y nuevas.',
-      'Búsqueda de piezas difíciles para modelos descontinuados.',
+      'Importación directa de repuestos difíciles y transmisiones completas.',
+      'Búsqueda de piezas para modelos automotrices descontinuados.',
       'Garantía formal por escrito en repuestos y mano de obra.',
     ],
-    waMsg: 'Hola J-SAN, estoy buscando un repuesto o caja importada para mi vehículo:',
-    ctaText: 'Consultar repuestos disponibles →',
+    targetUrl: '#repuestos',
+    ctaText: 'Ver marcas de repuestos USA →',
   },
 ];
 ---
@@ -106,10 +104,8 @@ const SERVICIOS = [
 
           <div class="card-footer">
             <a
-              class="btn btn-primary btn-sm btn-svc-cta"
-              href={waLink(s.waMsg)}
-              target="_blank"
-              rel="noopener"
+              class="btn btn-ghost btn-sm btn-svc-nav"
+              href={s.targetUrl}
             >
               <span>{s.ctaText}</span>
             </a>
@@ -159,9 +155,9 @@ const SERVICIOS = [
   .svc-premium-card {
     background: #ffffff;
     border: 1.5px solid var(--sky-line);
-    border-top: 4px solid var(--blue);
+    border-top: 4.5px solid var(--blue);
     border-radius: var(--radius);
-    padding: 2.2rem 2rem 1.8rem;
+    padding: 2.2rem 2rem;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 28px rgba(15, 42, 87, 0.05);
@@ -170,9 +166,8 @@ const SERVICIOS = [
 
   .svc-premium-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 18px 42px rgba(15, 42, 87, 0.12);
+    box-shadow: 0 18px 40px rgba(15, 42, 87, 0.12);
     border-color: var(--blue);
-    border-top-color: var(--gold);
   }
 
   .card-top-bar {
@@ -187,24 +182,24 @@ const SERVICIOS = [
   .card-num {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.6rem;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
     color: var(--gold);
-    line-height: 1;
-    background: rgba(201, 162, 39, 0.12);
-    padding: 0.25rem 0.65rem;
-    border-radius: 8px;
+    background: var(--navy);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
   }
 
   .card-pills {
     display: flex;
-    gap: 0.4rem;
+    gap: 0.35rem;
     flex-wrap: wrap;
   }
 
   .card-pill {
     font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--blue);
     background: var(--blue-soft);
@@ -220,40 +215,41 @@ const SERVICIOS = [
   .card-body h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.75rem;
-    line-height: 1.1;
+    font-size: 1.65rem;
     text-transform: uppercase;
     color: var(--navy);
-    margin-bottom: 0.35rem;
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
   }
 
   .card-sub {
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--blue);
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.85rem;
   }
 
   .card-desc {
     color: var(--muted);
     font-size: 0.96rem;
     line-height: 1.55;
-    margin-bottom: 1.4rem;
+    margin-bottom: 1.3rem;
   }
 
+  /* CHECKLIST */
   .card-checklist {
     background: var(--sky);
-    border: 1px solid var(--sky-line);
     border-radius: 12px;
-    padding: 1.2rem 1.3rem;
-    margin-bottom: 1.6rem;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.4rem;
+    border: 1px solid var(--sky-line);
   }
 
   .checklist-title {
     display: block;
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--navy);
     margin-bottom: 0.6rem;
@@ -267,54 +263,51 @@ const SERVICIOS = [
   }
 
   .card-checklist li {
-    font-size: 0.9rem;
-    color: var(--navy);
-    line-height: 1.45;
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 0.55rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.4;
   }
 
   .check-ico {
     color: var(--green);
     font-weight: 900;
     font-size: 0.95rem;
+    line-height: 1.2;
     flex-shrink: 0;
   }
 
   .card-footer {
-    padding-top: 1rem;
+    padding-top: 0.8rem;
     border-top: 1px solid var(--sky-line);
   }
 
-  .btn-svc-cta {
+  .btn-svc-nav {
     width: 100%;
     justify-content: center;
-    font-size: 0.92rem;
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .btn-svc-nav:hover {
+    background: var(--blue);
+    color: #ffffff;
   }
 
   @media (max-width: 900px) {
     .svc-cards-grid {
       grid-template-columns: 1fr;
-      gap: 1.5rem;
     }
   }
 
   @media (max-width: 480px) {
     .services-sec {
-      padding: 3.2rem 0;
+      padding: 3.4rem 0;
     }
-
     .svc-premium-card {
       padding: 1.6rem 1.3rem;
-    }
-
-    .card-body h3 {
-      font-size: 1.5rem;
-    }
-
-    .card-checklist {
-      padding: 1rem;
     }
   }
 </style>

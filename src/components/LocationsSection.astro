@@ -31,11 +31,18 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
             </div>
 
             <div class="loc-detail-box">
-              <span class="loc-label">📞 Teléfonos Directos de Taller:</span>
+              <span class="loc-label">📞 Teléfonos de Atención Directa:</span>
               <div class="loc-phones">
-                <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
-                <span class="sep" aria-hidden="true">·</span>
-                <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+                <div>
+                  <small class="phone-tag">Oficina / Taller:</small>
+                  <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+                  <span class="sep" aria-hidden="true">·</span>
+                  <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+                </div>
+                <div>
+                  <small class="phone-tag">WhatsApp Citas:</small>
+                  <a class="phone-wa" href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">{SITE.whatsappDisplay}</a>
+                </div>
               </div>
             </div>
 
@@ -216,9 +223,21 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
 
   .loc-phones {
     display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .loc-phones > div {
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     flex-wrap: wrap;
+  }
+
+  .phone-tag {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
   }
 
   .loc-phones a {
@@ -230,6 +249,11 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
 
   .loc-phones a:hover {
     text-decoration: underline;
+  }
+
+  .phone-wa {
+    color: #16a34a !important;
+    font-weight: 800 !important;
   }
 
   .sep {
