@@ -9,7 +9,16 @@
 @import "@fontsource/barlow-condensed/600.css";
 @import "@fontsource/barlow-condensed/700.css";
 
-/* ============ TOKENS DE DISEÑO (LIGHT / NAVY, CORPORATE BLUE & GOLD) ============ */
+/* ============ TOKENS DE DISEÑO (LIGHT / NAVY, CORPORATE BLUE & GOLD) ============
+   Sistema institucional J-SAN:
+   - Azul marino (#0f2a57) = autoridad técnica (fondos oscuros, titularidad)
+   - Azul corporativo (#2D5893) = acción e identidad (botones, enlaces)
+   - Dorado (#c9a227) = acento fino ÚNICAMENTE (reglas, numerales, estrellas),
+     nunca como franjas gruesas de borde
+   - Cielo (#eef4fb) = superficies alternas de sección
+   Tipografía: Barlow Condensed (display, MAYÚSCULAS) + Barlow (texto, frase normal)
+   Ritmo: secciones alternan blanco / cielo; solo 4 superficies oscuras
+   (topbar, franja institucional, proceso, CTA final y footer)                   */
 :root {
   --navy: #0f2a57;              /* Marino institucional profundo */
   --navy-deep: #0a1e40;         /* Marino ultra profundo */
@@ -28,8 +37,14 @@
   --gold-soft: #e9c25c;         /* Dorado suave para acentos */
   --green: #178a42;             /* WhatsApp / éxito */
   --radius: 16px;
+  --radius-sm: 10px;
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Barlow', sans-serif;
+  /* Sistema de ritmo vertical unificado */
+  --sec-pad: clamp(4rem, 8vw, 5.75rem);
+  --head-gap: clamp(2rem, 4vw, 2.75rem);
+  --shadow-card: 0 1px 2px rgba(15, 42, 87, 0.04), 0 8px 24px rgba(15, 42, 87, 0.06);
+  --shadow-card-hover: 0 2px 4px rgba(15, 42, 87, 0.05), 0 18px 40px rgba(15, 42, 87, 0.12);
 }
 
 /* ============ RESET & BASE ============ */
@@ -85,6 +100,11 @@ a {
   border-radius: 6px;
 }
 
+::selection {
+  background: var(--blue);
+  color: #fff;
+}
+
 /* ============ CONTENEDOR & BOTONES REUTILIZABLES ============ */
 .wrap {
   width: min(1160px, 92%);
@@ -114,21 +134,25 @@ a {
 .btn-primary {
   background: var(--blue);
   color: #fff;
-  box-shadow: 0 6px 16px rgba(45, 88, 147, 0.3);
+  box-shadow: 0 4px 14px rgba(45, 88, 147, 0.28);
 }
 
 .btn-primary:hover {
   background: var(--blue-hover);
+  box-shadow: 0 6px 20px rgba(45, 88, 147, 0.36);
+  transform: translateY(-1px);
 }
 
 .btn-gold {
   background: var(--gold);
   color: var(--navy-deep);
-  box-shadow: 0 6px 16px rgba(201, 162, 39, 0.3);
+  box-shadow: 0 4px 14px rgba(201, 162, 39, 0.28);
 }
 
 .btn-gold:hover {
   background: var(--gold-soft);
+  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.36);
+  transform: translateY(-1px);
 }
 
 .btn-ghost {
@@ -140,6 +164,7 @@ a {
 .btn-ghost:hover {
   background: var(--navy);
   color: #fff;
+  border-color: var(--navy);
 }
 
 .btn-white {
@@ -158,50 +183,102 @@ a {
   min-height: 38px;
 }
 
-/* ============ KICKERS & TITULARES ============ */
+/* ============ KICKER & ENCABEZADOS DE SECCIÓN (SISTEMA ÚNICO) ============ */
 .kicker {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--blue);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.7rem;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
 }
 
 .kicker::before {
   content: "";
-  width: 22px;
+  width: 26px;
   height: 2px;
+  background: var(--gold);
+  flex: none;
+}
+
+.kicker-gold {
+  color: var(--gold-soft);
+}
+
+.kicker-gold::before {
   background: var(--gold);
 }
 
-.eyebrow {
-  display: inline-block;
-  font-size: 0.75rem;
+/* Titular de sección — escala única en todo el sitio */
+.sec-title {
+  font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: clamp(2.1rem, 4vw, 3rem);
+  line-height: 1.03;
   text-transform: uppercase;
-  color: var(--blue);
-  border: 1.5px solid var(--sky-line);
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  margin-bottom: 1.3rem;
-  background: #fff;
+  color: var(--navy);
+  text-wrap: balance;
+  letter-spacing: 0.01em;
+}
+
+.sec-title-light {
+  color: #ffffff;
+}
+
+.sec-lead {
+  color: var(--muted);
+  margin-top: 0.9rem;
+  font-size: 1.06rem;
+  line-height: 1.6;
+  max-width: 46rem;
+  text-wrap: pretty;
+}
+
+.sec-lead-light {
+  color: var(--muted-dark);
+}
+
+/* Contenedor de cabecera de sección — ritmo uniforme */
+.sec-head {
+  max-width: 50rem;
+  margin-bottom: var(--head-gap);
+}
+
+/* Superficie de sección — alternancia limpia sin gradientes */
+.section {
+  padding-block: var(--sec-pad);
+}
+
+.section-sky {
+  background: var(--sky);
+  border-top: 1px solid var(--sky-line);
+  border-bottom: 1px solid var(--sky-line);
+}
+
+.section-white {
+  background: #ffffff;
+  border-top: 1px solid var(--sky-line);
+}
+
+.section-navy {
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+  color: #ffffff;
+  border-top: 1px solid var(--navy-deep);
 }
 
 /* ============ ANIMACIONES ============ */
 @keyframes pulso {
   0% {
-    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.45), 0 0 0 0 rgba(31, 170, 83, 0.45);
+    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.4), 0 0 0 0 rgba(31, 170, 83, 0.4);
   }
   70% {
-    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.45), 0 0 0 16px rgba(31, 170, 83, 0);
+    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.4), 0 0 0 14px rgba(31, 170, 83, 0);
   }
   100% {
-    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.45), 0 0 0 0 rgba(31, 170, 83, 0);
+    box-shadow: 0 10px 26px rgba(23, 138, 66, 0.4), 0 0 0 0 rgba(31, 170, 83, 0);
   }
 }
 

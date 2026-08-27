@@ -80,8 +80,8 @@ const fmt = (d: Date) =>
 
 <style>
   .blog-page {
-    padding: 4.2rem 0 5.4rem;
-    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+    padding: clamp(2.6rem, 6vw, 4.2rem) 0 clamp(3rem, 7vw, 5.2rem);
+    background: #ffffff;
   }
 
   .blog-hero {
@@ -121,18 +121,17 @@ const fmt = (d: Date) =>
   .post-card {
     background: #ffffff;
     border: 1px solid var(--sky-line);
-    border-top: 4px solid var(--gold);
     border-radius: var(--radius);
     padding: 2rem 1.8rem;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 26px rgba(15, 42, 87, 0.06);
+    box-shadow: var(--shadow-card);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 38px rgba(15, 42, 87, 0.12);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
   }
 
   .post-header {
@@ -220,6 +219,7 @@ const fmt = (d: Date) =>
 
   .blog-cta-box {
     background: linear-gradient(180deg, var(--navy), var(--navy-deep));
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 2.8rem 3rem;
     color: #ffffff;
@@ -228,7 +228,6 @@ const fmt = (d: Date) =>
     justify-content: space-between;
     gap: 2rem;
     box-shadow: 0 16px 36px rgba(10, 30, 64, 0.18);
-    border-top: 3px solid var(--gold);
   }
 
   .blog-cta-box h3 {

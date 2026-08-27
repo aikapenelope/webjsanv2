@@ -52,19 +52,12 @@ import { RESENAS } from '../data/site';
     width: clamp(280px, 32vw, 360px);
     background: #ffffff;
     border: 1px solid var(--sky-line);
-    border-top: 3px solid var(--gold);
     border-radius: var(--radius);
     padding: 1.6rem 1.5rem;
-    box-shadow: 0 8px 24px rgba(15, 42, 87, 0.06);
+    box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
     flex: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .car-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 32px rgba(15, 42, 87, 0.12);
   }
 
   .t-stars {

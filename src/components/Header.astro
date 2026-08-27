@@ -98,8 +98,12 @@ const { activePath = '/' } = Astro.props;
       <div class="m-company-info">
         <p class="m-name"><strong>{SITE.name}</strong></p>
         <p class="m-rif-full">RIF: {SITE.rif} · Est. {SITE.fundacion}</p>
-        <p class="m-loc">📍 {SITE.sede}</p>
-        <p class="m-phone">📞 <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a></p>
+        <p class="m-loc">{SITE.sedeCorta} — Miranda, Caracas</p>
+        <p class="m-phone">
+          <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+          <span class="m-phone-sep" aria-hidden="true">·</span>
+          <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">{SITE.whatsappDisplay}</a>
+        </p>
       </div>
     </div>
   </div>
@@ -199,6 +203,10 @@ const { activePath = '/' } = Astro.props;
 
   .nav-links a.activo {
     border-bottom: 2px solid var(--gold);
+  }
+
+  .nav-links a:hover {
+    border-bottom: 2px solid var(--sky-line);
   }
 
   .nav-actions {
@@ -385,6 +393,11 @@ const { activePath = '/' } = Astro.props;
   .m-phone a {
     color: var(--blue);
     font-weight: 700;
+  }
+
+  .m-phone-sep {
+    color: var(--sky-line);
+    margin: 0 0.15rem;
   }
 
   @media (max-width: 1040px) {

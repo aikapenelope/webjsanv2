@@ -78,12 +78,12 @@ const SINTOMAS: SintomaTecnico[] = [
 ];
 ---
 
-<section id="diagnostico-guiado" class="diag-sec">
+<section id="diagnostico-guiado" class="diag-sec section section-white">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker">Diagnóstico Técnico Especializado</span>
-      <h2>Evaluación de Síntomas &amp; Causas Mecánicas</h2>
-      <p>Selecciona el comportamiento anómalo que presenta tu vehículo para conocer el diagnóstico técnico preliminar y los componentes comprometidos.</p>
+      <h2 class="sec-title">Evaluación de Síntomas &amp; Causas Mecánicas</h2>
+      <p class="sec-lead">Selecciona el comportamiento anómalo que presenta tu vehículo para conocer el diagnóstico técnico preliminar y los componentes comprometidos.</p>
     </div>
 
     <div class="diag-container">
@@ -168,30 +168,7 @@ const SINTOMAS: SintomaTecnico[] = [
 
 <style>
   .diag-sec {
-    padding: 4.8rem 0 5.2rem;
     background: #ffffff;
-    border-top: 1px solid var(--sky-line);
-  }
-
-  .sec-head {
-    max-width: 48rem;
-    margin-bottom: 2.8rem;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(2.2rem, 4.4vw, 3.2rem);
-    line-height: 1.02;
-    text-transform: uppercase;
-    color: var(--navy);
-  }
-
-  .sec-head p {
-    color: var(--muted);
-    margin-top: 0.8rem;
-    font-size: 1.06rem;
-    line-height: 1.55;
   }
 
   .diag-container {
@@ -208,8 +185,8 @@ const SINTOMAS: SintomaTecnico[] = [
   }
 
   .diag-tab-btn {
-    background: var(--sky);
-    border: 1.5px solid var(--sky-line);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
     border-radius: var(--radius);
     padding: 1.15rem 1.3rem;
     text-align: left;
@@ -222,16 +199,14 @@ const SINTOMAS: SintomaTecnico[] = [
   }
 
   .diag-tab-btn:hover {
-    background: #ffffff;
     border-color: var(--blue);
-    box-shadow: 0 6px 18px rgba(45, 88, 147, 0.08);
+    box-shadow: var(--shadow-card);
   }
 
   .diag-tab-btn.active {
-    background: #ffffff;
     border-color: var(--blue);
-    border-left: 5px solid var(--gold);
-    box-shadow: 0 10px 24px rgba(15, 42, 87, 0.1);
+    border-left: 3px solid var(--gold);
+    box-shadow: var(--shadow-card);
   }
 
   .tab-code {
@@ -291,12 +266,11 @@ const SINTOMAS: SintomaTecnico[] = [
 
   /* PANEL */
   .diag-display {
-    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
-    border: 1.5px solid var(--sky-line);
-    border-top: 4px solid var(--gold);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
     border-radius: 20px;
     padding: 2.4rem 2.4rem;
-    box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
+    box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
   }
@@ -394,9 +368,8 @@ const SINTOMAS: SintomaTecnico[] = [
 
   .panel-box-cause {
     background: #ffffff;
-    border: 1.5px solid var(--sky-line);
-    border-left: 4px solid var(--blue);
-    border-radius: 10px;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
     padding: 1.1rem 1.25rem;
     margin-bottom: 1.3rem;
   }
@@ -447,9 +420,9 @@ const SINTOMAS: SintomaTecnico[] = [
   }
 
   .panel-protocol {
-    background: rgba(45, 88, 147, 0.06);
-    border: 1px solid rgba(45, 88, 147, 0.15);
-    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
     padding: 1rem 1.2rem;
     margin-bottom: 1.6rem;
   }

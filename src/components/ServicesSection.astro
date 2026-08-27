@@ -13,7 +13,8 @@ const SERVICIOS = [
       'Presupuesto escrito y detallado antes de iniciar cualquier labor.',
     ],
     targetUrl: '#diagnostico-guiado',
-    ctaText: 'Ver evaluación de síntomas →',
+    ctaText: 'Ver evaluación de síntomas',
+    icono: 'scan',
   },
   {
     num: '02',
@@ -28,7 +29,8 @@ const SERVICIOS = [
       'Sustitución de tambores, planetarios y bombas de aceite fatigadas.',
     ],
     targetUrl: '#proceso',
-    ctaText: 'Conocer pasos de reparación →',
+    ctaText: 'Conocer pasos de reparación',
+    icono: 'engranaje',
   },
   {
     num: '03',
@@ -43,7 +45,8 @@ const SERVICIOS = [
       'Servicio preventivo para motores y mecánica automotriz ligera.',
     ],
     targetUrl: '/blog/que-es-el-servicio-atf/',
-    ctaText: 'Leer guía de servicio ATF →',
+    ctaText: 'Leer guía de servicio ATF',
+    icono: 'gota',
   },
   {
     num: '04',
@@ -58,30 +61,33 @@ const SERVICIOS = [
       'Garantía formal por escrito en repuestos y mano de obra.',
     ],
     targetUrl: '#repuestos',
-    ctaText: 'Ver marcas de repuestos USA →',
+    ctaText: 'Ver marcas de repuestos USA',
+    icono: 'caja',
   },
 ];
+
+const ICONOS: Record<string, string> = {
+  scan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2"/><rect x="7" y="9" width="10" height="6" rx="1"/><path d="M10 12h.01M14 12h.01"/></svg>',
+  engranaje: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>',
+  gota: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5S6 10 6 14a6 6 0 0 0 12 0c0-4-6-10.5-6-10.5Z"/><path d="M9 14.5a3.5 3.5 0 0 0 2.5 3.3"/></svg>',
+  caja: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+};
 ---
 
-<section id="servicios" class="services-sec">
+<section id="servicios" class="services-sec section section-sky">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker">Especialización Mecánica</span>
-      <h2>Todo lo que necesita tu transmisión, en un solo taller</h2>
-      <p>Del escaneo electrónico computarizado a la reconstrucción integral con piezas americanas. Siempre con presupuesto claro antes de tocar tu carro.</p>
+      <h2 class="sec-title">Todo lo que necesita tu transmisión, en un solo taller</h2>
+      <p class="sec-lead">Del escaneo electrónico computarizado a la reconstrucción integral con piezas americanas. Siempre con presupuesto claro antes de tocar tu carro.</p>
     </div>
 
-    <!-- CARDS MODERNAS CON UX MEJORADA -->
     <div class="svc-cards-grid">
       {SERVICIOS.map((s) => (
-        <article class="svc-premium-card">
-          <div class="card-top-bar">
+        <article class="svc-card">
+          <div class="card-top">
+            <span class="svc-icon" aria-hidden="true" set:html={ICONOS[s.icono]} />
             <span class="card-num">{s.num}</span>
-            <div class="card-pills">
-              {s.pills.map((pill) => (
-                <span class="card-pill">{pill}</span>
-              ))}
-            </div>
           </div>
 
           <div class="card-body">
@@ -89,12 +95,22 @@ const SERVICIOS = [
             <p class="card-sub">{s.subtitulo}</p>
             <p class="card-desc">{s.desc}</p>
 
+            <div class="card-pills" aria-label="Etiquetas del servicio">
+              {s.pills.map((pill) => (
+                <span class="card-pill">{pill}</span>
+              ))}
+            </div>
+
             <div class="card-checklist">
               <span class="checklist-title">Qué incluye:</span>
               <ul>
                 {s.items.map((item) => (
                   <li>
-                    <span class="check-ico" aria-hidden="true">✓</span>
+                    <span class="check-ico" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5"/>
+                      </svg>
+                    </span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -103,11 +119,9 @@ const SERVICIOS = [
           </div>
 
           <div class="card-footer">
-            <a
-              class="btn btn-ghost btn-sm btn-svc-nav"
-              href={s.targetUrl}
-            >
+            <a class="btn btn-ghost btn-sm btn-svc-nav" href={s.targetUrl}>
               <span>{s.ctaText}</span>
+              <span class="svc-arrow" aria-hidden="true">→</span>
             </a>
           </div>
         </article>
@@ -117,95 +131,64 @@ const SERVICIOS = [
 </section>
 
 <style>
-  .services-sec {
-    padding: 4.6rem 0 5rem;
-    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
-    border-bottom: 1px solid var(--sky-line);
-  }
-
-  .sec-head {
-    max-width: 48rem;
-    margin-bottom: 2.8rem;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(2.2rem, 4.4vw, 3.3rem);
-    line-height: 1.02;
-    text-transform: uppercase;
-    color: var(--navy);
-    text-wrap: balance;
-  }
-
-  .sec-head p {
-    color: var(--muted);
-    margin-top: 0.9rem;
-    font-size: 1.08rem;
-    line-height: 1.6;
-  }
-
-  /* GRID DE CARDS PREMIUM */
   .svc-cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.8rem;
+    gap: 1.6rem;
   }
 
-  .svc-premium-card {
+  .svc-card {
     background: #ffffff;
-    border: 1.5px solid var(--sky-line);
-    border-top: 4.5px solid var(--blue);
+    border: 1px solid var(--sky-line);
     border-radius: var(--radius);
-    padding: 2.2rem 2rem;
+    padding: 1.9rem 1.9rem 1.5rem;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 28px rgba(15, 42, 87, 0.05);
-    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
   }
 
-  .svc-premium-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 40px rgba(15, 42, 87, 0.12);
-    border-color: var(--blue);
+  .svc-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(45, 88, 147, 0.35);
+    transform: translateY(-2px);
   }
 
-  .card-top-bar {
+  .card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1.2rem;
-    flex-wrap: wrap;
+    margin-bottom: 1.1rem;
+  }
+
+  .svc-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+
+  .svc-icon :global(svg) {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .card-num {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.2rem;
-    letter-spacing: 0.1em;
-    color: var(--gold);
-    background: var(--navy);
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-  }
-
-  .card-pills {
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-  }
-
-  .card-pill {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--blue);
-    background: var(--blue-soft);
-    padding: 0.22rem 0.6rem;
-    border-radius: 999px;
-    border: 1px solid rgba(45, 88, 147, 0.15);
+    font-size: 1.5rem;
+    letter-spacing: 0.08em;
+    color: var(--sky-line);
+    line-height: 1;
   }
 
   .card-body {
@@ -215,72 +198,93 @@ const SERVICIOS = [
   .card-body h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.65rem;
+    font-size: 1.6rem;
     text-transform: uppercase;
     color: var(--navy);
     line-height: 1.1;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.25rem;
   }
 
   .card-sub {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 600;
     color: var(--blue);
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.8rem;
   }
 
   .card-desc {
     color: var(--muted);
-    font-size: 0.96rem;
+    font-size: 0.95rem;
     line-height: 1.55;
-    margin-bottom: 1.3rem;
+    margin-bottom: 1.1rem;
+    text-wrap: pretty;
+  }
+
+  .card-pills {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-soft);
+    padding: 0.24rem 0.65rem;
+    border-radius: 999px;
   }
 
   /* CHECKLIST */
   .card-checklist {
-    background: var(--sky);
-    border-radius: 12px;
-    padding: 1.1rem 1.25rem;
-    margin-bottom: 1.4rem;
-    border: 1px solid var(--sky-line);
+    border-top: 1px solid var(--sky-line);
+    padding-top: 1.05rem;
+    margin-bottom: 1.3rem;
   }
 
   .checklist-title {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--navy);
-    margin-bottom: 0.6rem;
+    color: var(--muted);
+    margin-bottom: 0.65rem;
   }
 
   .card-checklist ul {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.55rem;
   }
 
   .card-checklist li {
     display: flex;
     align-items: flex-start;
-    gap: 0.55rem;
+    gap: 0.6rem;
     font-size: 0.88rem;
     color: var(--muted);
-    line-height: 1.4;
+    line-height: 1.45;
   }
 
   .check-ico {
     color: var(--green);
-    font-weight: 900;
-    font-size: 0.95rem;
-    line-height: 1.2;
     flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(23, 138, 66, 0.1);
+    display: grid;
+    place-items: center;
+    margin-top: 0.05rem;
   }
 
   .card-footer {
-    padding-top: 0.8rem;
+    padding-top: 0.9rem;
     border-top: 1px solid var(--sky-line);
   }
 
@@ -296,6 +300,14 @@ const SERVICIOS = [
     color: #ffffff;
   }
 
+  .svc-arrow {
+    transition: transform 0.15s ease;
+  }
+
+  .btn-svc-nav:hover .svc-arrow {
+    transform: translateX(4px);
+  }
+
   @media (max-width: 900px) {
     .svc-cards-grid {
       grid-template-columns: 1fr;
@@ -303,11 +315,8 @@ const SERVICIOS = [
   }
 
   @media (max-width: 480px) {
-    .services-sec {
-      padding: 3.4rem 0;
-    }
-    .svc-premium-card {
-      padding: 1.6rem 1.3rem;
+    .svc-card {
+      padding: 1.5rem 1.25rem 1.3rem;
     }
   }
 </style>

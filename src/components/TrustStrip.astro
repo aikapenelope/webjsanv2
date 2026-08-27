@@ -10,91 +10,70 @@ const STRIP_ITEMS = [
 ];
 ---
 
-<div class="strip-container" role="region" aria-label="Garantías y credenciales de servicio">
-  <div class="strip-track">
-    {[0, 1].map(() => (
-      <div class="strip-group" aria-hidden="true">
-        {STRIP_ITEMS.map((item) => (
-          <div class="strip-item">
-            <span class="strip-star" aria-hidden="true">★</span>
-            <span>{item}</span>
-          </div>
-        ))}
-      </div>
+<div class="strip" role="region" aria-label="Garantías y credenciales de servicio">
+  <div class="wrap strip-inner">
+    {STRIP_ITEMS.map((item, idx) => (
+      <span class="strip-item">
+        {item}
+        {idx < STRIP_ITEMS.length - 1 && <span class="strip-dot" aria-hidden="true"></span>}
+      </span>
     ))}
   </div>
 </div>
 
 <style>
-  .strip-container {
+  .strip {
     background: var(--navy);
     color: #ffffff;
-    border-top: 3px solid var(--gold);
     border-bottom: 1px solid var(--navy-deep);
-    overflow: hidden;
-    padding: 0.95rem 0;
-    user-select: none;
-    position: relative;
-    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    padding: 0.85rem 0;
   }
 
-  .strip-track {
-    display: flex;
-    width: max-content;
-    animation: stripMarquee 32s linear infinite;
-  }
-
-  .strip-container:hover .strip-track {
-    animation-play-state: paused;
-  }
-
-  .strip-group {
+  .strip-inner {
     display: flex;
     align-items: center;
-    gap: 2.8rem;
-    padding-right: 2.8rem;
-    flex-shrink: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    column-gap: 1.6rem;
+    row-gap: 0.4rem;
   }
 
   .strip-item {
-    font-family: var(--font-display);
+    font-size: 0.76rem;
     font-weight: 600;
-    font-size: 1.08rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    display: flex;
+    color: #dfe8f8;
+    display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 1.6rem;
     white-space: nowrap;
-    color: #f0f4fc;
   }
 
-  .strip-star {
-    color: var(--gold);
-    font-size: 0.95rem;
-    filter: drop-shadow(0 0 4px rgba(201, 162, 39, 0.4));
+  .strip-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex: none;
+    opacity: 0.85;
   }
 
-  @keyframes stripMarquee {
-    0% {
-      transform: translateX(0);
+  @media (max-width: 760px) {
+    .strip-inner {
+      justify-content: flex-start;
+      column-gap: 1.2rem;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+      scrollbar-width: none;
     }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .strip-container {
-      padding: 0.75rem 0;
+    .strip-inner::-webkit-scrollbar {
+      display: none;
     }
     .strip-item {
-      font-size: 0.95rem;
-    }
-    .strip-group {
-      gap: 1.8rem;
-      padding-right: 1.8rem;
+      gap: 1.2rem;
+      font-size: 0.72rem;
     }
   }
 </style>

@@ -2,12 +2,12 @@
 import { MARCAS_USA } from '../data/site';
 ---
 
-<section id="repuestos" class="usa-section">
+<section id="repuestos" class="usa-section section section-sky">
   <div class="wrap">
     <div class="sec-head">
       <span class="kicker">Calidad de Importación</span>
-      <h2>Componentes originales de las marcas líderes de EE.UU.</h2>
-      <p>
+      <h2 class="sec-title">Componentes originales de las marcas líderes de EE.UU.</h2>
+      <p class="sec-lead">
         En cada reparación instalamos repuestos certificados de los mismos fabricantes de equipo original y aftermarket de alto rendimiento en Estados Unidos.
       </p>
     </div>
@@ -32,7 +32,7 @@ import { MARCAS_USA } from '../data/site';
           </div>
           <h3>{m.nombre}</h3>
           <p>{m.desc}</p>
-          <span class="usa-link-label">Sitio oficial {m.nombre.toLowerCase()} ↗</span>
+          <span class="usa-link-label">Sitio oficial {m.nombre.toLowerCase()}</span>
         </a>
       ))}
     </div>
@@ -40,34 +40,6 @@ import { MARCAS_USA } from '../data/site';
 </section>
 
 <style>
-  .usa-section {
-    padding: 4.8rem 0;
-    background: var(--sky);
-    border-top: 1px solid var(--sky-line);
-    border-bottom: 1px solid var(--sky-line);
-  }
-
-  .sec-head {
-    max-width: 48rem;
-    margin-bottom: 2.8rem;
-  }
-
-  h2 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(2rem, 4vw, 3.1rem);
-    line-height: 1.03;
-    text-transform: uppercase;
-    color: var(--navy);
-  }
-
-  .sec-head p {
-    color: var(--muted);
-    margin-top: 0.8rem;
-    font-size: 1.05rem;
-    line-height: 1.55;
-  }
-
   .usa-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -76,35 +48,39 @@ import { MARCAS_USA } from '../data/site';
 
   .usa-card {
     background: #ffffff;
-    border: 1.5px solid var(--sky-line);
-    border-top: 4px solid var(--gold);
+    border: 1px solid var(--sky-line);
     border-radius: var(--radius);
-    padding: 2rem 1.4rem;
+    padding: 2rem 1.4rem 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     text-decoration: none;
-    box-shadow: 0 10px 24px rgba(15, 42, 87, 0.05);
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   }
 
   .usa-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 36px rgba(15, 42, 87, 0.12);
-    border-color: var(--blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(45, 88, 147, 0.35);
   }
 
   .usa-card-img {
-    height: 70px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
+    padding: 0.7rem 1rem;
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: 12px;
+    width: 100%;
   }
 
   .usa-card-img img {
-    max-height: 52px;
+    max-height: 42px;
     width: auto;
     object-fit: contain;
   }
@@ -123,7 +99,8 @@ import { MARCAS_USA } from '../data/site';
     font-size: 0.88rem;
     line-height: 1.45;
     flex: 1;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.1rem;
+    text-wrap: pretty;
   }
 
   .usa-link-label {
@@ -132,8 +109,20 @@ import { MARCAS_USA } from '../data/site';
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--blue);
-    border-bottom: 1.5px solid var(--gold);
-    padding-bottom: 0.15rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.15s ease;
+  }
+
+  .usa-link-label::after {
+    content: "↗";
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .usa-card:hover .usa-link-label {
+    color: var(--blue-hover);
   }
 
   @media (max-width: 960px) {
