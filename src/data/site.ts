@@ -1,8 +1,9 @@
 // Datos únicos del negocio — fuente de verdad para todo el sitio
 export const SITE = {
-  name: 'Hidromáticos J-SAN, C.A.',
-  shortName: 'Hidromáticos J-SAN',
+  name: 'HIDROMÁTICOS J.SAN, C.A.',
+  shortName: 'HIDROMÁTICOS J.SAN',
   rif: 'J-40348320-5',
+  rifSimple: 'J-40348320',
   description:
     'Reparación de cajas automáticas y motores en Caracas. Escaneo computarizado, presupuesto claro antes de trabajar y repuestos importados. Desde 2013 en Miranda, Venezuela.',
   url: 'https://hidromaticosjsan.com',

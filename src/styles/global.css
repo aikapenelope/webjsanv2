@@ -9,21 +9,24 @@
 @import "@fontsource/barlow-condensed/600.css";
 @import "@fontsource/barlow-condensed/700.css";
 
-/* ============ TOKENS DE DISEÑO (LIGHT / NAVY & GOLD) ============ */
+/* ============ TOKENS DE DISEÑO (LIGHT / NAVY, CORPORATE BLUE & GOLD) ============ */
 :root {
-  --navy: #0f2a57;         /* Marino institucional */
-  --navy-deep: #0a1e40;    /* Marino profundo */
-  --navy-panel: #16346b;   /* Panel sobre marino */
-  --blue: #2159c3;         /* Azul de acción */
-  --blue-hover: #1a48a3;   /* Hover azul */
-  --sky: #eef4fb;          /* Tinte celeste */
-  --sky-line: #d7e3f4;     /* Divisores claros */
-  --white: #ffffff;        /* Blanco */
-  --muted: #55607a;        /* Texto secundario claro */
-  --muted-dark: #a8b6d4;   /* Texto secundario sobre marino */
-  --gold: #c9a227;         /* Dorado del escudo / estrellas */
-  --gold-soft: #e9c25c;    /* Dorado suave para acentos */
-  --green: #178a42;        /* WhatsApp / éxito */
+  --navy: #0f2a57;              /* Marino institucional profundo */
+  --navy-deep: #0a1e40;         /* Marino ultra profundo */
+  --navy-panel: #16346b;        /* Panel sobre marino */
+  --blue: #2D5893;              /* Azul marino/real corporativo (#2D5893 | rgb(45,88,147)) */
+  --blue-hover: #1e3f6f;        /* Azul corporativo hover */
+  --blue-corporate: #2D5893;    /* Token oficial corporativo */
+  --blue-light: #3d6eb3;        /* Azul real brillante para acentos */
+  --blue-soft: #eaf1fa;         /* Fondo suave azul corporativo */
+  --sky: #eef4fb;               /* Tinte celeste base */
+  --sky-line: #d7e3f4;          /* Divisores claros */
+  --white: #ffffff;             /* Blanco */
+  --muted: #4e5d78;             /* Texto secundario claro con alto contraste */
+  --muted-dark: #a8b6d4;        /* Texto secundario sobre marino */
+  --gold: #c9a227;              /* Dorado del escudo / estrellas */
+  --gold-soft: #e9c25c;         /* Dorado suave para acentos */
+  --green: #178a42;             /* WhatsApp / éxito */
   --radius: 16px;
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Barlow', sans-serif;
@@ -38,10 +41,12 @@
 
 html, body {
   overflow-x: clip;
+  width: 100%;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -60,15 +65,18 @@ body {
   color: var(--navy);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 img {
   max-width: 100%;
+  height: auto;
   display: block;
 }
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 :focus-visible {
@@ -94,8 +102,9 @@ a {
   font-size: 0.97rem;
   border: 1.5px solid transparent;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   font-family: var(--font-body);
+  min-height: 44px; /* Touch target accesible en móvil */
 }
 
 .btn:active {
@@ -105,7 +114,7 @@ a {
 .btn-primary {
   background: var(--blue);
   color: #fff;
-  box-shadow: 0 6px 16px rgba(33, 89, 195, 0.28);
+  box-shadow: 0 6px 16px rgba(45, 88, 147, 0.3);
 }
 
 .btn-primary:hover {
@@ -144,13 +153,14 @@ a {
 }
 
 .btn-sm {
-  padding: 0.5rem 1.1rem;
+  padding: 0.5rem 1.15rem;
   font-size: 0.88rem;
+  min-height: 38px;
 }
 
 /* ============ KICKERS & TITULARES ============ */
 .kicker {
-  font-size: 0.73rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -170,9 +180,9 @@ a {
 
 .eyebrow {
   display: inline-block;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--blue);
   border: 1.5px solid var(--sky-line);
@@ -202,5 +212,17 @@ a {
 }
 
 section[id] {
-  scroll-margin-top: 88px;
+  scroll-margin-top: 80px;
+}
+
+/* ============ OPTIMIZACIÓN RESPONSIVA GLOBAL ============ */
+@media (max-width: 640px) {
+  .wrap {
+    width: 92%;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

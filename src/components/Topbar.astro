@@ -5,17 +5,23 @@ interface Props {
   tagline?: string;
 }
 
-const { tagline = 'Oficina: Urb. Monte Cristo, Calle 10, Miranda' } = Astro.props;
+const { tagline = 'Sede Monte Cristo, Calle 10 · Caracas, Miranda' } = Astro.props;
 ---
 
-<div class="topbar" role="complementary" aria-label="Información de contacto rápido">
-  <div class="wrap">
-    <span class="tb-info"><b>{SITE.shortName}:</b> {tagline}</span>
-    <span class="tb-phones">
+<div class="topbar" role="complementary" aria-label="Información institucional y contacto rápido">
+  <div class="wrap topbar-inner">
+    <div class="tb-left">
+      <span class="tb-empresa">{SITE.name}</span>
+      <span class="tb-rif">RIF: {SITE.rif}</span>
+      <span class="tb-sep tb-hide-mobile" aria-hidden="true">|</span>
+      <span class="tb-tagline tb-hide-mobile">{tagline}</span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-label">Atención:</span>
       <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
       <span class="tb-sep" aria-hidden="true">·</span>
-      <a href={`tel:${SITE.whatsapp}`}>{SITE.whatsappDisplay}</a>
-    </span>
+      <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+    </div>
   </div>
 </div>
 
@@ -23,48 +29,93 @@ const { tagline = 'Oficina: Urb. Monte Cristo, Calle 10, Miranda' } = Astro.prop
   .topbar {
     background: var(--navy-deep);
     color: #c6d3ec;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     border-bottom: 2px solid var(--gold);
+    line-height: 1.4;
   }
 
-  .topbar .wrap {
+  .topbar-inner {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    padding: 0.45rem 0;
+    gap: 0.8rem;
+    padding: 0.4rem 0;
     flex-wrap: wrap;
   }
 
-  .tb-info b {
-    color: #fff;
-    font-weight: 600;
+  .tb-left {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .tb-empresa {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .tb-rif {
+    color: var(--gold-soft);
+    font-weight: 700;
+    font-size: 0.76rem;
+    background: rgba(201, 162, 39, 0.15);
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .tb-tagline {
+    color: #a8b6d4;
+  }
+
+  .tb-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+  }
+
+  .tb-label {
+    color: var(--muted-dark);
+    font-size: 0.75rem;
   }
 
   .topbar a {
-    color: #c6d3ec;
+    color: #e0e9f8;
     text-decoration: none;
+    font-weight: 600;
     transition: color 0.15s ease;
   }
 
   .topbar a:hover {
     color: var(--gold-soft);
+    text-decoration: underline;
   }
 
   .tb-sep {
-    margin: 0 0.35rem;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.35);
+    margin: 0 0.15rem;
   }
 
-  @media (max-width: 960px) {
-    .tb-info {
+  @media (max-width: 900px) {
+    .tb-hide-mobile {
       display: none;
     }
   }
 
-  @media (max-width: 560px) {
-    .topbar .wrap {
+  @media (max-width: 600px) {
+    .topbar-inner {
       justify-content: center;
+      text-align: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0;
+    }
+    .tb-left {
+      width: 100%;
+      justify-content: center;
+    }
+    .tb-right {
+      font-size: 0.76rem;
     }
   }
 </style>

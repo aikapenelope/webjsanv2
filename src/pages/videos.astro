@@ -2,27 +2,28 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { waLink } from '../data/site';
 
-const title = 'Videos & Reels · Hidromáticos J-SAN — Trabajos reales en taller';
+const title = 'Videos & Reels · HIDROMÁTICOS J.SAN — Trabajos reales en taller';
 const description =
-  'Videos y reels reales del taller: diagnósticos de cajas automáticas, reparaciones, escaneos computarizados y el día a día de Hidromáticos J-SAN en Caracas.';
+  'Videos y reels reales del taller: diagnósticos de cajas automáticas, reparaciones, escaneos computarizados y el día a día de HIDROMÁTICOS J.SAN en Caracas.';
 
 // Video destacado de YouTube
 const YT = {
   id: 'cabwaOuhG-U',
-  titulo: 'Hidromáticos J-SAN en acción — Especialistas en Caracas',
+  titulo: 'HIDROMÁTICOS J.SAN en acción — Especialistas en Caracas',
   texto:
     'Un recorrido por lo que hacemos: especialistas en cajas automáticas, importadores de transmisiones y repuestos, y presupuesto claro antes de trabajar. Así atendemos en Miranda desde 2013.',
+  thumb: 'https://i.ytimg.com/vi/cabwaOuhG-U/hqdefault.jpg',
 };
 
 // Reels verticales reales de Instagram
 const VERTICALES = [
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/embed', link: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/' },
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DcWIww6OWs_/embed', link: 'https://www.instagram.com/reel/DcWIww6OWs_/' },
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DcBynXMhn5r/embed', link: 'https://www.instagram.com/reel/DcBynXMhn5r/' },
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Db3Ux9xOX6N/embed', link: 'https://www.instagram.com/reel/Db3Ux9xOX6N/' },
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dbqk7LROnMl/embed', link: 'https://www.instagram.com/reel/Dbqk7LROnMl/' },
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/Dbqk2uMOucv/embed', link: 'https://www.instagram.com/reel/Dbqk2uMOucv/' },
-  { tipo: 'instagram', src: 'https://www.instagram.com/reel/DbqkE6pOcAM/embed', link: 'https://www.instagram.com/reel/DbqkE6pOcAM/' },
+  { id: 'Dcbmrl0NPBQ', titulo: 'Diagnóstico y desarme de transmisión en taller', link: 'https://www.instagram.com/reel/Dcbmrl0NPBQ/' },
+  { id: 'DcWIww6OWs_', titulo: 'Prueba de cuerpo de válvulas y solenoides', link: 'https://www.instagram.com/reel/DcWIww6OWs_/' },
+  { id: 'DcBynXMhn5r', titulo: 'Reconstrucción con kit master americano', link: 'https://www.instagram.com/reel/DcBynXMhn5r/' },
+  { id: 'Db3Ux9xOX6N', titulo: 'Escaneo computarizado DTC de transmisión', link: 'https://www.instagram.com/reel/Db3Ux9xOX6N/' },
+  { id: 'Dbqk7LROnMl', titulo: 'Servicio y sustitución de fluido ATF', link: 'https://www.instagram.com/reel/Dbqk7LROnMl/' },
+  { id: 'Dbqk2uMOucv', titulo: 'Revisión y mantenimiento de turbinas', link: 'https://www.instagram.com/reel/Dbqk2uMOucv/' },
+  { id: 'DbqkE6pOcAM', titulo: 'Entrega de vehículo con garantía escrita', link: 'https://www.instagram.com/reel/DbqkE6pOcAM/' },
 ] as const;
 
 const jsonLdVideo = {
@@ -30,7 +31,7 @@ const jsonLdVideo = {
   '@type': 'VideoObject',
   name: YT.titulo,
   description: YT.texto,
-  thumbnailUrl: [`https://i.ytimg.com/vi/${YT.id}/hqdefault.jpg`],
+  thumbnailUrl: [YT.thumb],
   uploadDate: '2026-01-01',
   embedUrl: `https://www.youtube-nocookie.com/embed/${YT.id}`,
 };
@@ -50,16 +51,23 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
         </p>
       </div>
 
-      <!-- FEATURED YOUTUBE -->
+      <!-- FEATURED YOUTUBE (LITE PLAYER ULTRA RÁPIDO) -->
       <div class="yt-feature-card">
-        <div class="yt-frame-wrap">
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${YT.id}`}
-            title={YT.titulo}
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+        <div class="yt-lite-wrap" id="yt-player-container" data-video-id={YT.id}>
+          <img
+            src={YT.thumb}
+            alt={YT.titulo}
+            width="640"
+            height="360"
+            class="yt-thumb"
+            loading="eager"
+          />
+          <button class="yt-play-btn" id="yt-play-trigger" aria-label="Reproducir video de YouTube">
+            <svg viewBox="0 0 68 48" width="68" height="48" aria-hidden="true">
+              <path class="ytp-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#212121" fill-opacity="0.85"></path>
+              <path d="M 45,24 27,14 27,34" fill="#ffffff"></path>
+            </svg>
+          </button>
         </div>
         <div class="yt-info">
           <span class="yt-tag">DESTACADO · YOUTUBE</span>
@@ -81,27 +89,31 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
         </div>
       </div>
 
-      <!-- REELS EN REDES -->
+      <!-- REELS EN REDES (CARGA RÁPIDA BAJO DEMANDA) -->
       <section class="reels-section">
         <div class="sec-head">
-          <span class="kicker">Recientes en redes</span>
-          <h2>Directo de Instagram &amp; Redes Sociales</h2>
-          <p>Síguenos en nuestras cuentas oficiales para ver transmisiones abiertas, diagnósticos y entregas de vehículos.</p>
+          <span class="kicker">Directo de Redes</span>
+          <h2>Videos del día a día en Instagram</h2>
+          <p>Mira los trabajos de desarme, calibración de cuerpos de válvulas y entrega de vehículos en Caracas.</p>
         </div>
 
         <div class="reels-grid">
           {VERTICALES.map((v, i) => (
             <article class="reel-card">
-              <div class="reel-frame">
+              <div class="reel-header">
+                <span class="reel-num">0{i + 1}</span>
+                <span class="reel-badge">INSTAGRAM REEL</span>
+              </div>
+              <div class="reel-frame-wrap" data-src={`https://www.instagram.com/reel/${v.id}/embed`}>
                 <iframe
-                  src={v.src}
-                  title={`Reel de Instagram N° ${i + 1} — Hidromáticos J-SAN`}
+                  src={`https://www.instagram.com/reel/${v.id}/embed`}
+                  title={v.titulo}
                   loading="lazy"
                   allowfullscreen
                 ></iframe>
               </div>
               <div class="reel-footer">
-                <span class="reel-label">INSTAGRAM · REEL</span>
+                <span class="reel-title">{v.titulo}</span>
                 <a class="reel-link" href={v.link} target="_blank" rel="noopener">
                   Abrir en Instagram ↗
                 </a>
@@ -147,10 +159,10 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
     max-width: 40rem;
   }
 
-  /* YOUTUBE FEATURE */
+  /* YOUTUBE LITE FEATURE */
   .yt-feature-card {
     background: #ffffff;
-    border: 1px solid var(--sky-line);
+    border: 1.5px solid var(--sky-line);
     border-top: 4px solid var(--gold);
     border-radius: 20px;
     overflow: hidden;
@@ -161,14 +173,50 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
     align-items: center;
   }
 
-  .yt-frame-wrap {
+  .yt-lite-wrap {
     aspect-ratio: 16 / 9;
-    background: #000;
+    background: #0a1e40;
     width: 100%;
     height: 100%;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
   }
 
-  .yt-frame-wrap iframe {
+  .yt-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+  }
+
+  .yt-lite-wrap:hover .yt-thumb {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+
+  .yt-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+    transition: transform 0.2s ease;
+  }
+
+  .yt-lite-wrap:hover .yt-play-btn {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .yt-lite-wrap:hover .ytp-bg {
+    fill: #cc181e;
+    fill-opacity: 1;
+  }
+
+  .yt-lite-wrap :global(iframe) {
     width: 100%;
     height: 100%;
     border: none;
@@ -252,15 +300,46 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
     box-shadow: 0 8px 24px rgba(15, 42, 87, 0.06);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .reel-frame {
+  .reel-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.12);
+  }
+
+  .reel-header {
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--sky-line);
+    background: var(--sky);
+  }
+
+  .reel-num {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.95rem;
+  }
+
+  .reel-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--blue);
+    text-transform: uppercase;
+  }
+
+  .reel-frame-wrap {
     aspect-ratio: 9 / 16;
     background: var(--sky);
     width: 100%;
+    position: relative;
   }
 
-  .reel-frame iframe {
+  .reel-frame-wrap iframe {
     width: 100%;
     height: 100%;
     border: none;
@@ -270,23 +349,25 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
   .reel-footer {
     padding: 1rem 1.2rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.4rem;
     border-top: 1px solid var(--sky-line);
+    flex: 1;
   }
 
-  .reel-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+  .reel-title {
+    font-size: 0.88rem;
+    font-weight: 600;
     color: var(--navy);
+    line-height: 1.35;
   }
 
   .reel-link {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--blue);
     text-decoration: none;
+    margin-top: auto;
   }
 
   .reel-link:hover {
@@ -298,4 +379,37 @@ const waVideos = waLink('Hola J-SAN, vi sus videos de reparación y quiero consu
       grid-template-columns: 1fr;
     }
   }
+
+  @media (max-width: 480px) {
+    .videos-page {
+      padding: 3rem 0;
+    }
+    .yt-info {
+      padding: 1.6rem 1.3rem;
+    }
+  }
 </style>
+
+<script>
+  function setupLiteVideo() {
+    const container = document.getElementById('yt-player-container');
+    if (!container) return;
+
+    const videoId = container.getAttribute('data-video-id');
+    if (!videoId) return;
+
+    container.addEventListener('click', () => {
+      container.innerHTML = `
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0"
+          title="HIDROMÁTICOS J.SAN en acción"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      `;
+    }, { once: true });
+  }
+
+  setupLiteVideo();
+  document.addEventListener('astro:page-load', setupLiteVideo);
+</script>

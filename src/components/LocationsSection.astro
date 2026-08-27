@@ -2,56 +2,66 @@
 import { SITE, SOCIAL, waLink } from '../data/site';
 
 const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
-const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión en el taller de Monte Cristo');
+const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y diagnóstico en su taller de Monte Cristo');
 ---
 
 <section id="sedes" class="locations-sec">
   <div class="wrap">
     <div class="sec-head">
-      <span class="kicker">Ubicación y Atención</span>
-      <h2>Visítanos en nuestra sede de Caracas</h2>
-      <p>Instalaciones equipadas para escaneo electrónico, diagnóstico en fosa y servicio completo de transmisión.</p>
+      <span class="kicker">Taller &amp; Oficinas</span>
+      <h2>Visítanos en nuestra sede en Caracas</h2>
+      <p>Instalaciones equipadas con elevadores, fosa mecánica y scanner computarizado para atención directa de tu vehículo.</p>
     </div>
 
-    <div class="loc-grid">
-      <div class="loc-card">
-        <span class="loc-tag">SEDE PRINCIPAL</span>
-        <h3>Taller &amp; Oficina Monte Cristo</h3>
-        <address>
-          <strong>Dirección:</strong> {SITE.sede}.
-        </address>
-        <div class="loc-meta">
-          <p><strong>Horario:</strong> {SITE.horario}</p>
-          <p>
-            <strong>Teléfonos:</strong> <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a> · <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
-          </p>
+    <div class="loc-card-main">
+      <div class="loc-header">
+        <div class="loc-title-group">
+          <span class="loc-tag">SEDE CENTRAL · CARACAS</span>
+          <h3>Taller &amp; Oficina Monte Cristo</h3>
         </div>
-        <div class="loc-actions">
-          <a class="btn btn-primary btn-sm" href={mapsUrl} target="_blank" rel="noopener">
-            Abrir en Google Maps ↗
-          </a>
-          <a class="btn btn-ghost btn-sm" href={waAgendar} target="_blank" rel="noopener">
-            Agendar cita previa →
-          </a>
+        <span class="loc-status-pill">● Abierto Lun-Sáb con cita previa</span>
+      </div>
+
+      <div class="loc-details-grid">
+        <div class="loc-detail-box">
+          <span class="loc-label">📍 Dirección Exacta</span>
+          <address>
+            {SITE.sede}
+          </address>
+          <span class="loc-ref">Referencia: Justo frente a Campi Ferretería.</span>
+        </div>
+
+        <div class="loc-detail-box">
+          <span class="loc-label">🕒 Horario de Atención</span>
+          <p class="loc-val">{SITE.horario}</p>
+          <span class="loc-ref">Recomendamos agendar vía WhatsApp para evitar esperas.</span>
+        </div>
+
+        <div class="loc-detail-box">
+          <span class="loc-label">📞 Teléfonos Directos</span>
+          <div class="loc-phones">
+            <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+            <span class="sep" aria-hidden="true">·</span>
+            <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+          </div>
+          <span class="loc-ref">Líneas fijas de recepción y taller.</span>
         </div>
       </div>
 
-      <div class="loc-info-card">
-        <span class="loc-tag loc-tag-gold">LOGÍSTICA &amp; ENVÍOS</span>
-        <h3>Atención a nivel nacional</h3>
-        <p class="loc-info-desc">
-          ¿Estás fuera de Caracas? Recibimos y enviamos cuerpos de válvulas, convertidores de par (turbinas) y cajas completas reconstruidas a toda Venezuela mediante las principales empresas de encomienda (MRW, Tealca, Zoom).
-        </p>
-        <ul class="loc-bullets">
-          <li><b>Embalaje seguro:</b> protección industrial contra golpes y derrames.</li>
-          <li><b>Asesoría a distancia:</b> diagnóstico previo vía WhatsApp con fotos y videos.</li>
-          <li><b>Garantía nacional:</b> soporte técnico y respaldo en repuestos.</li>
-        </ul>
-        <div class="loc-actions">
-          <a class="btn btn-primary btn-sm" href={waLink('Hola J-SAN, quiero consultar por un envío de repuesto / caja al interior del país')} target="_blank" rel="noopener">
-            Consultar envíos nacionales →
-          </a>
-        </div>
+      <div class="loc-actions">
+        <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Abrir ubicación en Google Maps ↗</span>
+        </a>
+        <a class="btn btn-gold" href={waAgendar} target="_blank" rel="noopener">
+          <span>Agendar cita por WhatsApp →</span>
+        </a>
+        <a class="btn btn-ghost" href={`tel:${SITE.phoneOficina1}`}>
+          <span>Llamar a recepción</span>
+        </a>
       </div>
     </div>
   </div>
@@ -72,8 +82,8 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión en 
   h2 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(2rem, 4vw, 3.1rem);
-    line-height: 1.03;
+    font-size: clamp(2.2rem, 4.4vw, 3.2rem);
+    line-height: 1.02;
     text-transform: uppercase;
     color: var(--navy);
   }
@@ -81,132 +91,154 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión en 
   .sec-head p {
     color: var(--muted);
     margin-top: 0.8rem;
-    font-size: 1.05rem;
+    font-size: 1.06rem;
     line-height: 1.55;
   }
 
-  .loc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.6rem;
+  .loc-card-main {
+    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 100%);
+    border: 1.5px solid var(--sky-line);
+    border-top: 5px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.8rem 2.6rem;
+    box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
   }
 
-  .loc-card,
-  .loc-info-card {
-    border: 1px solid var(--sky-line);
-    border-radius: var(--radius);
-    padding: 2.2rem;
-    background: linear-gradient(180deg, #ffffff, var(--sky));
-    box-shadow: 0 10px 28px rgba(15, 42, 87, 0.06);
+  .loc-header {
     display: flex;
-    flex-direction: column;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-  }
-
-  .loc-card:hover,
-  .loc-info-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.12);
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.4rem;
+    margin-bottom: 2.2rem;
+    padding-bottom: 1.8rem;
+    border-bottom: 1px solid var(--sky-line);
+    flex-wrap: wrap;
   }
 
   .loc-tag {
     font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--gold);
     background: var(--navy);
+    padding: 0.28rem 0.75rem;
     border-radius: 999px;
-    padding: 0.32rem 0.85rem;
     display: inline-block;
-    align-self: flex-start;
+    margin-bottom: 0.5rem;
   }
 
-  .loc-tag-gold {
-    background: var(--gold);
-    color: var(--navy-deep);
-  }
-
-  .loc-card h3,
-  .loc-info-card h3 {
+  .loc-header h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.65rem;
+    font-size: clamp(1.8rem, 3.4vw, 2.4rem);
     text-transform: uppercase;
-    margin: 1rem 0 0.8rem;
     color: var(--navy);
+    line-height: 1.1;
   }
 
-  .loc-card address {
-    font-style: normal;
-    color: var(--muted);
-    font-size: 0.98rem;
-    line-height: 1.55;
-    margin-bottom: 1rem;
-  }
-
-  .loc-card address strong {
-    color: var(--navy);
-  }
-
-  .loc-meta {
-    font-size: 0.92rem;
-    color: var(--muted);
-    line-height: 1.5;
-    margin-bottom: 1.4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .loc-meta a {
-    color: var(--blue);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .loc-meta a:hover {
-    text-decoration: underline;
-  }
-
-  .loc-info-desc {
-    color: var(--muted);
-    font-size: 0.95rem;
-    line-height: 1.55;
-    margin-bottom: 1.2rem;
-  }
-
-  .loc-bullets {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.4rem;
-    font-size: 0.92rem;
-    color: var(--muted);
-  }
-
-  .loc-bullets li::before {
-    content: "✓";
+  .loc-status-pill {
+    font-size: 0.78rem;
+    font-weight: 700;
     color: var(--green);
-    font-weight: 900;
-    margin-right: 0.45rem;
+    background: rgba(23, 138, 66, 0.1);
+    border: 1px solid rgba(23, 138, 66, 0.2);
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    white-space: nowrap;
   }
 
-  .loc-bullets b {
-    color: var(--navy);
+  .loc-details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2.4rem;
   }
 
-  .loc-actions {
-    margin-top: auto;
+  .loc-detail-box {
     display: flex;
-    gap: 0.8rem;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .loc-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  .loc-detail-box address,
+  .loc-val {
+    font-style: normal;
+    color: var(--navy);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .loc-ref {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-top: 0.2rem;
+  }
+
+  .loc-phones {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     flex-wrap: wrap;
   }
 
-  @media (max-width: 860px) {
-    .loc-grid {
+  .loc-phones a {
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+  }
+
+  .loc-phones a:hover {
+    text-decoration: underline;
+  }
+
+  .sep {
+    color: var(--muted);
+  }
+
+  .loc-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 1.8rem;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  @media (max-width: 960px) {
+    .loc-details-grid {
       grid-template-columns: 1fr;
+      gap: 1.4rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .locations-sec {
+      padding: 3.4rem 0;
+    }
+
+    .loc-card-main {
+      padding: 1.8rem 1.4rem;
+    }
+
+    .loc-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .loc-actions .btn {
+      width: 100%;
+      justify-content: center;
     }
   }
 </style>
