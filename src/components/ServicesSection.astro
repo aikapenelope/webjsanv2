@@ -475,7 +475,8 @@ const ICONOS: Record<string, string> = {
 
     items.forEach((item) => {
       const head = item.querySelector<HTMLButtonElement>('.acc-head');
-      if (!head) return;
+      if (!head || head.dataset.accBound) return;
+      head.dataset.accBound = '1';
 
       head.addEventListener('click', () => {
         const isOpen = item.classList.contains('open');

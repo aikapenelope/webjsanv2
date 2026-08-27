@@ -64,8 +64,34 @@ import { SITE, SOCIAL } from '../data/site';
           </p>
           <div class="foot-socials">
             {SOCIAL.map((s) => (
-              <a href={s.url} target="_blank" rel="noopener" aria-label={s.nombre}>
-                {s.nombre} ↗
+              <a
+                class="social-btn"
+                href={s.url}
+                target="_blank"
+                rel="noopener"
+                aria-label={`${s.nombre} — ${s.cta}`}
+                title={s.nombre}
+              >
+                {s.icono === 'instagram' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.849.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.849.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069Zm0 1.802c-3.15 0-3.517.011-4.759.068-2.432.11-3.555 1.26-3.665 3.664-.057 1.242-.068 1.609-.068 4.759s.011 3.517.068 4.759c.11 2.4 1.228 3.554 3.665 3.664 1.242.057 1.609.068 4.759.068 3.15 0 3.517-.011 4.759-.068 2.433-.11 3.554-1.26 3.665-3.664.057-1.242.068-1.609.068-4.759 0-3.15-.011-3.517-.068-4.759-.111-2.4-1.232-3.554-3.665-3.664-1.242-.057-1.609-.068-4.759-.068Zm0 3.062a5.13 5.13 0 1 1 0 10.26 5.13 5.13 0 0 1 0-10.26Zm0 1.802a3.328 3.328 0 1 0 0 6.656 3.328 3.328 0 0 0 0-6.656Zm5.338-3.205a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z"/>
+                  </svg>
+                )}
+                {s.icono === 'facebook' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.026 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971H15.83c-1.491 0-1.956.93-1.956 1.886v2.264h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z"/>
+                  </svg>
+                )}
+                {s.icono === 'threads' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.02-5.132.936-6.612 2.723-1.353 1.635-2.064 4.035-2.09 7.095.027 3.064.74 5.462 2.095 7.097 1.478 1.786 3.7 2.7 6.61 2.72 2.625-.02 4.56-.7 5.9-2.07 1.4-1.43 2.09-3.45 2.05-6.005l-.03-3.5-.015-.8c-1.13 1.08-2.69 1.74-4.36 1.84-.73.046-1.47-.05-2.196-.28-.83-.265-1.52-.73-1.96-1.32-.472-.633-.7-1.4-.65-2.19.09-1.47 1.23-2.84 2.98-3.58 1.53-.65 3.1-.49 4.27.44.9.716 1.44 1.66 1.61 2.83.03.19.05.38.06.57l.04.42c.9.16 1.63.5 2.19 1.03.86.81 1.36 2.03 1.43 3.52l-.66.02.66-.02c.03 3.24-.92 5.9-2.89 7.83-1.94 1.9-4.62 2.9-7.98 2.9Zm.32-12.83c.035 0 .07 0 .105.002.83.04 1.53.37 2.02.95.33.39.52.92.55 1.53l.01.88-.3-.01c-1.85-.05-2.8-.82-2.87-2.08-.015-.26.02-.52.1-.76.19-.55.73-.92 1.39-.92-.002-.03-.004-.06-.005-.09Z"/>
+                  </svg>
+                )}
+                {s.icono === 'mapa' && (
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+                  </svg>
+                )}
               </a>
             ))}
           </div>
@@ -198,19 +224,48 @@ import { SITE, SOCIAL } from '../data/site';
 
   .foot-socials {
     display: flex;
-    gap: 0.8rem;
+    gap: 0.6rem;
     flex-wrap: wrap;
-    margin-top: 0.4rem;
-    font-size: 0.84rem;
+    margin-top: 0.7rem;
   }
 
-  .foot-socials a {
-    color: var(--gold-soft);
-    font-weight: 700;
+  .social-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: #d3ddf0;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    flex: none;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   }
 
-  .foot-socials a:hover {
+  .social-btn svg {
+    width: 19px;
+    height: 19px;
+    fill: currentColor;
+  }
+
+  .social-btn:hover {
     color: #ffffff;
+    transform: translateY(-2px);
+    border-color: transparent;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .social-btn[aria-label^="Instagram"]:hover {
+    background: #e1306c;
+  }
+  .social-btn[aria-label^="Facebook"]:hover {
+    background: #1877f2;
+  }
+  .social-btn[aria-label^="Threads"]:hover {
+    background: #000000;
+  }
+  .social-btn[aria-label^="Cómo llegar"]:hover {
+    background: var(--blue);
   }
 
   .foot-legal {
