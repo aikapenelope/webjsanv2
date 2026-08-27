@@ -105,13 +105,16 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
 
   .emblem-stage {
     aspect-ratio: 1 / 0.92;
-    border-radius: 20px;
-    background: var(--sky);
+    border-radius: 22px;
     border: 1px solid var(--sky-line);
     display: grid;
     place-items: center;
     overflow: hidden;
     box-shadow: var(--shadow-card);
+    background:
+      repeating-radial-gradient(circle at 50% 47%, rgba(15, 42, 87, 0.055) 0 1.5px, transparent 1.5px 32px),
+      radial-gradient(circle at 50% 42%, rgba(201, 162, 39, 0.08), transparent 60%),
+      linear-gradient(160deg, #f8f6f1 0%, #ece9e1 100%);
   }
 
   .emblem-stage img {
@@ -123,13 +126,27 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
   .float-card {
     background: #ffffff;
     border: 1px solid var(--sky-line);
-    border-radius: var(--radius);
+    border-radius: 16px;
     box-shadow: var(--shadow-card);
     padding: 1rem 1.2rem;
     display: flex;
     gap: 0.9rem;
     align-items: center;
     max-width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .float-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 30%, transparent 72%);
+    opacity: 0.75;
+    pointer-events: none;
   }
 
   .float-card .dot {
@@ -138,6 +155,7 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
     height: 42px;
     border-radius: 10px;
     background: var(--blue-soft);
+    border: 1px solid rgba(45, 88, 147, 0.12);
     display: grid;
     place-items: center;
   }
