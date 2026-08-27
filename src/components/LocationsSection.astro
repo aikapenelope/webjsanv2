@@ -1,67 +1,89 @@
 ---
 import { SITE, SOCIAL, waLink } from '../data/site';
 
-const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? 'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela';
+const wazeUrl = 'https://waze.com/ul?q=Monte+Cristo+Caracas+Calle+10';
 const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y diagnóstico en su taller de Monte Cristo');
 ---
 
 <section id="sedes" class="locations-sec">
   <div class="wrap">
     <div class="sec-head">
-      <span class="kicker">Taller &amp; Oficinas</span>
-      <h2>Visítanos en nuestra sede en Caracas</h2>
-      <p>Instalaciones equipadas con elevadores, fosa mecánica y scanner computarizado para atención directa de tu vehículo.</p>
+      <span class="kicker">Sede Principal en Caracas</span>
+      <h2>Visítanos en nuestro taller en Monte Cristo</h2>
+      <p>Instalaciones equipadas con elevadores, fosa mecánica y scanner computarizado para atención directa y resguardo seguro de tu carro.</p>
     </div>
 
     <div class="loc-card-main">
-      <div class="loc-header">
-        <div class="loc-title-group">
-          <span class="loc-tag">SEDE CENTRAL · CARACAS</span>
-          <h3>Taller &amp; Oficina Monte Cristo</h3>
-        </div>
-        <span class="loc-status-pill">● Abierto Lun-Sáb con cita previa</span>
-      </div>
-
-      <div class="loc-details-grid">
-        <div class="loc-detail-box">
-          <span class="loc-label">📍 Dirección Exacta</span>
-          <address>
-            {SITE.sede}
-          </address>
-          <span class="loc-ref">Referencia: Justo frente a Campi Ferretería.</span>
-        </div>
-
-        <div class="loc-detail-box">
-          <span class="loc-label">🕒 Horario de Atención</span>
-          <p class="loc-val">{SITE.horario}</p>
-          <span class="loc-ref">Recomendamos agendar vía WhatsApp para evitar esperas.</span>
-        </div>
-
-        <div class="loc-detail-box">
-          <span class="loc-label">📞 Teléfonos Directos</span>
-          <div class="loc-phones">
-            <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
-            <span class="sep" aria-hidden="true">·</span>
-            <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+      <div class="loc-grid-top">
+        <div class="loc-info-col">
+          <div class="loc-header">
+            <span class="loc-tag">SEDE CENTRAL · MONTE CRISTO</span>
+            <h3>HIDROMÁTICOS J.SAN, C.A.</h3>
+            <span class="loc-status-pill">● Abierto Lun–Sáb · 8:00 AM a 5:00 PM</span>
           </div>
-          <span class="loc-ref">Líneas fijas de recepción y taller.</span>
-        </div>
-      </div>
 
-      <div class="loc-actions">
-        <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <span>Abrir ubicación en Google Maps ↗</span>
-        </a>
-        <a class="btn btn-gold" href={waAgendar} target="_blank" rel="noopener">
-          <span>Agendar cita por WhatsApp →</span>
-        </a>
-        <a class="btn btn-ghost" href={`tel:${SITE.phoneOficina1}`}>
-          <span>Llamar a recepción</span>
-        </a>
+          <div class="loc-details">
+            <div class="loc-detail-box">
+              <span class="loc-label">📍 Dirección Exacta:</span>
+              <address>{SITE.sede}</address>
+              <span class="loc-ref"><strong>Punto de referencia:</strong> Calle 10, justo frente a Campi Ferretería.</span>
+            </div>
+
+            <div class="loc-detail-box">
+              <span class="loc-label">📞 Teléfonos Directos de Taller:</span>
+              <div class="loc-phones">
+                <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+                <span class="sep" aria-hidden="true">·</span>
+                <a href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
+              </div>
+            </div>
+
+            <div class="loc-detail-box">
+              <span class="loc-label">🚗 Rutas y Accesos Rápidos:</span>
+              <ul class="loc-routes">
+                <li>
+                  <b>Desde la Cota Mil:</b> Bajada por Sebucán / Los Dos Caminos hacia la 3ra transversal de Monte Cristo (3 min).
+                </li>
+                <li>
+                  <b>Desde la Av. Fco. de Miranda:</b> Subiendo por Los Dos Caminos o La California (4 min).
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="loc-actions">
+            <a class="btn btn-primary btn-sm" href={mapsUrl} target="_blank" rel="noopener">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span>Abrir en Google Maps ↗</span>
+            </a>
+            <a class="btn btn-gold btn-sm" href={waAgendar} target="_blank" rel="noopener">
+              <span>Agendar cita previa por WhatsApp →</span>
+            </a>
+            <a class="btn btn-ghost btn-sm" href={wazeUrl} target="_blank" rel="noopener">
+              <span>Navegar con Waze ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- MINI MAPA INTERACTIVO / RESPONSIVE MAP EMBED -->
+        <div class="loc-map-col">
+          <div class="map-frame-wrapper">
+            <iframe
+              title="Ubicación de Hidromáticos J-SAN en Monte Cristo Caracas"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.0039209539316!2d-66.83999!3d10.4965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a584065604169%3A0xc31633cf4839cf9e!2sHidromaticos%20J-San%2C%20C.A.!5e0!3m2!1ses!2sve!4v1700000000000!5m2!1ses!2sve"
+              width="100%"
+              height="100%"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -100,19 +122,26 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     border: 1.5px solid var(--sky-line);
     border-top: 5px solid var(--gold);
     border-radius: 20px;
-    padding: 2.8rem 2.6rem;
+    padding: 2.6rem;
     box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
   }
 
-  .loc-header {
+  .loc-grid-top {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 2.4rem;
+    align-items: stretch;
+  }
+
+  .loc-info-col {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1.4rem;
-    margin-bottom: 2.2rem;
-    padding-bottom: 1.8rem;
+    flex-direction: column;
+  }
+
+  .loc-header {
+    margin-bottom: 1.4rem;
+    padding-bottom: 1.2rem;
     border-bottom: 1px solid var(--sky-line);
-    flex-wrap: wrap;
   }
 
   .loc-tag {
@@ -122,67 +151,67 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     text-transform: uppercase;
     color: var(--gold);
     background: var(--navy);
-    padding: 0.28rem 0.75rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 999px;
     display: inline-block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
   }
 
   .loc-header h3 {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+    font-size: clamp(1.8rem, 3.2vw, 2.3rem);
     text-transform: uppercase;
     color: var(--navy);
     line-height: 1.1;
+    margin-bottom: 0.4rem;
   }
 
   .loc-status-pill {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 700;
     color: var(--green);
     background: rgba(23, 138, 66, 0.1);
     border: 1px solid rgba(23, 138, 66, 0.2);
-    padding: 0.35rem 0.85rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 999px;
-    white-space: nowrap;
+    display: inline-block;
   }
 
-  .loc-details-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-bottom: 2.4rem;
+  .loc-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    flex: 1;
+    margin-bottom: 1.6rem;
   }
 
   .loc-detail-box {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.25rem;
   }
 
   .loc-label {
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--blue);
   }
 
-  .loc-detail-box address,
-  .loc-val {
+  .loc-detail-box address {
     font-style: normal;
     color: var(--navy);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.98rem;
     line-height: 1.45;
   }
 
   .loc-ref {
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     color: var(--muted);
     line-height: 1.4;
-    margin-top: 0.2rem;
   }
 
   .loc-phones {
@@ -207,18 +236,63 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     color: var(--muted);
   }
 
+  .loc-routes {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  .loc-routes li::before {
+    content: "•";
+    color: var(--gold);
+    font-weight: 900;
+    margin-right: 0.4rem;
+  }
+
+  .loc-routes b {
+    color: var(--navy);
+  }
+
   .loc-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.7rem;
     flex-wrap: wrap;
-    padding-top: 1.8rem;
+    padding-top: 1.4rem;
     border-top: 1px solid var(--sky-line);
   }
 
+  /* MAPA EMBED */
+  .loc-map-col {
+    display: flex;
+    min-height: 380px;
+  }
+
+  .map-frame-wrapper {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1.5px solid var(--sky-line);
+    box-shadow: 0 8px 24px rgba(15, 42, 87, 0.08);
+    background: var(--sky);
+  }
+
+  .map-frame-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    display: block;
+  }
+
   @media (max-width: 960px) {
-    .loc-details-grid {
+    .loc-grid-top {
       grid-template-columns: 1fr;
-      gap: 1.4rem;
+    }
+    .loc-map-col {
+      min-height: 300px;
     }
   }
 
@@ -228,7 +302,7 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     }
 
     .loc-card-main {
-      padding: 1.8rem 1.4rem;
+      padding: 1.6rem 1.3rem;
     }
 
     .loc-actions {

@@ -1,0 +1,475 @@
+---
+import { waLink } from '../data/site';
+
+interface Sintoma {
+  id: string;
+  icono: string;
+  nombre: string;
+  resumen: string;
+  causaProbable: string;
+  componentes: string[];
+  urgencia: 'Alta' | 'Media' | 'Inmediata';
+  recomendacion: string;
+  waMsg: string;
+}
+
+const SINTOMAS: Sintoma[] = [
+  {
+    id: 'patina',
+    icono: '🔄',
+    nombre: 'El motor se acelera pero el carro no avanza (patina)',
+    resumen: 'Pisas el acelerador, las revoluciones (RPM) suben pero el vehículo responde lento o resbala en cambios altos.',
+    causaProbable: 'Desgaste en discos de fricción del kit master, fuga interna de presión hidráulica o nivel de fluido ATF críticamente bajo.',
+    componentes: ['Discos de Fricción', 'Sellos de Pistón', 'Bomba de Aceite'],
+    urgencia: 'Alta',
+    recomendacion: 'Evita acelerar a fondo para no quemar los tambores de acero. Se recomienda diagnóstico con scanner antes de continuar rodando.',
+    waMsg: 'Hola J-SAN, mi carro tiene el síntoma: "El motor se acelera y la caja patina". Quiero consultar disponibilidad para escaneo.',
+  },
+  {
+    id: 'golpe',
+    icono: '💥',
+    nombre: 'Golpea o tironea al aplicar Retroceso (R) o Drive (D)',
+    resumen: 'Al mover la palanca de P a D/R se siente un golpe seco o vibración brusca en toda la carrocería.',
+    causaProbable: 'Solenoides de presión atascados, cuerpo de válvulas descalibrado, soportes de motor/caja rotos o juego en estrías de planetarios.',
+    componentes: ['Cuerpo de Válvulas', 'Solenoides EPC', 'Soportes de Caja'],
+    urgencia: 'Alta',
+    recomendacion: 'Un golpe hidráulico constante puede fisurar los tambores internos y partir engranajes. Requiere revisión de presiones y scanner.',
+    waMsg: 'Hola J-SAN, mi carro tiene el síntoma: "Golpea fuerte al aplicar D o Retroceso". Quiero consultar presupuesto.',
+  },
+  {
+    id: 'fuga',
+    icono: '🩸',
+    nombre: 'Bota fluido rojo / rosado por debajo',
+    resumen: 'Gotas o charco de aceite rojizo o marrón en el piso del garaje, a veces acompañado de olor a aceite caliente.',
+    causaProbable: 'Estopera delantera de la bomba dañada, sellos del convertidor de par (turbina) vencidos o empacadura de cárter agrietada.',
+    componentes: ['Estopera de Bomba', 'Sellos de Turbina', 'Empacadura de Cárter'],
+    urgencia: 'Inmediata',
+    recomendacion: 'Si la caja se queda sin fluido, se quema en pocos kilómetros. Revisa el nivel de varilla y agenda revisión de fugas de inmediato.',
+    waMsg: 'Hola J-SAN, mi carro tiene el síntoma: "Fuga de aceite rojo de transmisión". Quiero llevarlo a revisar en Monte Cristo.',
+  },
+  {
+    id: 'frio',
+    icono: '❄️',
+    nombre: 'Tarda en aplicar en frío o se neutraliza en las mañanas',
+    resumen: 'Al encender el carro por la mañana la velocidad tarda 10 a 30 segundos en entrar hasta que el motor calienta.',
+    causaProbable: 'Sellos de goma endurecidos que pierden flexibilidad en frío, fluido ATF quemado o colador interno obstruido con virutas.',
+    componentes: ['Sellos Viton', 'Filtro / Colador ATF', 'Anillos de Teflón'],
+    urgencia: 'Media',
+    recomendacion: 'Es la primera etapa de desgaste de los sellos. Un mantenimiento preventivo a tiempo puede evitar una reconstrucción mayor.',
+    waMsg: 'Hola J-SAN, mi carro tiene el síntoma: "Tarda en aplicar velocidad en frío". Quiero consultar si aplica servicio ATF o reparación.',
+  },
+  {
+    id: 'check-engine',
+    icono: '⚠️',
+    nombre: 'Luz de Check Engine / AT y caja bloqueada en 3ra marcha',
+    resumen: 'El tablero enciende el testigo de motor y la transmisión entra en "modo de emergencia" (limp mode), quedando fija en una sola marcha.',
+    causaProbable: 'Fallo electrónico en sensores de velocidad (ISS / OSS), falla en módulo de transmisión TCM o solenoides en corto circuito.',
+    componentes: ['Módulo TCM', 'Sensor de Velocidad', 'Cableado & Conectores'],
+    urgencia: 'Inmediata',
+    recomendacion: 'El modo de protección electrónica evita daños mayores. Se debe conectar scanner especializado para leer el código de falla DTC.',
+    waMsg: 'Hola J-SAN, mi carro tiene la luz de Check Engine / AT y la caja se quedó en modo emergencia. Quiero agendar scanner.',
+  },
+];
+---
+
+<section id="diagnostico-interactivo" class="symptom-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Diagnóstico Guiado</span>
+      <h2>¿Qué le ocurre a tu transmisión? Selecciona el síntoma</h2>
+      <p>Toca la señal que notas al manejar para conocer la causa técnica probable y contactar directamente con nuestro especialista.</p>
+    </div>
+
+    <div class="symptom-widget">
+      <!-- SELECTOR DE TABS -->
+      <div class="symptom-tabs" role="tablist" aria-label="Síntomas comunes de transmisión">
+        {SINTOMAS.map((s, idx) => (
+          <button
+            class:list={['s-tab-btn', idx === 0 && 'active']}
+            role="tab"
+            aria-selected={idx === 0 ? 'true' : 'false'}
+            aria-controls={`panel-${s.id}`}
+            id={`tab-${s.id}`}
+            data-target={s.id}
+          >
+            <span class="s-tab-icon" aria-hidden="true">{s.icono}</span>
+            <span class="s-tab-title">{s.nombre}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- PANEL DE DIAGNÓSTICO DETALLADO -->
+      <div class="symptom-display">
+        {SINTOMAS.map((s, idx) => (
+          <div
+            class:list={['s-panel', idx === 0 && 'active']}
+            id={`panel-${s.id}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${s.id}`}
+          >
+            <div class="s-panel-header">
+              <div class="s-badge-urgencia" data-urgencia={s.urgencia}>
+                <span>Urgencia:</span> <strong>{s.urgencia}</strong>
+              </div>
+              <span class="s-panel-tag">DIAGNÓSTICO TÉCNICO</span>
+            </div>
+
+            <h3 class="s-panel-title">{s.icono} {s.nombre}</h3>
+            <p class="s-panel-resumen">{s.resumen}</p>
+
+            <div class="s-box-causa">
+              <span class="s-box-label">🔍 Causa Técnica Probable:</span>
+              <p>{s.causaProbable}</p>
+            </div>
+
+            <div class="s-componentes-wrap">
+              <span class="s-comp-label">Componentes típicamente involucrados:</span>
+              <div class="s-pills">
+                {s.componentes.map((c) => (
+                  <span class="s-pill">{c}</span>
+                ))}
+              </div>
+            </div>
+
+            <div class="s-box-recom">
+              <span class="s-recom-ico">💡</span>
+              <p><strong>Recomendación del Taller:</strong> {s.recomendacion}</p>
+            </div>
+
+            <div class="s-panel-action">
+              <a
+                class="btn btn-primary btn-symptom-wa"
+                href={waLink(s.waMsg)}
+                target="_blank"
+                rel="noopener"
+              >
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3s.8-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .6-.2 1.1Z"/>
+                </svg>
+                <span>Consultar esta falla por WhatsApp con el especialista →</span>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .symptom-sec {
+    padding: 4.8rem 0 5.2rem;
+    background: #ffffff;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.8rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 4.4vw, 3.2rem);
+    line-height: 1.02;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.8rem;
+    font-size: 1.06rem;
+    line-height: 1.55;
+  }
+
+  .symptom-widget {
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .symptom-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .s-tab-btn {
+    background: var(--sky);
+    border: 1.5px solid var(--sky-line);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+  }
+
+  .s-tab-btn:hover {
+    background: #ffffff;
+    border-color: var(--blue);
+    box-shadow: 0 6px 18px rgba(45, 88, 147, 0.08);
+  }
+
+  .s-tab-btn.active {
+    background: #ffffff;
+    border-color: var(--blue);
+    border-left: 5px solid var(--gold);
+    box-shadow: 0 10px 24px rgba(15, 42, 87, 0.1);
+  }
+
+  .s-tab-icon {
+    font-size: 1.45rem;
+    flex-shrink: 0;
+  }
+
+  .s-tab-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.35;
+  }
+
+  .s-tab-btn.active .s-tab-title {
+    color: var(--blue);
+  }
+
+  /* PANEL */
+  .symptom-display {
+    background: linear-gradient(180deg, #ffffff 0%, var(--sky) 140%);
+    border: 1.5px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.4rem 2.2rem;
+    box-shadow: 0 14px 36px rgba(15, 42, 87, 0.08);
+    position: relative;
+    min-height: 480px;
+  }
+
+  .s-panel {
+    display: none;
+    flex-direction: column;
+  }
+
+  .s-panel.active {
+    display: flex;
+    animation: fadeIn 0.25s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .s-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--sky-line);
+    flex-wrap: wrap;
+  }
+
+  .s-badge-urgencia {
+    font-size: 0.74rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(201, 162, 39, 0.18);
+    color: #8f6f12;
+    font-weight: 600;
+  }
+
+  .s-badge-urgencia strong {
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .s-badge-urgencia[data-urgencia="Inmediata"] {
+    background: rgba(220, 38, 38, 0.12);
+    color: #b91c1c;
+  }
+
+  .s-panel-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--blue);
+  }
+
+  .s-panel-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.65rem;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .s-panel-resumen {
+    font-size: 0.96rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 1.3rem;
+  }
+
+  .s-box-causa {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .s-box-label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.35rem;
+  }
+
+  .s-box-causa p {
+    font-size: 0.95rem;
+    color: var(--navy);
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .s-componentes-wrap {
+    margin-bottom: 1.2rem;
+  }
+
+  .s-comp-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .s-pills {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .s-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--navy);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .s-box-recom {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    background: rgba(45, 88, 147, 0.07);
+    border: 1px solid rgba(45, 88, 147, 0.18);
+    border-radius: 12px;
+    padding: 0.95rem 1.1rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .s-recom-ico {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .s-box-recom p {
+    font-size: 0.88rem;
+    color: var(--navy);
+    line-height: 1.45;
+  }
+
+  .s-panel-action {
+    margin-top: auto;
+    padding-top: 0.8rem;
+  }
+
+  .btn-symptom-wa {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.92rem;
+    padding: 0.85rem 1.2rem;
+  }
+
+  @media (max-width: 960px) {
+    .symptom-widget {
+      grid-template-columns: 1fr;
+    }
+    .symptom-display {
+      min-height: auto;
+      padding: 1.8rem 1.4rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .symptom-sec {
+      padding: 3.4rem 0;
+    }
+    .s-tab-btn {
+      padding: 0.9rem 1rem;
+    }
+    .s-tab-title {
+      font-size: 0.88rem;
+    }
+    .s-panel-title {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+
+<script>
+  function setupSymptomSelector() {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.s-tab-btn');
+    const panels = document.querySelectorAll<HTMLElement>('.s-panel');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const targetId = tab.getAttribute('data-target');
+        if (!targetId) return;
+
+        tabs.forEach((t) => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+
+        panels.forEach((p) => {
+          p.classList.remove('active');
+        });
+
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        const activePanel = document.getElementById(`panel-${targetId}`);
+        if (activePanel) {
+          activePanel.classList.add('active');
+        }
+      });
+    });
+  }
+
+  setupSymptomSelector();
+  document.addEventListener('astro:page-load', setupSymptomSelector);
+</script>

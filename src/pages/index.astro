@@ -3,9 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import TrustStrip from '../components/TrustStrip.astro';
 import ServicesSection from '../components/ServicesSection.astro';
+import SymptomSelector from '../components/SymptomSelector.astro';
 import ProcessCards from '../components/ProcessCards.astro';
 import BrandsMarquee from '../components/BrandsMarquee.astro';
 import MarcasUsa from '../components/MarcasUsa.astro';
+import TallerGallery from '../components/TallerGallery.astro';
 import ReviewsSection from '../components/ReviewsSection.astro';
 import LocationsSection from '../components/LocationsSection.astro';
 import FaqAccordion, { FAQS } from '../components/FaqAccordion.astro';
@@ -46,6 +48,9 @@ const jsonLdFaq = {
     <!-- SERVICIOS ESPECIALIZADOS DE DIAGNÓSTICO Y RECONSTRUCCIÓN -->
     <ServicesSection />
 
+    <!-- SELECTOR INTERACTIVO DE SÍNTOMAS & DIAGNÓSTICO GUIADO -->
+    <SymptomSelector />
+
     <!-- PROCESO DE TALLER EN 4 PASOS TRANSPARENTES -->
     <ProcessCards />
 
@@ -55,10 +60,13 @@ const jsonLdFaq = {
     <!-- REPUESTOS IMPORTADOS USA (SONNAX, TRANSGO, TRANSTEC) -->
     <MarcasUsa />
 
+    <!-- CASOS REALES EN TALLER & CONTENIDO DE REDES -->
+    <TallerGallery />
+
     <!-- TESTIMONIOS & CARRUSEL DE RESEÑAS GOOGLE ★4.6 -->
     <ReviewsSection />
 
-    <!-- SEDE MONTE CRISTO (CARACAS) -->
+    <!-- SEDE MONTE CRISTO (CARACAS) CON MAPA INTERACTIVO -->
     <LocationsSection />
 
     <!-- PREGUNTAS FRECUENTES ACCESIBLES -->

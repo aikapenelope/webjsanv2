@@ -1,0 +1,332 @@
+---
+import { SOCIAL } from '../data/site';
+
+interface CasoTaller {
+  titulo: string;
+  categoria: string;
+  tag: string;
+  descripcion: string;
+  detalleTecnico: string;
+  redUrl: string;
+}
+
+const CASOS: CasoTaller[] = [
+  {
+    titulo: 'Reconstrucción Overhaul de Caja Automática 6 Velocidades',
+    categoria: 'Overhaul Completo',
+    tag: 'Kit Master Americano',
+    descripcion: 'Desarme completo tras pérdida de tracción en 3ra marcha. Sustitución de todos los discos de fricción, pistones vulcanizados y sellos viton.',
+    detalleTecnico: 'Caja desarmada pieza por pieza, limpieza química y reemplazo total de juntas.',
+    redUrl: 'https://www.instagram.com/hidromaticosjs/',
+  },
+  {
+    titulo: 'Rectificación y Calibración de Cuerpo de Válvulas Sonnax®',
+    categoria: 'Sistema Hidráulico',
+    tag: 'Sonnax® & TransGo®',
+    descripcion: 'Corrección de golpes severos al aplicar Drive y Retroceso mediante instalación de válvulas reguladoras sobredimensionadas.',
+    detalleTecnico: 'Prueba de vacío en banco y sustitución de solenoides moduladores de presión.',
+    redUrl: 'https://www.threads.net/@hidromaticosjs',
+  },
+  {
+    titulo: 'Apertura, Reconstrucción y Balanceo de Convertidor (Turbina)',
+    categoria: 'Convertidor de Par',
+    tag: 'Torno & Balanceo',
+    descripcion: 'Eliminación de vibraciones a 60-80 km/h (shudder de embrague TCC). Cambio de forro de fricción lock-up y rodamientos axiales.',
+    detalleTecnico: 'Soldadura en torno de precisión y prueba hidrostática de estanqueidad.',
+    redUrl: 'https://www.facebook.com/HidromaticosJSan/',
+  },
+  {
+    titulo: 'Mantenimiento Preventivo de Fluido ATF & Filtro Interno',
+    categoria: 'Servicio Preventivo',
+    tag: 'Fluido Certificado',
+    descripcion: 'Remoción de cárter con acumulación de sedimentos, sustitución de colador/filtro sellado y recarga de fluido 100% sintético.',
+    detalleTecnico: 'Inspección de imanes recolectores de virutas para diagnóstico preventivo.',
+    redUrl: 'https://www.instagram.com/hidromaticosjs/',
+  },
+];
+
+const igUrl = SOCIAL.find((s) => s.nombre === 'Instagram')?.url ?? 'https://www.instagram.com/hidromaticosjs/';
+const threadsUrl = SOCIAL.find((s) => s.nombre === 'Threads')?.url ?? 'https://www.threads.net/@hidromaticosjs';
+---
+
+<section id="casos-reales" class="gallery-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Casos Reales en Taller</span>
+      <h2>Transparencia y precisión mecánica en cada trabajo</h2>
+      <p>Mira cómo desarmamos, diagnosticamos y devolvemos transmisiones a especificaciones de fábrica en nuestra sede de Monte Cristo.</p>
+    </div>
+
+    <!-- GRID DE CASOS -->
+    <div class="casos-grid">
+      {CASOS.map((c) => (
+        <article class="caso-card">
+          <div class="caso-top">
+            <span class="caso-cat">{c.categoria}</span>
+            <span class="caso-tag">{c.tag}</span>
+          </div>
+
+          <div class="caso-body">
+            <h3>{c.titulo}</h3>
+            <p class="caso-desc">{c.descripcion}</p>
+
+            <div class="caso-box-tech">
+              <span class="tech-label">⚙️ Labor realizada:</span>
+              <p>{c.detalleTecnico}</p>
+            </div>
+          </div>
+
+          <div class="caso-foot">
+            <a class="caso-link" href={c.redUrl} target="_blank" rel="noopener">
+              <span>Ver casos similares en redes ↗</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- BANNER SOCIAL FOLLOWER -->
+    <div class="gallery-social-banner">
+      <div class="social-banner-text">
+        <span class="social-badge">CONTENIDO DIARIO EN REDES SOCIALES</span>
+        <h3>¿Quieres ver diagnósticos en vivo y carros en prueba de ruta?</h3>
+        <p>Publicamos desarmes, explicación de fallas y recomendaciones de mantenimiento en nuestras cuentas oficiales de Instagram y Threads.</p>
+      </div>
+      <div class="social-banner-btns">
+        <a class="btn btn-primary btn-sm" href={igUrl} target="_blank" rel="noopener">
+          Seguir en Instagram @hidromaticosjs ↗
+        </a>
+        <a class="btn btn-ghost btn-sm" href={threadsUrl} target="_blank" rel="noopener">
+          Ver Threads @hidromaticosjs ↗
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .gallery-sec {
+    padding: 4.8rem 0;
+    background: var(--sky);
+    border-top: 1px solid var(--sky-line);
+    border-bottom: 1px solid var(--sky-line);
+  }
+
+  .sec-head {
+    max-width: 48rem;
+    margin-bottom: 2.8rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 4.4vw, 3.2rem);
+    line-height: 1.02;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .sec-head p {
+    color: var(--muted);
+    margin-top: 0.8rem;
+    font-size: 1.06rem;
+    line-height: 1.55;
+  }
+
+  .casos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.6rem;
+    margin-bottom: 3.2rem;
+  }
+
+  .caso-card {
+    background: #ffffff;
+    border: 1.5px solid var(--sky-line);
+    border-top: 4px solid var(--blue);
+    border-radius: var(--radius);
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 26px rgba(15, 42, 87, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .caso-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(15, 42, 87, 0.12);
+    border-color: var(--blue);
+  }
+
+  .caso-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .caso-cat {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-soft);
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .caso-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #8f6f12;
+    background: rgba(201, 162, 39, 0.15);
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+  }
+
+  .caso-body {
+    flex: 1;
+  }
+
+  .caso-body h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.45rem;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.65rem;
+  }
+
+  .caso-desc {
+    font-size: 0.94rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 1.1rem;
+  }
+
+  .caso-box-tech {
+    background: var(--sky);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .tech-label {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.2rem;
+  }
+
+  .caso-box-tech p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .caso-foot {
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .caso-link {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.15s ease;
+  }
+
+  .caso-link:hover {
+    color: var(--blue-hover);
+    text-decoration: underline;
+  }
+
+  /* BANNER SOCIAL */
+  .gallery-social-banner {
+    background: #ffffff;
+    border: 1.5px solid var(--sky-line);
+    border-top: 4px solid var(--gold);
+    border-radius: 20px;
+    padding: 2.4rem 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 12px 32px rgba(15, 42, 87, 0.06);
+    flex-wrap: wrap;
+  }
+
+  .social-banner-text {
+    max-width: 38rem;
+  }
+
+  .social-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .social-banner-text h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.45rem;
+  }
+
+  .social-banner-text p {
+    color: var(--muted);
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .social-banner-btns {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 900px) {
+    .casos-grid {
+      grid-template-columns: 1fr;
+    }
+    .gallery-social-banner {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.8rem 1.4rem;
+    }
+    .social-banner-btns {
+      width: 100%;
+    }
+    .social-banner-btns .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .gallery-sec {
+      padding: 3.4rem 0;
+    }
+    .caso-card {
+      padding: 1.5rem 1.2rem;
+    }
+  }
+</style>
