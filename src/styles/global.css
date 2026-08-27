@@ -115,6 +115,11 @@ a {
   margin-inline: auto;
 }
 
+/* Evita que los ítems de grid/flex desborden el contenedor (desborde horizontal) */
+.wrap > * {
+  min-width: 0;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
