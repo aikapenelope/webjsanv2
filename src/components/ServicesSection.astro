@@ -82,47 +82,62 @@ const ICONOS: Record<string, string> = {
       <p class="sec-lead">Del escaneo electrónico computarizado a la reconstrucción integral con piezas americanas. Siempre con presupuesto claro antes de tocar tu carro.</p>
     </div>
 
-    <div class="svc-cards-grid">
-      {SERVICIOS.map((s) => (
-        <article class="svc-card">
-          <div class="card-top">
-            <span class="svc-icon" aria-hidden="true" set:html={ICONOS[s.icono]} />
-            <span class="card-num">{s.num}</span>
-          </div>
+    <!-- DESPLEGABLE MODERNO DE SERVICIOS -->
+    <div class="acc-list">
+      {SERVICIOS.map((s, idx) => (
+        <article class:list={['acc-item', idx === 0 && 'open']}>
+          <button
+            class="acc-head"
+            aria-expanded={idx === 0 ? 'true' : 'false'}
+            aria-controls={`acc-panel-${s.num}`}
+            data-acc={s.num}
+          >
+            <span class="acc-icon" aria-hidden="true" set:html={ICONOS[s.icono]} />
+            <span class="acc-titles">
+              <span class="acc-num">{s.num}</span>
+              <span class="acc-title">{s.titulo}</span>
+              <span class="acc-sub">{s.subtitulo}</span>
+            </span>
+            <span class="acc-chev" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
 
-          <div class="card-body">
-            <h3>{s.titulo}</h3>
-            <p class="card-sub">{s.subtitulo}</p>
-            <p class="card-desc">{s.desc}</p>
+          <div class="acc-panel" id={`acc-panel-${s.num}`} role="region" aria-label={`Detalle: ${s.titulo}`} aria-hidden={idx === 0 ? 'false' : 'true'}>
+            <div class="acc-inner">
+              <p class="acc-desc">{s.desc}</p>
 
-            <div class="card-pills" aria-label="Etiquetas del servicio">
-              {s.pills.map((pill) => (
-                <span class="card-pill">{pill}</span>
-              ))}
+              <div class="acc-cols">
+                <div class="acc-pills" aria-label="Etiquetas del servicio">
+                  {s.pills.map((pill) => (
+                    <span class="acc-pill">{pill}</span>
+                  ))}
+                </div>
+
+                <div class="acc-checklist">
+                  <span class="checklist-title">Qué incluye:</span>
+                  <ul>
+                    {s.items.map((item) => (
+                      <li>
+                        <span class="check-ico" aria-hidden="true">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 6 9 17l-5-5"/>
+                          </svg>
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <a class="btn btn-primary acc-cta" href={s.targetUrl}>
+                  <span>{s.ctaText}</span>
+                  <span class="acc-cta-arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
             </div>
-
-            <div class="card-checklist">
-              <span class="checklist-title">Qué incluye:</span>
-              <ul>
-                {s.items.map((item) => (
-                  <li>
-                    <span class="check-ico" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 6 9 17l-5-5"/>
-                      </svg>
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div class="card-footer">
-            <a class="btn btn-ghost btn-sm btn-svc-nav" href={s.targetUrl}>
-              <span>{s.ctaText}</span>
-              <span class="svc-arrow" aria-hidden="true">→</span>
-            </a>
           </div>
         </article>
       ))}
@@ -131,50 +146,75 @@ const ICONOS: Record<string, string> = {
 </section>
 
 <style>
-  .svc-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.6rem;
-  }
-
-  .svc-card {
-    background: #ffffff;
-    border: 1px solid var(--sky-line);
-    border-radius: var(--radius);
-    padding: 1.9rem 1.9rem 1.5rem;
+  .acc-list {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* CARD PREMIUM: hairline dorada + capa de profundidad */
+  .acc-item {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: 18px;
     box-shadow: var(--shadow-card);
-    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
   }
 
-  .svc-card:hover {
+  .acc-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 22%, transparent 55%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .acc-item.open,
+  .acc-item:hover {
+    border-color: rgba(45, 88, 147, 0.3);
     box-shadow: var(--shadow-card-hover);
-    border-color: rgba(45, 88, 147, 0.35);
-    transform: translateY(-2px);
   }
 
-  .card-top {
-    display: flex;
-    justify-content: space-between;
+  .acc-item.open::before {
+    opacity: 1;
+  }
+
+  .acc-head {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    margin-bottom: 1.1rem;
+    gap: 1.1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--font-body);
+    padding: 1.35rem 1.6rem;
   }
 
-  .svc-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 12px;
-    background: var(--blue-soft);
-    color: var(--blue);
+  .acc-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: #ffffff;
     display: grid;
     place-items: center;
     flex: none;
+    box-shadow: 0 6px 16px rgba(15, 42, 87, 0.28);
   }
 
-  .svc-icon :global(svg) {
-    width: 24px;
-    height: 24px;
+  .acc-icon :global(svg) {
+    width: 25px;
+    height: 25px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.7;
@@ -182,67 +222,125 @@ const ICONOS: Record<string, string> = {
     stroke-linejoin: round;
   }
 
-  .card-num {
+  .acc-titles {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "num title"
+      "num sub";
+    column-gap: 0.9rem;
+    align-items: baseline;
+    min-width: 0;
+  }
+
+  .acc-num {
+    grid-area: num;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(201, 162, 39, 0.65);
+    letter-spacing: 0.02em;
+  }
+
+  .acc-title {
+    grid-area: title;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.5rem;
-    letter-spacing: 0.08em;
-    color: var(--sky-line);
-    line-height: 1;
-  }
-
-  .card-body {
-    flex: 1;
-  }
-
-  .card-body h3 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.6rem;
     text-transform: uppercase;
     color: var(--navy);
     line-height: 1.1;
-    margin-bottom: 0.25rem;
+    letter-spacing: 0.015em;
   }
 
-  .card-sub {
-    font-size: 0.92rem;
+  .acc-sub {
+    grid-area: sub;
+    font-size: 0.88rem;
     font-weight: 600;
     color: var(--blue);
-    margin-bottom: 0.8rem;
+    line-height: 1.3;
   }
 
-  .card-desc {
+  .acc-chev {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--sky-line);
+    background: var(--sky);
+    color: var(--blue);
+    display: grid;
+    place-items: center;
+    flex: none;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, color 0.2s ease;
+  }
+
+  .acc-item.open .acc-chev {
+    transform: rotate(180deg);
+    background: var(--navy);
+    color: var(--gold-soft);
+    border-color: var(--navy);
+  }
+
+  /* PANEL: animación de altura suave */
+  .acc-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0.35s;
+  }
+
+  .acc-item.open .acc-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s;
+  }
+
+  .acc-inner {
+    overflow: hidden;
+    padding: 0 1.6rem;
+  }
+
+  .acc-desc {
     color: var(--muted);
-    font-size: 0.95rem;
-    line-height: 1.55;
-    margin-bottom: 1.1rem;
+    font-size: 0.97rem;
+    line-height: 1.6;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--sky-line);
+    max-width: 44rem;
     text-wrap: pretty;
   }
 
-  .card-pills {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.2rem;
+  .acc-cols {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr auto;
+    gap: 1.6rem;
+    align-items: center;
+    padding: 1.3rem 0 1.5rem;
   }
 
-  .card-pill {
-    font-size: 0.7rem;
+  .acc-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .acc-pill {
+    font-size: 0.74rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--blue);
     background: var(--blue-soft);
-    padding: 0.24rem 0.65rem;
+    border: 1px solid rgba(45, 88, 147, 0.12);
+    padding: 0.32rem 0.75rem;
     border-radius: 999px;
-  }
-
-  /* CHECKLIST */
-  .card-checklist {
-    border-top: 1px solid var(--sky-line);
-    padding-top: 1.05rem;
-    margin-bottom: 1.3rem;
+    width: fit-content;
   }
 
   .checklist-title {
@@ -252,21 +350,21 @@ const ICONOS: Record<string, string> = {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.6rem;
   }
 
-  .card-checklist ul {
+  .acc-checklist ul {
     list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem 1.4rem;
   }
 
-  .card-checklist li {
+  .acc-checklist li {
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
-    font-size: 0.88rem;
+    gap: 0.55rem;
+    font-size: 0.9rem;
     color: var(--muted);
     line-height: 1.45;
   }
@@ -280,43 +378,126 @@ const ICONOS: Record<string, string> = {
     background: rgba(23, 138, 66, 0.1);
     display: grid;
     place-items: center;
-    margin-top: 0.05rem;
+    margin-top: 0.06rem;
   }
 
-  .card-footer {
-    padding-top: 0.9rem;
-    border-top: 1px solid var(--sky-line);
-  }
-
-  .btn-svc-nav {
-    width: 100%;
+  .acc-cta {
     justify-content: center;
-    border-color: var(--blue);
-    color: var(--blue);
+    white-space: nowrap;
   }
 
-  .btn-svc-nav:hover {
-    background: var(--blue);
-    color: #ffffff;
-  }
-
-  .svc-arrow {
+  .acc-cta-arrow {
     transition: transform 0.15s ease;
   }
 
-  .btn-svc-nav:hover .svc-arrow {
+  .acc-cta:hover .acc-cta-arrow {
     transform: translateX(4px);
   }
 
-  @media (max-width: 900px) {
-    .svc-cards-grid {
+  @media (max-width: 980px) {
+    .acc-cols {
       grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    .acc-pills {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .acc-cta {
+      width: 100%;
     }
   }
 
-  @media (max-width: 480px) {
-    .svc-card {
-      padding: 1.5rem 1.25rem 1.3rem;
+  @media (max-width: 560px) {
+    .acc-head {
+      grid-template-columns: auto 1fr auto;
+      gap: 0.85rem;
+      padding: 1.1rem 1.1rem;
+    }
+
+    .acc-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+    }
+
+    .acc-icon :global(svg) {
+      width: 22px;
+      height: 22px;
+    }
+
+    .acc-num {
+      font-size: 1.5rem;
+    }
+
+    .acc-title {
+      font-size: 1.18rem;
+    }
+
+    .acc-sub {
+      font-size: 0.8rem;
+    }
+
+    .acc-inner {
+      padding: 0 1.1rem;
+    }
+
+    .acc-chev {
+      width: 38px;
+      height: 38px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .acc-titles {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "sub";
+    }
+
+    .acc-num {
+      display: none;
+    }
+
+    .acc-checklist ul {
+      grid-template-columns: 1fr;
     }
   }
 </style>
+
+<script>
+  function setupAccordion() {
+    const items = document.querySelectorAll<HTMLElement>('.acc-item');
+    if (!items.length) return;
+
+    items.forEach((item) => {
+      const head = item.querySelector<HTMLButtonElement>('.acc-head');
+      if (!head) return;
+
+      head.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+
+        items.forEach((other) => {
+          other.classList.remove('open');
+          const btn = other.querySelector<HTMLButtonElement>('.acc-head');
+          const panel = other.querySelector<HTMLElement>('.acc-panel');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+          if (panel) panel.setAttribute('aria-hidden', 'true');
+        });
+
+        if (!isOpen) {
+          item.classList.add('open');
+          head.setAttribute('aria-expanded', 'true');
+          const panel = item.querySelector<HTMLElement>('.acc-panel');
+          if (panel) panel.setAttribute('aria-hidden', 'false');
+        }
+      });
+    });
+  }
+
+  setupAccordion();
+  document.addEventListener('astro:page-load', setupAccordion);
+</script>

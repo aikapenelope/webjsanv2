@@ -91,6 +91,7 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
     margin-bottom: 2.4rem;
     box-shadow: var(--shadow-card);
     position: relative;
+    overflow: hidden;
   }
 
   .quote-stage::before {
@@ -102,6 +103,18 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
     font-size: 5.5rem;
     line-height: 1;
     color: rgba(201, 162, 39, 0.35);
+    pointer-events: none;
+  }
+
+  .quote-stage::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 22%, transparent 55%);
+    opacity: 0.6;
     pointer-events: none;
   }
 

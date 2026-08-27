@@ -11,13 +11,31 @@ const STRIP_ITEMS = [
 ---
 
 <div class="strip" role="region" aria-label="Garantías y credenciales de servicio">
-  <div class="wrap strip-inner">
-    {STRIP_ITEMS.map((item, idx) => (
-      <span class="strip-item">
-        {item}
-        {idx < STRIP_ITEMS.length - 1 && <span class="strip-dot" aria-hidden="true"></span>}
-      </span>
-    ))}
+  <div class="strip-track">
+    <div class="strip-group">
+      {STRIP_ITEMS.map((item) => (
+        <span class="strip-item">
+          <span class="strip-mark" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1.8 14.6 9l7.4 1.4-5.5 5.1 1.4 7.3L12 19.1l-5.9 3.7 1.4-7.3L2 10.4 9.4 9 12 1.8Z"/>
+            </svg>
+          </span>
+          <span>{item}</span>
+        </span>
+      ))}
+    </div>
+    <div class="strip-group" aria-hidden="true">
+      {STRIP_ITEMS.map((item) => (
+        <span class="strip-item">
+          <span class="strip-mark" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1.8 14.6 9l7.4 1.4-5.5 5.1 1.4 7.3L12 19.1l-5.9 3.7 1.4-7.3L2 10.4 9.4 9 12 1.8Z"/>
+            </svg>
+          </span>
+          <span>{item}</span>
+        </span>
+      ))}
+    </div>
   </div>
 </div>
 
@@ -25,55 +43,63 @@ const STRIP_ITEMS = [
   .strip {
     background: var(--navy);
     color: #ffffff;
+    border-top: 1px solid rgba(201, 162, 39, 0.4);
     border-bottom: 1px solid var(--navy-deep);
-    padding: 0.85rem 0;
+    overflow: hidden;
+    padding: 0.9rem 0;
+    user-select: none;
+    position: relative;
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
   }
 
-  .strip-inner {
+  .strip-track {
+    display: flex;
+    width: max-content;
+    animation: mq 36s linear infinite;
+  }
+
+  .strip:hover .strip-track {
+    animation-play-state: paused;
+  }
+
+  .strip-group {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    column-gap: 1.6rem;
-    row-gap: 0.4rem;
+    gap: 2.6rem;
+    padding-right: 2.6rem;
+    flex-shrink: 0;
   }
 
   .strip-item {
-    font-size: 0.76rem;
+    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: 0.14em;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #dfe8f8;
     display: inline-flex;
     align-items: center;
-    gap: 1.6rem;
+    gap: 0.55rem;
     white-space: nowrap;
+    color: #e7eefb;
   }
 
-  .strip-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--gold);
+  .strip-mark {
+    color: var(--gold);
+    display: inline-flex;
     flex: none;
-    opacity: 0.85;
   }
 
-  @media (max-width: 760px) {
-    .strip-inner {
-      justify-content: flex-start;
-      column-gap: 1.2rem;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding-bottom: 0.2rem;
-      scrollbar-width: none;
+  @media (max-width: 600px) {
+    .strip {
+      padding: 0.7rem 0;
     }
-    .strip-inner::-webkit-scrollbar {
-      display: none;
+    .strip-group {
+      gap: 1.7rem;
+      padding-right: 1.7rem;
     }
     .strip-item {
-      gap: 1.2rem;
-      font-size: 0.72rem;
+      font-size: 0.95rem;
     }
   }
 </style>

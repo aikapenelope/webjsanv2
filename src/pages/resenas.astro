@@ -353,6 +353,20 @@ const jsonLdResenas = {
     gap: 2rem;
     box-shadow: var(--shadow-card);
     flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opinion-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 22%, transparent 55%);
+    opacity: 0.6;
+    pointer-events: none;
   }
 
   .opinion-box h3 {

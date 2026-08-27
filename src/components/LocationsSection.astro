@@ -2,7 +2,6 @@
 import { SITE, SOCIAL, waLink } from '../data/site';
 
 const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? 'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela';
-const wazeUrl = 'https://waze.com/ul?q=Monte+Cristo+Caracas+Calle+10';
 const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y diagnóstico en su taller de Monte Cristo');
 ---
 
@@ -88,9 +87,6 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
             <a class="btn btn-gold btn-sm" href={waAgendar} target="_blank" rel="noopener">
               <span>Agendar cita previa por WhatsApp →</span>
             </a>
-            <a class="btn btn-ghost btn-sm" href={wazeUrl} target="_blank" rel="noopener">
-              <span>Navegar con Waze ↗</span>
-            </a>
           </div>
         </div>
 
@@ -121,6 +117,20 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     border-radius: 20px;
     padding: 2.6rem;
     box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loc-card-main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold) 0%, rgba(201, 162, 39, 0.35) 22%, transparent 55%);
+    opacity: 0.6;
+    pointer-events: none;
   }
 
   .loc-grid-top {
