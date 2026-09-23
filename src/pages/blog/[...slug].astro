@@ -18,13 +18,26 @@ const title = `${post.data.title} | ${SITE.shortName}`;
 const description = post.data.description;
 const path = `/blog/${post.id}/`;
 
+const postImageUrl = new URL('/assets/og-jsan.jpg', SITE.url).href;
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: post.data.title,
   description: post.data.description,
+  image: [postImageUrl],
   datePublished: post.data.pubDate.toISOString().split('T')[0],
-  author: { '@type': 'Organization', name: SITE.name },
+  dateModified: post.data.pubDate.toISOString().split('T')[0],
+  author: {
+    '@type': 'Person',
+    name: post.data.author,
+    jobTitle: 'Especialista en Transmisiones Automáticas',
+    worksFor: {
+      '@type': 'AutoRepair',
+      name: SITE.name,
+      url: SITE.url,
+    },
+  },
   publisher: {
     '@type': 'Organization',
     name: SITE.name,

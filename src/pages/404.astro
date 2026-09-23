@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, waLink } from '../data/site';
+
+const title = `Página no encontrada (404) · ${SITE.shortName}`;
+const description =
+  'La página solicitada no está disponible. Consulta nuestros servicios de reparación de cajas automáticas o contáctanos por WhatsApp en Caracas.';
+
+const waAyuda = waLink('Hola J-SAN, estaba navegando en su sitio web y necesito consultar sobre una reparación');
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path="/404/"
+  topbarTagline="Error 404 · Hidromáticos J-SAN"
+>
+  <main class="error-page">
+    <div class="wrap error-wrap">
+      <div class="error-badge">ERROR 404</div>
+      <h1>Página no <span class="hl">encontrada</span></h1>
+      <p class="error-lead">
+        La dirección a la que intentas acceder no existe o fue movida. Pero no te preocupes: tu vehículo y su transmisión sí tienen solución rápida con nosotros.
+      </p>
+
+      <div class="error-actions">
+        <a class="btn btn-primary" href="/">
+          ← Volver a la página de inicio
+        </a>
+        <a class="btn btn-gold" href={waAyuda} target="_blank" rel="noopener">
+          Consultar por WhatsApp →
+        </a>
+      </div>
+
+      <div class="error-shortcuts">
+        <h3>Secciones recomendadas:</h3>
+        <div class="shortcuts-grid">
+          <a href="/#servicios" class="shortcut-card">
+            <b>01. Servicios Especializados</b>
+            <span>Diagnóstico con escáner, reconstrucción y mantenimiento ATF.</span>
+          </a>
+          <a href="/#sedes" class="shortcut-card">
+            <b>02. Ubicación en Caracas</b>
+            <span>Dirección exacta en Monte Cristo, Calle 10, y mapa de acceso.</span>
+          </a>
+          <a href="/resenas/" class="shortcut-card">
+            <b>03. Reseñas Verificadas</b>
+            <span>Opiniones reales de clientes con calificación ★ 4.6 en Google.</span>
+          </a>
+          <a href="/blog/" class="shortcut-card">
+            <b>04. Guías Técnicas y Blog</b>
+            <span>Artículos sobre por qué patina la caja, convertidor de par y ATF.</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .error-page {
+    padding: clamp(3.5rem, 8vw, 6rem) 0 clamp(4rem, 9vw, 7rem);
+    background: #ffffff;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .error-wrap {
+    max-width: 48rem;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .error-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--blue);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 1.1rem;
+  }
+
+  h1 .hl {
+    color: var(--blue);
+  }
+
+  .error-lead {
+    font-size: 1.12rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 2.2rem;
+    max-width: 38rem;
+    margin-inline: auto;
+  }
+
+  .error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3.5rem;
+  }
+
+  .error-shortcuts {
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: left;
+    box-shadow: var(--shadow-card);
+  }
+
+  .error-shortcuts h3 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 1.2rem;
+  }
+
+  .shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .shortcut-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .shortcut-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--blue);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .shortcut-card b {
+    font-size: 0.95rem;
+    color: var(--navy);
+  }
+
+  .shortcut-card span {
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  @media (max-width: 640px) {
+    .error-actions {
+      flex-direction: column;
+    }
+    .error-actions .btn {
+      width: 100%;
+    }
+  }
+</style>

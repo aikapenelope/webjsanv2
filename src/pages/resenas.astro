@@ -11,9 +11,9 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? 'https:/
 
 const jsonLdResenas = {
   '@context': 'https://schema.org',
-  '@type': 'Product',
-  name: 'Servicio de transmisión automática — HIDROMÁTICOS J.SAN, C.A.',
-  brand: { '@type': 'Brand', name: 'HIDROMÁTICOS J.SAN, C.A.' },
+  '@type': 'AutoRepair',
+  '@id': `${SITE.url}/#negocio`,
+  name: SITE.name,
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '4.6',
