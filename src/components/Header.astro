@@ -98,11 +98,12 @@ const { activePath = '/' } = Astro.props;
       <div class="m-company-info">
         <p class="m-name"><strong>{SITE.name}</strong></p>
         <p class="m-rif-full">RIF: {SITE.rif} · Est. {SITE.fundacion}</p>
-        <p class="m-loc">{SITE.sedeCorta} — Miranda, Caracas</p>
+        <p class="m-loc">{SITE.sedeCorta} — Caracas</p>
         <p class="m-phone">
-          <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
-          <span class="m-phone-sep" aria-hidden="true">·</span>
-          <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">{SITE.whatsappDisplay}</a>
+          <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">WhatsApp: {SITE.whatsappDisplay}</a>
+        </p>
+        <p class="m-email">
+          <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import { SITE } from '../data/site';
 import Topbar from '../components/Topbar.astro';
 import Header from '../components/Header.astro';
@@ -50,7 +51,7 @@ const jsonLdLocal: Record<string, unknown> = {
   url: SITE.url,
   logo: logoUrl,
   image: [ogImageUrl, logoUrl],
-  telephone: [SITE.phoneOficina1, SITE.phoneOficina2, `+${SITE.whatsapp}`],
+  telephone: [`+${SITE.whatsapp}`],
   email: SITE.email,
   foundingDate: String(SITE.fundacion),
   taxID: SITE.rif,
@@ -202,6 +203,8 @@ const scriptsJsonLd = [
     {scriptsJsonLd.map((schema) => (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
+
+    <ClientRouter />
   </head>
   <body>
     {!hideHeader && (

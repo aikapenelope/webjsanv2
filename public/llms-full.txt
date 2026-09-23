@@ -8,13 +8,12 @@
 
 - **Razón Social:** Hidromáticos J-SAN, C.A.
 - **Nombre Comercial:** HIDROMÁTICOS J-SAN / J-SAN Cajas Automáticas
-- **RIF:** J-40348320-5 (Número de Información Fiscal, República Bolivariana de Venezuela)
+- **RIF:** J-403483205 (Número de Información Fiscal, República Bolivariana de Venezuela)
 - **Año de Fundación:** 2013 (más de una década de trayectoria ininterrumpida)
-- **Sede Principal:** Urbanización Monte Cristo, 1ra con 3ra transversal, Calle 10 — justo frente a Campi Ferretería, Municipio Sucre, Estado Miranda, Caracas (Gran Caracas), Venezuela.
+- **Sede Principal:** Calle 1ra. Avenida con 3ra Transversal, Qta. Leonor Nro. 3, Urb. Monte Cristo, Los Ruices, Municipio Sucre, Estado Miranda, Caracas (Gran Caracas), Venezuela.
 - **Código Postal:** 1071
 - **Coordenadas GPS:** Latitud 10.4965 N, Longitud -66.8378 W
-- **Canal Principal de Citas y Consultas (WhatsApp):** +58 424-232.0424 (0424-232.0424)
-- **Central Telefónica de Oficina / Taller:** (0212) 235.1931 / (0212) 237.7340 (+58 212-2351931 / +58 212-2377340)
+- **Canal Principal de Citas y Consultas (WhatsApp):** +58 414-1066546
 - **Correo Electrónico:** hidromaticosjsan@gmail.com
 - **Sitio Web Oficial:** https://hidromaticosjsan.com
 - **Horario de Operaciones:** Lunes a sábado de 8:00 AM a 5:00 PM (atención personalizada bajo cita previa por WhatsApp)
@@ -80,8 +79,8 @@ Hidromáticos J-SAN importa directamente componentes de los fabricantes líderes
 
 ## 6. Proceso de Atención al Cliente (Paso a Paso)
 
-1. **Contacto y Recepción:** El cliente escribe por WhatsApp al +58 424-232.0424 indicando marca, modelo, año y síntoma percibido en el carro.
-2. **Cita en Sede:** El vehículo ingresa al taller en Monte Cristo, Calle 10.
+1. **Contacto y Recepción:** El cliente escribe por WhatsApp al +58 414-1066546 indicando marca, modelo, año y síntoma percibido en el carro.
+2. **Cita en Sede:** El vehículo ingresa al taller en Monte Cristo, Los Ruices, Qta. Leonor Nro. 3.
 3. **Escaneo y Prueba de Presión:** Se conecta el scanner de diagnóstico y se realiza prueba de manejo si el vehículo está operativo.
 4. **Presupuesto Claro y Detallado:** Se envía el desglose de mano de obra y repuestos requeridos por WhatsApp.
 5. **Ejecución y Ensamblaje:** Se realiza el trabajo en fosa o banco con torquímetro y fluido homologado.
@@ -101,7 +100,7 @@ Utilizamos exclusivamente el fluido que especifica el manual del fabricante del 
 Sí. El protocolo estándar de J-SAN consiste en realizar primero el escaneo computarizado del TCM (Módulo de Transmisión) y del ECM (Motor) y medir presiones. Si la falla radica en un solenoide, fusible, sensor o cableado, se repara externamente sin necesidad de desarmar la transmisión, ahorrando costos sustanciales al cliente.
 
 ### ¿Dónde queda ubicado el taller y cómo se llega?
-Está en Caracas, Estado Miranda, Urbanización Monte Cristo, en la Calle 10 (entre 1ra y 3ra transversal), exactamente frente a Campi Ferretería. Es fácilmente accesible desde la Cota Mil (bajada de Sebucán / Los Dos Caminos) en 3 minutos, o desde la Avenida Francisco de Miranda en 4 minutos.
+Está en Caracas, Estado Miranda, Urbanización Monte Cristo, Los Ruices, en la Calle 1ra. Avenida con 3ra Transversal, Qta. Leonor Nro. 3. Es fácilmente accesible desde la Cota Mil (bajada de Sebucán / Los Dos Caminos) en 3 minutos, o desde la Avenida Francisco de Miranda en 4 minutos.
 
 ---
 

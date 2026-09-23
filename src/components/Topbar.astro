@@ -5,7 +5,7 @@ interface Props {
   tagline?: string;
 }
 
-const { tagline = 'Sede Monte Cristo, Calle 10 · Caracas, Miranda' } = Astro.props;
+const { tagline = 'Calle 1ra. Av. con 3ra Transversal, Qta. Leonor Nro. 3 · Monte Cristo, Los Ruices' } = Astro.props;
 ---
 
 <div class="topbar" role="complementary" aria-label="Información institucional y contacto rápido">
@@ -17,8 +17,8 @@ const { tagline = 'Sede Monte Cristo, Calle 10 · Caracas, Miranda' } = Astro.pr
       <span class="tb-tagline tb-hide-mobile">{tagline}</span>
     </div>
     <div class="tb-right">
-      <span class="tb-label">Taller:</span>
-      <a href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
+      <span class="tb-label">Correo:</span>
+      <a href={`mailto:${SITE.email}`} class="tb-mail-link">{SITE.email}</a>
       <span class="tb-sep" aria-hidden="true">·</span>
       <span class="tb-label">WhatsApp:</span>
       <a class="tb-wa-link" href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener">{SITE.whatsappDisplay}</a>
