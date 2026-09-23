@@ -2,9 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE, SOCIAL, waLink } from '../data/site';
 
-const title = `Contacto · ${SITE.shortName} — Teléfonos, WhatsApp y Sede en Caracas`;
+const title = `Contacto Directo · ${SITE.shortName} — WhatsApp, Correo y Taller en Caracas`;
 const description =
-  'Canales de atención directa de Hidromáticos J-SAN, C.A.: WhatsApp, teléfonos de oficina y taller en Monte Cristo, Caracas. Atención de lunes a sábado con cita previa.';
+  'Canales de atención directa de Hidromáticos J-SAN, C.A.: WhatsApp, correo y taller en Monte Cristo, Los Ruices, Caracas. Atención de lunes a sábado con cita previa.';
 
 const waFalla = waLink('Hola J-SAN, quiero consultar por una falla en mi caja automática');
 const waAgendar = waLink('Hola J-SAN, quiero agendar un diagnóstico con scanner para mi carro');
@@ -35,13 +35,12 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
         </div>
 
         <div class="canal-card">
-          <span class="canal-tag">CANAL 02 — OFICINA &amp; TALLER</span>
-          <h3>Teléfonos Fijos</h3>
-          <p>Líneas de atención en Caracas para llamadas convencionales y recepción de citas.</p>
-          <div class="canal-phones">
-            <a class="canal-link" href={`tel:${SITE.phoneOficina1}`}>{SITE.phoneOficina1Display}</a>
-            <a class="canal-link" href={`tel:${SITE.phoneOficina2}`}>{SITE.phoneOficina2Display}</a>
-          </div>
+          <span class="canal-tag">CANAL 02 — SEDE CENTRAL</span>
+          <h3>Taller Presencial</h3>
+          <p>Ubicados en Monte Cristo, Los Ruices con rampas, fosa y resguardo seguro para tu carro.</p>
+          <a class="canal-link canal-loc" href={mapsUrl} target="_blank" rel="noopener">
+            {SITE.sedeCorta} ↗
+          </a>
         </div>
 
         <div class="canal-card">
@@ -78,8 +77,8 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
             <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
               Abrir ubicación en Google Maps ↗
             </a>
-            <a class="btn btn-ghost" href={`tel:${SITE.phoneOficina1}`}>
-              Llamar a recepción
+            <a class="btn btn-gold" href={waAgendar} target="_blank" rel="noopener">
+              Agendar cita por WhatsApp →
             </a>
           </div>
         </div>
@@ -212,6 +211,10 @@ const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
   .canal-email {
     font-size: clamp(1.1rem, 2.2vw, 1.45rem);
     word-break: break-all;
+  }
+
+  .canal-loc {
+    font-size: clamp(1.15rem, 2.4vw, 1.55rem);
   }
 
   /* MAPA CARD */

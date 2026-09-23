@@ -26,6 +26,7 @@ import { MARCAS_USA } from '../data/site';
               src={`/assets/marcas-usa/${m.slug}.png`}
               alt={`Logo ${m.nombre}`}
               loading="lazy"
+              decoding="async"
               width="200"
               height="60"
             />
@@ -43,14 +44,14 @@ import { MARCAS_USA } from '../data/site';
   .usa-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.4rem;
+    gap: 1.2rem;
   }
 
   .usa-card {
     background: #ffffff;
     border: 1px solid var(--sky-line);
-    border-radius: 18px;
-    padding: 2rem 1.4rem 1.5rem;
+    border-radius: 16px;
+    padding: 1.4rem 1.2rem 1.25rem;
     display: flex;
     flex-direction: column;
     align-items: center;

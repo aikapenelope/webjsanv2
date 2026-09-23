@@ -2,21 +2,17 @@
 export const SITE = {
   name: 'HIDROMÁTICOS J.SAN, C.A.',
   shortName: 'HIDROMÁTICOS J.SAN',
-  rif: 'J-40348320-5',
-  rifSimple: 'J-40348320',
+  rif: 'J-403483205',
+  rifSimple: 'J-403483205',
   description:
     'Reparación de cajas automáticas y motores en Caracas. Escaneo computarizado, presupuesto claro antes de trabajar y repuestos importados. Desde 2013 en Miranda, Venezuela.',
   url: 'https://hidromaticosjsan.com',
-  whatsapp: '584242320424', // sin el +
-  whatsappDisplay: '0424-232.0424',
-  phoneOficina1: '+582122351931',
-  phoneOficina2: '+582122377340',
-  phoneOficina1Display: '(0212) 235.1931',
-  phoneOficina2Display: '(0212) 237.7340',
+  whatsapp: '584141066546', // sin el +
+  whatsappDisplay: '+58 414-1066546',
   email: 'hidromaticosjsan@gmail.com',
   fundacion: 2013,
-  sede: 'Urb. Monte Cristo, 1ra con 3ra transversal, Calle 10 — frente a Campi Ferretería, Miranda, Caracas',
-  sedeCorta: 'Monte Cristo, Calle 10',
+  sede: 'Calle 1ra. Avenida con 3ra Transversal, Qta. Leonor Nro. 3, Urb. Monte Cristo, Los Ruices, Caracas',
+  sedeCorta: 'Monte Cristo, Qta. Leonor Nro. 3',
   horario: 'Lunes a sábado · 8:00 AM a 5:00 PM (previa cita por WhatsApp)',
   redes: {
     facebook: 'https://www.facebook.com/HidromaticosJSan/',
@@ -57,7 +53,7 @@ export interface SocialItem {
 export const SOCIAL: readonly SocialItem[] = [
   {
     nombre: 'Cómo llegar',
-    handle: 'Monte Cristo, Calle 10 · Miranda',
+    handle: 'Qta. Leonor Nro. 3 · Monte Cristo, Los Ruices',
     url: 'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela',
     icono: 'mapa',
     cta: 'Abrir en Google Maps',

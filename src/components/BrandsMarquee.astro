@@ -36,14 +36,14 @@ const getSvg = (marca: string) => marcasSvg[`../assets/marcas/${marca}.svg`] ?? 
 
 <style>
   .marcas-sec {
-    padding: 4.2rem 0 0;
+    padding: clamp(2.4rem, 4.5vw, 3.4rem) 0 0;
     background: #ffffff;
     border-top: 1px solid var(--sky-line);
   }
 
   .marquee-wrap {
     overflow: hidden;
-    padding: 2rem 0;
+    padding: 1.35rem 0;
     border-top: 1px solid var(--sky-line);
     border-bottom: 1px solid var(--sky-line);
     background: var(--sky);
@@ -57,6 +57,8 @@ const getSvg = (marca: string) => marcasSvg[`../assets/marcas/${marca}.svg`] ?? 
     gap: 3.4rem;
     width: max-content;
     animation: mq 38s linear infinite;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .marquee-wrap:hover .marquee-track {
