@@ -5,5 +5,6 @@ export default defineCliConfig({
     projectId: '6ezakoyw',
     dataset: 'production',
   },
+  studioHost: 'hidromaticosjsan',
   autoUpdates: true,
 });
