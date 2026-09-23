@@ -2,35 +2,95 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { SITE, waLink } from '../../data/site';
+import { getSanityPosts, urlFor } from '../../lib/sanity';
+import { PortableText } from '@portabletext/astro';
+import PortableTextImage from '../../components/PortableTextImage.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
+  const sanityPosts = await getSanityPosts();
+  const localPosts = await getCollection('blog');
+
+  const sanityPaths = sanityPosts.map((sp) => ({
+    params: { slug: sp.slug },
+    props: {
+      isSanity: true as const,
+      sanityPost: sp,
+      localPost: null,
+      title: sp.title,
+      description: sp.description || '',
+      pubDate: new Date(sp.pubDate),
+      kicker: sp.kicker || 'GUÍA MECÁNICA',
+      readingTime: sp.readingTime || 4,
+      author: sp.author || 'Hidromáticos J-SAN',
+      mainImage: sp.mainImage || null,
+    },
   }));
+
+  const sanitySlugs = new Set(sanityPosts.map((p) => p.slug));
+
+  const localPaths = localPosts
+    .filter((lp) => !sanitySlugs.has(lp.id))
+    .map((lp) => ({
+      params: { slug: lp.id },
+      props: {
+        isSanity: false as const,
+        sanityPost: null,
+        localPost: lp,
+        title: lp.data.title,
+        description: lp.data.description,
+        pubDate: lp.data.pubDate,
+        kicker: lp.data.kicker,
+        readingTime: lp.data.readingTime,
+        author: lp.data.author,
+        mainImage: null,
+      },
+    }));
+
+  return [...sanityPaths, ...localPaths];
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const {
+  isSanity,
+  sanityPost,
+  localPost,
+  title,
+  description,
+  pubDate,
+  kicker,
+  readingTime,
+  author,
+  mainImage,
+} = Astro.props;
 
-const title = `${post.data.title} | ${SITE.shortName}`;
-const description = post.data.description;
-const path = `/blog/${post.id}/`;
+let MarkdownContent: any = null;
+if (!isSanity && localPost) {
+  const rendered = await render(localPost);
+  MarkdownContent = rendered.Content;
+}
 
-const postImageUrl = new URL('/assets/og-jsan.jpg', SITE.url).href;
+const pageTitle = `${title} | ${SITE.shortName}`;
+const path = `/blog/${Astro.params.slug}/`;
+
+let postImageUrl = new URL('/assets/og-jsan.jpg', SITE.url).href;
+if (isSanity && mainImage) {
+  try {
+    postImageUrl = urlFor(mainImage).width(1200).height(630).fit('crop').url();
+  } catch (e) {
+    console.warn('[Sanity] Error generating mainImage URL:', e);
+  }
+}
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
-  headline: post.data.title,
-  description: post.data.description,
+  headline: title,
+  description: description,
   image: [postImageUrl],
-  datePublished: post.data.pubDate.toISOString().split('T')[0],
-  dateModified: post.data.pubDate.toISOString().split('T')[0],
+  datePublished: pubDate.toISOString().split('T')[0],
+  dateModified: pubDate.toISOString().split('T')[0],
   author: {
     '@type': 'Person',
-    name: post.data.author,
+    name: author,
     jobTitle: 'Especialista en Transmisiones Automáticas',
     worksFor: {
       '@type': 'AutoRepair',
@@ -49,18 +109,18 @@ const jsonLd = {
   mainEntityOfPage: new URL(path, SITE.url).href,
 };
 
-const fmtDate = post.data.pubDate.toLocaleDateString('es-VE', {
+const fmtDate = pubDate.toLocaleDateString('es-VE', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 });
 
 const waPostCta = waLink(
-  `Hola J-SAN, leí su artículo sobre "${post.data.title}". Quiero consultar por una falla en mi carro`
+  `Hola J-SAN, leí su artículo sobre "${title}". Quiero consultar por una falla en mi carro`
 );
 ---
 
-<BaseLayout title={title} description={description} path={path} jsonLdExtra={jsonLd} topbarTagline="Guías Técnicas J-SAN">
+<BaseLayout title={pageTitle} description={description} path={path} jsonLdExtra={jsonLd} topbarTagline="Guías Técnicas J-SAN">
   <main class="article-page">
     <div class="wrap article-wrap">
       <!-- BREADCRUMBS -->
@@ -69,26 +129,49 @@ const waPostCta = waLink(
         <span aria-hidden="true">/</span>
         <a href="/blog/">Blog</a>
         <span aria-hidden="true">/</span>
-        <span class="curr">{post.data.title}</span>
+        <span class="curr">{title}</span>
       </nav>
 
       <header class="article-header">
         <div class="article-meta-top">
-          <span class="article-kicker">{post.data.kicker}</span>
-          <span class="article-time">⏱️ {post.data.readingTime} min de lectura</span>
+          <span class="article-kicker">{kicker}</span>
+          <span class="article-time">⏱️ {readingTime} min de lectura</span>
         </div>
-        <h1>{post.data.title}</h1>
-        <p class="article-lead">{post.data.description}</p>
+        <h1>{title}</h1>
+        <p class="article-lead">{description}</p>
         <div class="article-byline">
-          <span>Por <b>{post.data.author}</b></span>
+          <span>Por <b>{author}</b></span>
           <span aria-hidden="true">·</span>
-          <time datetime={post.data.pubDate.toISOString()}>{fmtDate}</time>
+          <time datetime={pubDate.toISOString()}>{fmtDate}</time>
         </div>
+        {isSanity && mainImage && (
+          <div class="article-cover-box">
+            <img
+              src={urlFor(mainImage).width(1100).auto('format').fit('max').url()}
+              alt={mainImage.alt || title}
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              class="article-cover-img"
+            />
+          </div>
+        )}
       </header>
 
       <!-- CONTENIDO PROSE -->
       <div class="article-body">
-        <Content />
+        {isSanity && sanityPost?.body ? (
+          <PortableText
+            value={sanityPost.body}
+            components={{
+              type: {
+                image: PortableTextImage,
+              },
+            }}
+          />
+        ) : MarkdownContent ? (
+          <MarkdownContent />
+        ) : null}
       </div>
 
       <!-- CTA CONSULTA ESPECÍFICA -->
@@ -206,6 +289,21 @@ const waPostCta = waLink(
 
   .article-byline b {
     color: var(--navy);
+  }
+
+  .article-cover-box {
+    margin-top: 1.8rem;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--sky-line);
+    box-shadow: 0 8px 24px rgba(10, 30, 64, 0.08);
+  }
+
+  .article-cover-img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    display: block;
   }
 
   /* ESTILOS TIPOGRÁFICOS DE PROSE */

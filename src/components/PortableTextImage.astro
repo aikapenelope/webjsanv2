@@ -1,0 +1,61 @@
+---
+import { urlFor } from '../lib/sanity';
+
+interface Props {
+  node: {
+    _type: string;
+    asset?: any;
+    alt?: string;
+    caption?: string;
+  };
+}
+
+const { node } = Astro.props;
+
+let imageUrl = '';
+if (node && (node.asset || (node as any)._ref)) {
+  try {
+    imageUrl = urlFor(node).width(1000).auto('format').fit('max').url();
+  } catch (e) {
+    console.warn('[PortableTextImage] Error generating image URL:', e);
+  }
+}
+---
+
+{imageUrl && (
+  <figure class="article-sanity-image">
+    <img
+      src={imageUrl}
+      alt={node.alt || ''}
+      loading="lazy"
+      decoding="async"
+    />
+    {node.caption && (
+      <figcaption>{node.caption}</figcaption>
+    )}
+  </figure>
+)}
+
+<style>
+  .article-sanity-image {
+    margin: 2rem 0;
+    width: 100%;
+  }
+
+  .article-sanity-image img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid var(--sky-line);
+    box-shadow: 0 4px 14px rgba(10, 30, 64, 0.08);
+  }
+
+  .article-sanity-image figcaption {
+    font-size: 0.82rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.6rem;
+    font-style: italic;
+  }
+</style>

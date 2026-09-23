@@ -1,0 +1,25 @@
+{
+  "name": "studio-hidromaticosjsan",
+  "private": true,
+  "version": "1.0.0",
+  "main": "package.json",
+  "author": "Hidromáticos J-SAN",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "@sanity/vision": "^3.78.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sanity": "^3.78.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "typescript": "^5.7.3"
+  }
+}

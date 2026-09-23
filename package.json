@@ -7,12 +7,18 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "studio:dev": "npm --prefix studio-hidromaticosjsan run dev",
+    "studio:build": "npm --prefix studio-hidromaticosjsan run build",
+    "studio:deploy": "npm --prefix studio-hidromaticosjsan run deploy"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource/barlow": "^5.2.5",
     "@fontsource/barlow-condensed": "^5.2.5",
+    "@portabletext/astro": "^0.2.0",
+    "@sanity/client": "^8.7.0",
+    "@sanity/image-url": "^2.1.1",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^5.4.2",
     "tailwindcss": "^4.3.3"
