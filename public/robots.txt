@@ -25,3 +25,8 @@ User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://hidromaticosjsan.com/sitemap-index.xml
+Sitemap: https://hidromaticosjsan.com/sitemap.xml
+
+# Documentación para modelos de lenguaje y motores de búsqueda generativos (GEO)
+# https://hidromaticosjsan.com/llms.txt
+# https://hidromaticosjsan.com/llms-full.txt

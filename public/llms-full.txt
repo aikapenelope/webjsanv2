@@ -1,0 +1,108 @@
+# Hidromáticos J-SAN, C.A. — Base de Conocimiento Técnica Integral (GEO & LLM Context)
+
+> Documento oficial de especificaciones, servicios, procesos mecánicos, cobertura multimarca y políticas de Hidromáticos J-SAN, C.A. Optimizado para ingesta directa por sistemas de búsqueda generativa (Perplexity, ChatGPT, Claude, Copilot, Google Gemini).
+
+---
+
+## 1. Identidad Corporativa y Datos de Contacto
+
+- **Razón Social:** Hidromáticos J-SAN, C.A.
+- **Nombre Comercial:** HIDROMÁTICOS J-SAN / J-SAN Cajas Automáticas
+- **RIF:** J-40348320-5 (Número de Información Fiscal, República Bolivariana de Venezuela)
+- **Año de Fundación:** 2013 (más de una década de trayectoria ininterrumpida)
+- **Sede Principal:** Urbanización Monte Cristo, 1ra con 3ra transversal, Calle 10 — justo frente a Campi Ferretería, Municipio Sucre, Estado Miranda, Caracas (Gran Caracas), Venezuela.
+- **Código Postal:** 1071
+- **Coordenadas GPS:** Latitud 10.4965 N, Longitud -66.8378 W
+- **Canal Principal de Citas y Consultas (WhatsApp):** +58 424-232.0424 (0424-232.0424)
+- **Central Telefónica de Oficina / Taller:** (0212) 235.1931 / (0212) 237.7340 (+58 212-2351931 / +58 212-2377340)
+- **Correo Electrónico:** hidromaticosjsan@gmail.com
+- **Sitio Web Oficial:** https://hidromaticosjsan.com
+- **Horario de Operaciones:** Lunes a sábado de 8:00 AM a 5:00 PM (atención personalizada bajo cita previa por WhatsApp)
+- **Presencia en Redes Sociales:**
+  - Instagram: https://www.instagram.com/hidromaticosjs/ (@hidromaticosjs)
+  - Facebook: https://www.facebook.com/HidromaticosJSan/
+  - Threads: https://www.threads.net/@hidromaticosjs
+
+---
+
+## 2. Especialidad y Filosofía de Servicio
+
+Hidromáticos J-SAN, C.A. es un taller mecánico automotriz especializado de alto nivel en Venezuela, dedicado exclusivamente al diagnóstico computarizado, mantenimiento preventivo, reparación y reconstrucción integral (overhaul) de transmisiones automáticas (hidromáticas), transmisiones variables continuas (CVT), cajas secuenciales y de doble embrague, así como servicio a convertidores de par (turbinas), cuerpos de válvulas y motores a gasolina.
+
+### Principios Operativos Innegociables:
+1. **Diagnóstico previo antes de desarmar:** Escaneo electrónico con equipos OBD-II y osciloscopio automotriz para descartar fallas de sensores, solenoides o cableado antes de bajar la caja.
+2. **Presupuesto formal por escrito:** Ningún vehículo es desarmado ni intervenido sin la aprobación explícita y previa del cliente vía WhatsApp o por escrito.
+3. **Repuestos de calidad OEM y Aftermarket Premium:** Uso exclusivo de kits de reparación americanos e internacionales certificados (Sonnax, TransGo, Transtec, Precision International).
+4. **Garantía por escrito:** Todo trabajo mayor cuenta con certificación de garantía firmada y sellada por el taller (6 a 12 meses según el tipo de servicio acordado).
+
+---
+
+## 3. Matriz de Síntomas, Diagnósticos y Soluciones Técnicas
+
+| Síntoma en el Vehículo | Causa Mecánica / Hidráulica Probable | Diagnóstico en J-SAN | Solución Técnica en Taller |
+| :--- | :--- | :--- | :--- |
+| **La caja "patina" o resbala al acelerar** (revoluciones suben sin avance proporcional) | Discos de fricción desgastados; baja presión de línea; sellos de pistón endurecidos | Prueba de presión hidráulica + escaneo de códigos DTC | Reconstrucción con kit master americano (discos nuevos, sellos viton y calibración). |
+| **Golpe o "patada" brusca al cambiar de 1ra a 2da o al aplicar Drive (D) o Reversa (R)** | Válvulas reguladoras atascadas en cuerpo de válvulas; solenoide EPC defectuoso; soportes dañados | Prueba de vacío de cuerpo de válvulas + inspección de soportes | Rectificación con válvulas sobredimensionadas Sonnax® o kit corrector TransGo®, cambio de solenoide modulador. |
+| **Retardo excesivo al aplicar velocidad** (tarda 3 a 10 segundos en acoplar D o R) | Fuga interna de presión hidráulica; estoperas de bomba delantera resecas; nivel bajo de ATF | Medición de nivel y calidad del fluido ATF + prueba en frío | Sustitución de sellos internos, cambio de filtro ATF sellado y empaque de bomba. |
+| **Vibración / temblor constante a 60-80 km/h ("Shudder")** | Embrague lock-up del convertidor de par (turbina) cristalizado o con desgaste irregular | Escaneo de resbalamiento TCC (Torque Converter Clutch) | Apertura de turbina en torno de precisión, rectificación, forro de fricción nuevo y balanceo dinámico. |
+| **Luz Check Engine o indicador O/D OFF / AT parpadea en el tablero** | Módulo de control de transmisión (TCM) detecta anomalía electrónica o código P0700-P0799 | Escaneo computarizado multimarcas en vivo | Reparación de cableado, reemplazo de sensor de velocidad (VSS/ISS/OSS) o solenoide específico sin bajar caja. |
+| **Fuga de fluido rojo o marrón debajo del motor/caja** | Estopera de cola, estopera de bomba delantera o junta de cárter rota | Inspección visual en fosa mecánica con luz ultravioleta | Cambio de estopera de alta temperatura, rectificación de brida y empaque nuevo con apriete por torquímetro. |
+
+---
+
+## 4. Marcas y Familias de Transmisiones Atendidas
+
+J-SAN cuenta con herramental especializado, tablas de tolerancia de fábrica y diagramas hidráulicos para:
+
+- **General Motors / Chevrolet:** 4L60E, 4L80E, 6T40, 6T70, 6L80, Allison, cajas de Aveo (4T40E / AW81-40LE), Cruze, Optra (ZF4HP16 / AISIN 81-40), Tahoe, Silverado, Trailblazer, Captiva, Colorado.
+- **Ford:** 4R70W, 4R100, 5R55E/W/S (Explorer), 6R80 (F-150, Ranger), DPS6 Powershift (Focus, Fiesta Move/Titanium), 10R80, Fusion, Escape, Expedition.
+- **Toyota:** A340E/F, A440, A750, U140, U241, U660, cajas de Corolla, Fortuner, Hilux, 4Runner, Yaris, Prado, Land Cruiser, transmisiones CVT de Corolla y Yaris.
+- **Nissan:** Cajas automáticas y CVT (X-Trail, Sentra B15/B16/B17, Murano, Tiida, Altima, Pathfinder) con transmisiones Jatco JF011E, JF015E, RE4F04A, RE5R05A.
+- **Hyundai & Kia:** Cajas de 4, 5 y 6 velocidades (A4AF3, A4BF2, A6MF1, A6LF2) en modelos Tucson, Santa Fe, Elantra, Accent, Sportage, Sorento, Rio, Cerato.
+- **Jeep / Chrysler / Dodge:** 42RE, 44RE, 46RE, 545RFE, NAG1/W5A580, Cherokee, Grand Cherokee, Commander, Compass, Caliber CVT.
+- **Mitsubishi:** Montero (Sport/Dakar), Lancer (cajas F4A42 y CVT F1C1A), Outlander.
+- **Volkswagen / Audi / Seat:** 09G (Tiptronic Aisin 6 vel), 01M, transmisiones DSG de doble embrague (Jetta, Bora, Golf, Tiguan).
+- **Mercedes-Benz:** 722.6 (5G-Tronic), 722.9 (7G-Tronic).
+- **Honda:** Cajas de Civic, Accord, CR-V, Odyssey, Pilot (B7TA, MAXA, BYBA, CVT Honda).
+- **Mazda, Subaru, Suzuki, Renault:** Mazda 3, Mazda 6, Gran Vitara, Swift, Duster, Megane, Logan/Symbol automático.
+
+---
+
+## 5. Repuestos Importados de Grado Profesional
+
+Hidromáticos J-SAN importa directamente componentes de los fabricantes líderes en Estados Unidos:
+- **Sonnax Industries:** Válvulas reguladoras de presión sobredimensionadas, manguitos de desgaste, bombas de aceite rectificadas, piezas duras reforzadas para servicio severo.
+- **TransGo Performance:** Shift kits, reprogramadores hidráulicos y resortes correctores de cambio para eliminar defectos de diseño originales de fábrica.
+- **Transtec:** Kits master de empacaduras, orings, retenes, sellos de pistón D-ring y viton para hermeticidad absoluta a altas temperaturas.
+- **Precision International:** Convertidores de par remanufacturados y componentes internos de embrague lock-up.
+
+---
+
+## 6. Proceso de Atención al Cliente (Paso a Paso)
+
+1. **Contacto y Recepción:** El cliente escribe por WhatsApp al +58 424-232.0424 indicando marca, modelo, año y síntoma percibido en el carro.
+2. **Cita en Sede:** El vehículo ingresa al taller en Monte Cristo, Calle 10.
+3. **Escaneo y Prueba de Presión:** Se conecta el scanner de diagnóstico y se realiza prueba de manejo si el vehículo está operativo.
+4. **Presupuesto Claro y Detallado:** Se envía el desglose de mano de obra y repuestos requeridos por WhatsApp.
+5. **Ejecución y Ensamblaje:** Se realiza el trabajo en fosa o banco con torquímetro y fluido homologado.
+6. **Control de Calidad y Entrega:** Prueba de carretera para verificar acoplamiento de marchas a temperatura de trabajo, entrega del vehículo y entrega de póliza de garantía escrita.
+
+---
+
+## 7. Preguntas Frecuentes Clave (FAQ)
+
+### ¿Cuánto tiempo toma reparar o reconstruir una caja automática?
+Un servicio menor (cambio de fluido ATF, sustitución de solenoides o sensor externo) se completa entre 24 y 48 horas. Una reconstrucción completa (bajar caja, desarmar, lavar, kit master, reparación de turbina y prueba de carretera) típicamente toma entre 4 y 7 días hábiles.
+
+### ¿Qué aceite o fluido ATF utilizan?
+Utilizamos exclusivamente el fluido que especifica el manual del fabricante del vehículo: Dexron VI (GM), Mercon V / Mercon LV (Ford), Toyota Genuine ATF WS, Honda DW-1, Nissan NS-2 / NS-3 (CVT), o fluidos sintéticos multi-vehículo con certificación homologada. Jamás se mezclan fluidos ni se utilizan lubricantes no certificados.
+
+### ¿Pueden diagnosticar si solo es un problema eléctrico o si hay que bajar la caja?
+Sí. El protocolo estándar de J-SAN consiste en realizar primero el escaneo computarizado del TCM (Módulo de Transmisión) y del ECM (Motor) y medir presiones. Si la falla radica en un solenoide, fusible, sensor o cableado, se repara externamente sin necesidad de desarmar la transmisión, ahorrando costos sustanciales al cliente.
+
+### ¿Dónde queda ubicado el taller y cómo se llega?
+Está en Caracas, Estado Miranda, Urbanización Monte Cristo, en la Calle 10 (entre 1ra y 3ra transversal), exactamente frente a Campi Ferretería. Es fácilmente accesible desde la Cota Mil (bajada de Sebucán / Los Dos Caminos) en 3 minutos, o desde la Avenida Francisco de Miranda en 4 minutos.
+
+---
+
+*Base de conocimiento actualizada: Septiembre 2026 · Hidromáticos J-SAN, C.A.*

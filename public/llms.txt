@@ -1,6 +1,7 @@
 # Hidromáticos J-SAN, C.A.
 
 > Taller venezolano especialista en transmisiones automáticas ("cajas automáticas" / hidromáticos), importadores de motores, cajas y repuestos. Fundado en 2013. Caracas · Miranda · Venezuela.
+> Base de conocimiento técnica completa para modelos de IA y búsqueda generativa (GEO): https://hidromaticosjsan.com/llms-full.txt
 
 ## Datos del negocio
 

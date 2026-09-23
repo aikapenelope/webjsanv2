@@ -19,6 +19,8 @@ interface Props {
   topbarTagline?: string;
   hideHeader?: boolean;
   hideFooter?: boolean;
+  /** Evitar indexación en motores de búsqueda (ej: 404) */
+  noindex?: boolean;
 }
 
 const {
@@ -30,10 +32,13 @@ const {
   topbarTagline,
   hideHeader = false,
   hideFooter = false,
+  noindex = false,
 } = Astro.props;
 
 const canonical = new URL(path, SITE.url).href;
 const ogImageUrl = new URL(ogImage, SITE.url).href;
+const logoUrl = new URL('/assets/logo-jsan.webp', SITE.url).href;
+const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=Hidrom%C3%A1ticos+J-SAN+C.A.+Monte+Cristo+Miranda+Caracas+Venezuela';
 
 const jsonLdLocal: Record<string, unknown> = {
   '@context': 'https://schema.org',
@@ -41,19 +46,25 @@ const jsonLdLocal: Record<string, unknown> = {
   '@id': `${SITE.url}/#negocio`,
   name: SITE.name,
   legalName: SITE.name,
+  alternateName: ['Hidromáticos J-SAN', 'Taller J-SAN', 'JSAN Cajas Automáticas'],
   url: SITE.url,
+  logo: logoUrl,
+  image: [ogImageUrl, logoUrl],
   telephone: [SITE.phoneOficina1, SITE.phoneOficina2, `+${SITE.whatsapp}`],
   email: SITE.email,
   foundingDate: String(SITE.fundacion),
   taxID: SITE.rif,
-  image: ogImageUrl,
   priceRange: '$$',
-  slogan: 'Líderes en Transmisiones',
+  currenciesAccepted: 'USD, VED',
+  paymentAccepted: 'Efectivo, Tarjeta de Débito, Tarjeta de Crédito, Pago Móvil, Zelle, Transferencia Bancaria',
+  hasMap: mapsUrl,
+  slogan: 'Líderes en Transmisiones Automáticas y Motores',
   address: {
     '@type': 'PostalAddress',
     streetAddress: SITE.sede,
     addressLocality: 'Caracas',
     addressRegion: 'Miranda',
+    postalCode: '1071',
     addressCountry: 'VE',
   },
   geo: {
@@ -69,12 +80,74 @@ const jsonLdLocal: Record<string, unknown> = {
       closes: '17:00',
     },
   ],
-  areaServed: ['Caracas', 'Miranda', 'Los Teques', 'Venezuela'],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.6',
+    reviewCount: '35',
+    bestRating: '5',
+    worstRating: '1',
+  },
+  areaServed: ['Caracas', 'Miranda', 'Los Teques', 'Guarenas', 'Guatire', 'Venezuela'],
   sameAs: Object.values(SITE.redes),
 };
 
+const jsonLdWebsite: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE.url}/#sitio`,
+  url: SITE.url,
+  name: SITE.shortName,
+  alternateName: ['Hidromáticos JSAN', 'JSAN Cajas Automáticas Caracas'],
+  inLanguage: 'es-VE',
+  publisher: {
+    '@id': `${SITE.url}/#negocio`,
+  },
+};
+
+// Generación automática de BreadcrumbList para Google Rich Results
+let jsonLdBreadcrumbs: Record<string, unknown> | null = null;
+if (path !== '/' && !path.includes('404')) {
+  const segments = path.split('/').filter(Boolean);
+  const itemListElement = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Inicio',
+      item: `${SITE.url}/`,
+    },
+  ];
+
+  let accumulated = SITE.url;
+  segments.forEach((seg, idx) => {
+    accumulated += `/${seg}/`;
+    let segName = seg.replace(/-/g, ' ');
+    if (seg === 'blog') segName = 'Blog';
+    else if (seg === 'nosotros') segName = 'Nosotros';
+    else if (seg === 'contacto') segName = 'Contacto';
+    else if (seg === 'resenas') segName = 'Reseñas';
+    else if (seg === 'videos') segName = 'Videos';
+    else if (seg === 'terminos') segName = 'Términos y Condiciones';
+    else segName = title.split('|')[0].split('·')[0].trim();
+
+    itemListElement.push({
+      '@type': 'ListItem',
+      position: idx + 2,
+      name: segName,
+      item: accumulated,
+    });
+  });
+
+  jsonLdBreadcrumbs = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement,
+  };
+}
+
 const scriptsJsonLd = [
   jsonLdLocal,
+  jsonLdWebsite,
+  ...(jsonLdBreadcrumbs ? [jsonLdBreadcrumbs] : []),
   ...(jsonLdExtra ? (Array.isArray(jsonLdExtra) ? jsonLdExtra : [jsonLdExtra]) : []),
 ];
 ---
@@ -86,10 +159,18 @@ const scriptsJsonLd = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={noindex
+        ? 'noindex, follow'
+        : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+    />
+    <meta name="author" content={SITE.name} />
     <meta name="theme-color" content="#0f2a57" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href="/assets/favicon.png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
