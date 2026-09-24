@@ -4,6 +4,10 @@
   "trailingSlash": true,
   "rewrites": [
     {
+      "source": "/google9aae3038d74abcb6.html",
+      "destination": "/google9aae3038d74abcb6.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/sitemap-index.xml"
     },
