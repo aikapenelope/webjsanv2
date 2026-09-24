@@ -9,6 +9,25 @@ const description =
 
 const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
 const waDirecto = waLink('Hola J-SAN, ya completé la planilla de recepción de mi vehículo y voy en camino / estoy en el taller.');
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Inicio',
+      item: SITE.url,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Recepción de Vehículo',
+      item: `${SITE.url}/recepcion/`,
+    },
+  ],
+};
 ---
 
 <BaseLayout
@@ -16,6 +35,7 @@ const waDirecto = waLink('Hola J-SAN, ya completé la planilla de recepción de 
   description={description}
   path="/recepcion/"
   topbarTagline="Recepción Oficial en Taller · Est. 2013"
+  jsonLdExtra={breadcrumbSchema}
 >
   <main class="recepcion-standalone-page">
     <!-- SECTOR PRINCIPAL CON FORMULARIO E IFRAME -->

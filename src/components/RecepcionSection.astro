@@ -112,8 +112,9 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
           id="recepcion-lark-iframe"
           title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
           loading="lazy"
-          allow="camera; microphone; geolocation; clipboard-write; encrypted-media"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+          allow="camera; geolocation; clipboard-write; encrypted-media; fullscreen"
+          allowfullscreen
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
         ></iframe>
       </div>
 
@@ -140,22 +141,29 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
 </section>
 
 <script>
-  // Manejo del loader del iframe para evitar saltos visuales en conexiones lentas
-  const iframe = document.getElementById('recepcion-lark-iframe');
-  const loader = document.getElementById('iframe-loader');
+  function initRecepcionLoader() {
+    const iframe = document.getElementById('recepcion-lark-iframe') as HTMLIFrameElement | null;
+    const loader = document.getElementById('iframe-loader');
 
-  if (iframe && loader) {
-    iframe.addEventListener('load', () => {
-      loader.classList.add('is-hidden');
-    });
-
-    // Fallback de seguridad por si el evento load se retrasa en móviles
-    setTimeout(() => {
-      if (loader && !loader.classList.contains('is-hidden')) {
+    if (iframe && loader) {
+      const hideLoader = () => {
         loader.classList.add('is-hidden');
-      }
-    }, 4500);
+      };
+
+      iframe.addEventListener('load', hideLoader);
+
+      // Fallback de seguridad por si el evento load se retrasa en móviles
+      setTimeout(() => {
+        if (!loader.classList.contains('is-hidden')) {
+          hideLoader();
+        }
+      }, 4000);
+    }
   }
+
+  // Inicializar en primera carga y en cada navegación de ClientRouter
+  initRecepcionLoader();
+  document.addEventListener('astro:page-load', initRecepcionLoader);
 </script>
 
 <style>
