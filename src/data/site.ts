@@ -19,7 +19,11 @@ export const SITE = {
     threads: 'https://www.threads.net/@hidromaticosjs',
     instagram: 'https://www.instagram.com/hidromaticosjs/',
   },
+  formRecepcion: 'https://clarkuseqtlegfgv.usttp.larksuite.com/share/base/form/shrutqFpforzg3QLDEbgDX1iAae',
 } as const;
+
+export const RECEPCION_FORM_URL =
+  'https://clarkuseqtlegfgv.usttp.larksuite.com/share/base/form/shrutqFpforzg3QLDEbgDX1iAae';
 
 export const waLink = (texto: string) =>
   `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(texto)}`;
@@ -35,11 +39,12 @@ export const NAV: readonly NavItem[] = [
   { num: '01', label: 'Servicios', href: '/#servicios' },
   { num: '02', label: 'Repuestos', href: '/#repuestos' },
   { num: '03', label: 'Ubicación', href: '/#sedes' },
-  { num: '04', label: 'Nosotros', href: '/nosotros/' },
-  { num: '05', label: 'Reseñas', href: '/resenas/' },
-  { num: '06', label: 'Videos', href: '/videos/' },
-  { num: '07', label: 'Blog', href: '/blog/' },
-  { num: '08', label: 'Contacto', href: '/contacto/' },
+  { num: '04', label: 'Recepción', href: '/recepcion/', badge: 'TALLER' },
+  { num: '05', label: 'Nosotros', href: '/nosotros/' },
+  { num: '06', label: 'Reseñas', href: '/resenas/' },
+  { num: '07', label: 'Videos', href: '/videos/' },
+  { num: '08', label: 'Blog', href: '/blog/' },
+  { num: '09', label: 'Contacto', href: '/contacto/' },
 ];
 
 export interface SocialItem {

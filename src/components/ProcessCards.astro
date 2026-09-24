@@ -5,6 +5,8 @@ const PASOS = [
     t: 'Traes el carro',
     tag: 'Recepción & Síntomas',
     p: 'Nos cuentas qué sentiste: patineo, golpe en cambio o luz de tablero encendida. Anotamos el historial completo.',
+    cta: 'Llenar recepción digital ↓',
+    href: '#recepcion',
   },
   {
     n: '02',
@@ -43,6 +45,11 @@ const PASOS = [
             <span class="step-tag">{paso.tag}</span>
             <h3>{paso.t}</h3>
             <p>{paso.p}</p>
+            {paso.cta && (
+              <a href={paso.href} class="step-cta-link">
+                {paso.cta}
+              </a>
+            )}
           </div>
         </article>
       ))}
@@ -129,6 +136,25 @@ const PASOS = [
     color: var(--muted-dark);
     line-height: 1.5;
     text-wrap: pretty;
+  }
+
+  .step-cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 0.4rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+  }
+
+  .step-cta-link:hover {
+    color: #ffffff;
   }
 
   @media (max-width: 990px) {
