@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RecepcionSection from '../components/RecepcionSection.astro';
+import { SITE, SOCIAL, waLink } from '../data/site';
+
+const title = `Recepción de Vehículo en Taller · ${SITE.shortName} — Ingreso y Diagnóstico en Caracas`;
+const description =
+  'Planilla digital oficial de recepción de vehículos en HIDROMÁTICOS J-SAN, C.A. Registra el kilometraje, fallas de transmisión o motor y agiliza el diagnóstico computarizado en Monte Cristo, Caracas.';
+
+const mapsUrl = SOCIAL.find((s) => s.nombre === 'Cómo llegar')?.url ?? '#';
+const waDirecto = waLink('Hola J-SAN, ya completé la planilla de recepción de mi vehículo y voy en camino / estoy en el taller.');
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path="/recepcion/"
+  topbarTagline="Recepción Oficial en Taller · Est. 2013"
+>
+  <main class="recepcion-standalone-page">
+    <!-- SECTOR PRINCIPAL CON FORMULARIO E IFRAME -->
+    <RecepcionSection isPage={true} />
+
+    <!-- GUÍA RÁPIDA DE PASOS EN SEDE MONTE CRISTO -->
+    <section class="guia-taller-strip">
+      <div class="wrap">
+        <div class="guia-head">
+          <span class="kicker kicker-gold">Al Llegar a Nuestro Taller</span>
+          <h2>¿Qué ocurre tras enviar tu formulario?</h2>
+          <p class="guia-lead">
+            Tu vehículo entra directamente en la cola de revisión técnica bajo custodia segura en nuestras instalaciones de Monte Cristo, Los Ruices.
+          </p>
+        </div>
+
+        <div class="guia-steps">
+          <div class="guia-step">
+            <span class="g-num">Paso 01</span>
+            <h3>Inspección Visual y Odómetro</h3>
+            <p>Verificamos en fosa y rampa el kilometraje reportado, estado físico exterior y niveles de fluidos.</p>
+          </div>
+          <div class="guia-step">
+            <span class="g-num">Paso 02</span>
+            <h3>Escaneo Computarizado</h3>
+            <p>Conectamos scanner profesional a la computadora de la transmisión (TCM/PCM) para leer códigos DTC activos.</p>
+          </div>
+          <div class="guia-step">
+            <span class="g-num">Paso 03</span>
+            <h3>Presupuesto por WhatsApp</h3>
+            <p>Te enviamos el reporte exacto con repuestos necesarios antes de realizar cualquier intervención mecánica.</p>
+          </div>
+        </div>
+
+        <!-- ACCIONES RÁPIDAS -->
+        <div class="guia-actions">
+          <a class="btn btn-primary" href={mapsUrl} target="_blank" rel="noopener">
+            Ver cómo llegar a Monte Cristo en Google Maps ↗
+          </a>
+          <a class="btn btn-gold" href={waDirecto} target="_blank" rel="noopener">
+            Notificar llegada por WhatsApp →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .recepcion-standalone-page {
+    background: #ffffff;
+  }
+
+  .guia-taller-strip {
+    background: var(--navy);
+    color: #ffffff;
+    padding: clamp(2.8rem, 5.5vw, 4.4rem) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .guia-head {
+    max-width: 44rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .guia-head h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.8vw, 2.9rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ffffff;
+    line-height: 1.05;
+    margin-top: 0.4rem;
+  }
+
+  .guia-lead {
+    color: var(--muted-dark);
+    font-size: 1.02rem;
+    line-height: 1.55;
+    margin-top: 0.8rem;
+  }
+
+  .guia-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+    margin-bottom: 2.8rem;
+  }
+
+  .guia-step {
+    background: var(--navy-panel);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .g-num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+  }
+
+  .guia-step h3 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .guia-step p {
+    font-size: 0.9rem;
+    color: var(--muted-dark);
+    line-height: 1.5;
+  }
+
+  .guia-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .guia-steps {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .guia-actions {
+      flex-direction: column;
+    }
+    .guia-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

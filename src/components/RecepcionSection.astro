@@ -1,0 +1,554 @@
+---
+import { SITE, RECEPCION_FORM_URL, waLink } from '../data/site';
+
+interface Props {
+  isPage?: boolean;
+}
+
+const { isPage = false } = Astro.props;
+const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de mi vehículo y tengo una consulta:');
+---
+
+<section id="recepcion" class:list={['recepcion-section', isPage ? 'recepcion-page-mode' : 'section']}>
+  <div class="wrap">
+    <!-- CABECERA DEL SECTOR CON CONTEXTO INSTITUCIONAL -->
+    <div class="sec-head">
+      <div class="recepcion-badges-top">
+        <span class="kicker kicker-gold">Protocolo Oficial de Ingreso</span>
+        <span class="recepcion-live-badge">
+          <span class="live-dot" aria-hidden="true"></span>
+          Sistema Activo en Taller
+        </span>
+      </div>
+      <h2 class:list={['sec-title', isPage && 'page-title']}>
+        Recepción de Vehículo <em>en Taller</em>
+      </h2>
+      <p class="sec-lead">
+        Registra el ingreso formal de tu vehículo a las instalaciones de <strong>{SITE.name}</strong> en Monte Cristo. Capturamos los datos del automóvil, kilometraje y síntomas reportados para iniciar de inmediato el escaneo computarizado y resguardo bajo techo.
+      </p>
+    </div>
+
+    <!-- TARJETAS DE CONTEXTO Y SEGURIDAD DEL CLIENTE -->
+    <div class="context-grid">
+      <div class="context-card">
+        <div class="context-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"/>
+            <circle cx="7" cy="17" r="2"/>
+            <path d="M9 17h6"/>
+            <circle cx="17" cy="17" r="2"/>
+          </svg>
+        </div>
+        <div class="context-content">
+          <h4>01. Ingreso Inmediato</h4>
+          <p>Llena la planilla desde tu teléfono al llegar o antes de traer el carro para agilizar la entrada al portón sin papeleos.</p>
+        </div>
+      </div>
+
+      <div class="context-card">
+        <div class="context-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <path d="m9 15 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="context-content">
+          <h4>02. Reporte de Síntomas</h4>
+          <p>Indica si el carro patina, golpea en cambios, tiene bote de aceite ATF o testigo encendido en el tablero.</p>
+        </div>
+      </div>
+
+      <div class="context-card">
+        <div class="context-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="context-content">
+          <h4>03. Custodia &amp; Garantía</h4>
+          <p>Taller resguardado con fosa y rampas en Los Ruices. RIF institucional <strong>{SITE.rif}</strong> con presupuesto previo por escrito.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENEDOR TIPO TERMINAL PARA EL IFRAME OPTIMIZADO -->
+    <div class="iframe-container-card">
+      <div class="iframe-header">
+        <div class="iframe-header-left">
+          <span class="window-dot red" aria-hidden="true"></span>
+          <span class="window-dot yellow" aria-hidden="true"></span>
+          <span class="window-dot green" aria-hidden="true"></span>
+          <span class="iframe-title-label">Planilla Digital de Recepción · Base J-SAN</span>
+        </div>
+        <div class="iframe-header-right">
+          <a
+            href={RECEPCION_FORM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="open-external-btn"
+            title="Abrir formulario en pestaña completa"
+          >
+            <span>Pantalla completa</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="iframe-wrapper" id="iframe-wrapper">
+        <div class="iframe-loading-indicator" id="iframe-loader" aria-hidden="true">
+          <div class="spinner"></div>
+          <span>Cargando formulario seguro de recepción...</span>
+        </div>
+
+        <iframe
+          src={RECEPCION_FORM_URL}
+          class="recepcion-iframe"
+          id="recepcion-lark-iframe"
+          title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
+          loading="lazy"
+          allow="camera; microphone; geolocation; clipboard-write; encrypted-media"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+        ></iframe>
+      </div>
+
+      <div class="iframe-footer">
+        <div class="footer-note">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>
+            ¿Problemas al cargar el formulario en tu teléfono? Abre directamente en <a href={RECEPCION_FORM_URL} target="_blank" rel="noopener noreferrer">Lark Base Formulario ↗</a>
+          </span>
+        </div>
+        <a href={waDudas} target="_blank" rel="noopener" class="footer-wa-link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.5 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3s.8-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .6-.2 1.1Z"/>
+          </svg>
+          <span>Asistencia por WhatsApp en recepción</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Manejo del loader del iframe para evitar saltos visuales en conexiones lentas
+  const iframe = document.getElementById('recepcion-lark-iframe');
+  const loader = document.getElementById('iframe-loader');
+
+  if (iframe && loader) {
+    iframe.addEventListener('load', () => {
+      loader.classList.add('is-hidden');
+    });
+
+    // Fallback de seguridad por si el evento load se retrasa en móviles
+    setTimeout(() => {
+      if (loader && !loader.classList.contains('is-hidden')) {
+        loader.classList.add('is-hidden');
+      }
+    }, 4500);
+  }
+</script>
+
+<style>
+  .recepcion-section {
+    background: var(--sky);
+    border-top: 1px solid var(--sky-line);
+    border-bottom: 1px solid var(--sky-line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .recepcion-page-mode {
+    padding: clamp(2.4rem, 5vw, 4rem) 0 clamp(3rem, 6vw, 5rem);
+    background: #ffffff;
+    border-top: none;
+  }
+
+  .recepcion-badges-top {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.65rem;
+  }
+
+  .recepcion-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--blue-corporate);
+    background: var(--blue-soft);
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(45, 88, 147, 0.2);
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #178a42;
+    box-shadow: 0 0 0 0 rgba(23, 138, 66, 0.7);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(23, 138, 66, 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 6px rgba(23, 138, 66, 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 rgba(23, 138, 66, 0);
+    }
+  }
+
+  .sec-title em {
+    font-style: normal;
+    color: var(--blue-corporate);
+  }
+
+  .page-title {
+    font-size: clamp(2.4rem, 4.8vw, 3.8rem);
+  }
+
+  /* GRID DE CONTEXTO */
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 2.2rem;
+  }
+
+  .context-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 1.35rem 1.25rem;
+    display: flex;
+    gap: 1rem;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .context-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(45, 88, 147, 0.3);
+  }
+
+  .context-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--blue-soft);
+    color: var(--blue-corporate);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .context-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .context-content h4 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--navy);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+  }
+
+  .context-content p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .context-content strong {
+    color: var(--navy);
+  }
+
+  /* CARD DEL IFRAME CON ESTILO TALLER TECNOLÓGICO */
+  .iframe-container-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(15, 42, 87, 0.08), 0 1px 3px rgba(15, 42, 87, 0.04);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .iframe-header {
+    background: var(--navy);
+    color: #ffffff;
+    padding: 0.85rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .iframe-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .window-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .window-dot.red { background: #ff5f56; }
+  .window-dot.yellow { background: #ffbd2e; }
+  .window-dot.green { background: #27c93f; }
+
+  .iframe-title-label {
+    margin-left: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #f0f4fc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .open-external-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--gold-soft);
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid rgba(233, 194, 92, 0.3);
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .open-external-btn:hover {
+    background: rgba(233, 194, 92, 0.2);
+    color: #ffffff;
+    border-color: var(--gold);
+  }
+
+  /* WRAPPER DEL IFRAME Y OPTIMIZACIÓN MÓVIL */
+  .iframe-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 780px;
+    background: #fbfcfe;
+    overflow: hidden;
+  }
+
+  .iframe-loading-indicator {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: #ffffff;
+    z-index: 2;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .iframe-loading-indicator.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--sky-line);
+    border-top-color: var(--blue-corporate);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .recepcion-iframe {
+    width: 100%;
+    height: 820px;
+    min-height: 780px;
+    border: none;
+    display: block;
+    background: #ffffff;
+    /* Optimización de scroll táctil en smartphones */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  /* PIE DEL IFRAME CON SOPORTE WHATSAPP Y ENLACES DIRECTOS */
+  .iframe-footer {
+    background: #ffffff;
+    border-top: 1px solid var(--sky-line);
+    padding: 0.9rem 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.84rem;
+  }
+
+  .footer-note {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--muted);
+  }
+
+  .footer-note a {
+    color: var(--blue-corporate);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .footer-note a:hover {
+    color: var(--blue-hover);
+  }
+
+  .footer-wa-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #127536;
+    font-weight: 700;
+    text-decoration: none;
+    background: rgba(23, 138, 66, 0.08);
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(23, 138, 66, 0.25);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .footer-wa-link:hover {
+    background: #178a42;
+    color: #ffffff;
+  }
+
+  /* RESPONSIVE MÓVIL Y TABLET */
+  @media (max-width: 980px) {
+    .context-grid {
+      grid-template-columns: 1fr;
+      gap: 0.9rem;
+    }
+
+    .iframe-wrapper {
+      min-height: 720px;
+    }
+
+    .recepcion-iframe {
+      height: 740px;
+      min-height: 720px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .recepcion-badges-top {
+      gap: 0.5rem;
+    }
+
+    .recepcion-live-badge {
+      font-size: 0.66rem;
+      padding: 0.18rem 0.5rem;
+    }
+
+    .context-card {
+      padding: 1.1rem 1rem;
+      gap: 0.8rem;
+    }
+
+    .context-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+    }
+
+    .context-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .iframe-header {
+      padding: 0.75rem 0.9rem;
+    }
+
+    .iframe-title-label {
+      font-size: 0.82rem;
+    }
+
+    .open-external-btn {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.55rem;
+    }
+
+    .iframe-wrapper {
+      min-height: 680px;
+    }
+
+    .recepcion-iframe {
+      height: 700px;
+      min-height: 680px;
+    }
+
+    .iframe-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+    }
+
+    .footer-wa-link {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
