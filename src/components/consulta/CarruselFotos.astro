@@ -39,7 +39,7 @@
 
 <style>
   .cq-fotos {
-    --cq-foto-alto: clamp(260px, 52vh, 460px);
+    --cq-foto-alto: clamp(300px, 58vh, 560px);
     display: grid;
     gap: 0.8rem;
   }
@@ -99,7 +99,7 @@
 
   /* Slides creados por JS: estilo global necesario (nodos fuera del scope Astro) */
   .cq-fotos-track :global(.cq-slide) {
-    width: min(88vw, 720px);
+    width: min(94vw, 940px);
     flex: none;
     scroll-snap-align: center;
     scroll-snap-stop: always;
@@ -108,9 +108,13 @@
     aspect-ratio: 4 / 3;
     height: var(--cq-foto-alto);
     display: block;
+    border-radius: calc(var(--radius) + 4px);
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(10, 30, 64, 0.28);
   }
 
   .cq-fotos-track :global(.cq-slide-btn) {
+    position: relative;
     display: block;
     width: 100%;
     height: 100%;
@@ -139,6 +143,33 @@
 
   .cq-fotos-track :global(.cq-slide.is-lista img) {
     opacity: 1;
+  }
+
+  /* Señal de ampliación: la foto se abre en pantalla completa */
+  .cq-fotos-track :global(.cq-slide-btn)::after {
+    content: '⤢';
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 1.1rem;
+    color: #ffffff;
+    background: rgba(10, 30, 64, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+  }
+
+  .cq-fotos-track :global(.cq-slide.is-lista .cq-slide-btn)::after {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .cq-flecha {
