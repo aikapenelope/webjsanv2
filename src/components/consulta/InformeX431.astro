@@ -335,4 +335,20 @@
       justify-content: center;
     }
   }
+  @media (max-width: 560px) {
+    .cq-x431-sistemas :global(.cq-falla) {
+      grid-template-columns: auto 1fr;
+      gap: 0.35rem 0.6rem;
+      padding: 0.65rem 0.75rem;
+    }
+
+    .cq-x431-sistemas :global(.cq-falla-estado) {
+      grid-column: 1 / -1;
+    }
+
+    .cq-x431-resumen {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem 0.9rem;
+    }
+  }
 </style>

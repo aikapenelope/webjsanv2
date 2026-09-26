@@ -122,7 +122,9 @@ const waGarantia = (placa) =>
 
 /* ───────────────────────────── Expediente completo ─────────────────────────── */
 
-export async function construirExpediente(placa) {
+const enVuelo = new Map();
+
+async function construirExpedienteInterno(placa) {
   const [veh, ots, entradas, dxs, gars] = await Promise.all([
     buscarRegistros(TABLAS.vehiculos, porPlacaNorm(placa), { pageSize: 5 }),
     buscarRegistros(TABLAS.ordenes, porPlacaNorm(placa), { pageSize: 100 }),
@@ -295,4 +297,17 @@ export async function construirExpediente(placa) {
     ordenes: ordenesDto,
     garantia,
   };
+}
+
+/**
+ * Deduplicación de peticiones idénticas en vuelo (misma placa): si dos
+ * clientes consultan a la vez, comparten una sola consulta a Lark. No cachea
+ * resultados; solo une peticiones concurrentes de la misma instancia.
+ */
+export function construirExpediente(placa) {
+  const enCurso = enVuelo.get(placa);
+  if (enCurso) return enCurso;
+  const promesa = construirExpedienteInterno(placa).finally(() => enVuelo.delete(placa));
+  enVuelo.set(placa, promesa);
+  return promesa;
 }

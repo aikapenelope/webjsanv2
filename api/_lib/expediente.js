@@ -82,7 +82,7 @@ export const porPlacaNorm = (placa) => [
 
 /* ───────────────────────────── Lectura de la Base ──────────────────────────── */
 
-export async function buscarRegistros(tableId, conditions, { pageSize = 100, sort } = {}) {
+export async function buscarRegistros(tableId, conditions, { pageSize = 100, sort, maxPaginas = 5 } = {}) {
   const token = await getTenantToken();
   const cuerpo = {};
   if (Array.isArray(conditions) && conditions.length > 0) {
@@ -90,19 +90,42 @@ export async function buscarRegistros(tableId, conditions, { pageSize = 100, sor
   }
   if (sort) cuerpo.sort = sort;
 
-  const res = await fetch(
-    `${LARK}/open-apis/bitable/v1/apps/${BASE_TOKEN}/tables/${tableId}/records/search?page_size=${pageSize}`,
-    {
-      method: 'POST', // lectura con filtro en el body (API de Búsqueda de registros)
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(cuerpo),
-    },
-  );
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.code !== 0) {
-    throw new Error(`Lark search ${tableId} (${data.code ?? res.status}): ${data.msg ?? 'sin detalle'}`);
+  const url = (query) =>
+    LARK + '/open-apis/bitable/v1/apps/' + BASE_TOKEN + '/tables/' + tableId + '/records/search?' + query;
+  const opciones = {
+    method: 'POST', // lectura con filtro en el body (API de Búsqueda de registros)
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+  };
+
+  // Reintento único ante frecuencia (429 · code 99991400): espera el reset que
+  // indica Lark (acotado a 2 s para no acercarse al maxDuration de la función).
+  const pedir = async (query) => {
+    let res = await fetch(url(query), opciones);
+    let data = await res.json().catch(() => ({}));
+    if (res.status === 429 || data.code === 99991400) {
+      const reset = Number(res.headers?.get?.('x-ogw-ratelimit-reset')) || 1;
+      await new Promise((r) => setTimeout(r, Math.min(reset, 2) * 1000));
+      res = await fetch(url(query), opciones);
+      data = await res.json().catch(() => ({}));
+    }
+    return { res, data };
+  };
+
+  // Paginación completa con tope de seguridad (hoy los volúmenes entran en 1 página).
+  const items = [];
+  let pageToken = '';
+  for (let pagina = 0; pagina < maxPaginas; pagina += 1) {
+    const query = 'page_size=' + pageSize + (pageToken ? '&page_token=' + encodeURIComponent(pageToken) : '');
+    const { res, data } = await pedir(query);
+    if (!res.ok || data.code !== 0) {
+      throw new Error('Lark search ' + tableId + ' (' + (data.code ?? res.status) + '): ' + (data.msg ?? 'sin detalle'));
+    }
+    items.push(...(data.data?.items ?? []));
+    if (!data.data?.has_more || !data.data?.page_token) break;
+    pageToken = data.data.page_token;
   }
-  return { items: data.data?.items ?? [], hasMore: Boolean(data.data?.has_more) };
+  return { items, hasMore: false };
 }
 
 /* ────────────────────── Helpers de valores de campo de Lark ────────────────── */
@@ -172,24 +195,54 @@ export const MAX_FIRMAS_POR_LOTE = 5; // verificado: 5/5 por llamada
  * ⚠️ Lark exige parámetro REPETIDO: ?file_tokens=A&file_tokens=B
  *    (con comas separadas responde vacío — verificado en vivo).
  */
-export async function firmarFotos(fileTokens = []) {
-  const tokens = fileTokens.filter(Boolean);
-  const salida = new Map();
+/* Caché de firmas en memoria del proceso: la URL temporal vive ~24 h y se
+   reutiliza hasta 20 h. Evita volver a firmar las mismas fotos en cada fan-out
+   (menos llamadas a Lark para todos los que abren el mismo expediente). */
+const FIRMA_TTL_MS = 20 * 60 * 60 * 1000;
+const cacheFirmas = new Map();
 
-  for (let i = 0; i < tokens.length; i += MAX_FIRMAS_POR_LOTE) {
-    const lote = tokens.slice(i, i + MAX_FIRMAS_POR_LOTE);
-    const query = lote.map((t) => `file_tokens=${encodeURIComponent(t)}`).join('&');
-    const token = await getTenantToken();
-    const res = await fetch(`${LARK}/open-apis/drive/v1/medias/batch_get_tmp_download_url?${query}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && data.code === 0) {
-      for (const item of data.data?.tmp_download_urls ?? []) {
-        if (item?.file_token && item?.tmp_download_url) {
-          salida.set(item.file_token, item.tmp_download_url);
-        }
+export async function firmarFotos(fileTokens = []) {
+  const salida = new Map();
+  const ahora = Date.now();
+  const faltantes = [];
+
+  for (const token of new Set(fileTokens.filter(Boolean))) {
+    const guardada = cacheFirmas.get(token);
+    if (guardada && guardada.expira > ahora) salida.set(token, guardada.url);
+    else faltantes.push(token);
+  }
+
+  const lotes = [];
+  for (let i = 0; i < faltantes.length; i += MAX_FIRMAS_POR_LOTE) {
+    lotes.push(faltantes.slice(i, i + MAX_FIRMAS_POR_LOTE));
+  }
+  if (lotes.length === 0) return salida;
+
+  const token = await getTenantToken();
+  const respuestas = await Promise.all(
+    lotes.map(async (lote) => {
+      const query = lote.map((t) => 'file_tokens=' + encodeURIComponent(t)).join('&');
+      const res = await fetch(
+        LARK + '/open-apis/drive/v1/medias/batch_get_tmp_download_url?' + query,
+        { headers: { Authorization: 'Bearer ' + token } },
+      );
+      const data = await res.json().catch(() => ({}));
+      return res.ok && data.code === 0 ? (data.data?.tmp_download_urls ?? []) : [];
+    }),
+  );
+
+  for (const items of respuestas) {
+    for (const item of items) {
+      if (item?.file_token && item?.tmp_download_url) {
+        salida.set(item.file_token, item.tmp_download_url);
+        cacheFirmas.set(item.file_token, { url: item.tmp_download_url, expira: ahora + FIRMA_TTL_MS });
       }
+    }
+  }
+
+  if (cacheFirmas.size > 2000) {
+    for (const [clave, valor] of cacheFirmas) {
+      if (valor.expira <= ahora) cacheFirmas.delete(clave);
     }
   }
   return salida;

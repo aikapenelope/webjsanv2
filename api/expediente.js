@@ -76,7 +76,7 @@ export default async function handler(req, res) {
     const expediente = await construirExpediente(placa);
 
     if (!expediente) {
-      res.setHeader('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=120');
+      res.setHeader('Cache-Control', 'public, s-maxage=45, stale-while-revalidate=300');
       res.status(200).json({
         ok: true,
         encontrado: false,
@@ -86,7 +86,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=900');
     res.status(200).json({ ok: true, encontrado: true, ...expediente });
   } catch (err) {
     console.error('[expediente] Lark no disponible:', err?.message ?? err);
