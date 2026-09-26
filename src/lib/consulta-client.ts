@@ -13,6 +13,7 @@
  *    (marca `data-cq-listo` en la página) y se re-ejecuta en `astro:page-load`.
  */
 import { SITE } from '../data/site';
+import { resetLazyEmbed, setupLazyEmbeds } from './lazyEmbed';
 
 /* ───────────────────────────── DTO (espejo del API) ─────────────────────────── */
 
@@ -793,6 +794,43 @@ function fijarEnlaceOriginal(id: string, url: string): void {
   if (enlace) enlace.href = url;
 }
 
+/** Texto de la fachada del iframe del informe (cambia según el estado). */
+function textoEmbed(texto: string): void {
+  ponerTexto(porId('cq-x431-embed'), 'embed-texto', texto);
+}
+
+/**
+ * Monta el iframe diferido del informe original reutilizando el patrón
+ * `data-lazy-embed` de `src/lib/lazyEmbed.ts` (fachada sin red, carga al toque,
+ * timeout con reintento y salida a pestaña nueva). Se reinicia cuando cambia
+ * la URL del informe.
+ */
+function montarEmbedInforme(url: string): void {
+  const bloque = porId('cq-x431-embed');
+  const marco = porId('cq-x431-embed-marco');
+  if (!bloque || !marco) return;
+
+  fijarEnlaceOriginal('cq-x431-embed-original', url);
+  fijarEnlaceOriginal('cq-x431-embed-original-2', url);
+  mostrar(bloque, true);
+
+  if (marco.dataset.src === url) return; // ya inicializado para este informe
+
+  resetLazyEmbed(marco); // desarma el informe anterior (escuchas, timeout e iframe)
+  marco.dataset.src = url;
+  setupLazyEmbeds();
+}
+
+/** Oculta y descarga el iframe del informe (cambio de placa o de expediente). */
+function reiniciarEmbedInforme(): void {
+  const bloque = porId('cq-x431-embed');
+  const marco = porId('cq-x431-embed-marco');
+  mostrar(bloque, false);
+  if (!marco) return;
+  resetLazyEmbed(marco);
+  delete marco.dataset.src;
+}
+
 async function cargarInforme(orden: OrdenDTO | undefined, forzar = false): Promise<void> {
   const ref = referenciaInforme(orden);
   if (!ref) {
@@ -803,6 +841,10 @@ async function cargarInforme(orden: OrdenDTO | undefined, forzar = false): Promi
 
   fijarEnlaceOriginal('cq-x431-original', ref.url);
   fijarEnlaceOriginal('cq-x431-original-error', ref.url);
+  montarEmbedInforme(ref.url);
+  textoEmbed(
+    'El informe original completo también se puede ver aquí mismo: se descarga solo cuando lo pides.',
+  );
 
   if (!forzar && informeCargado?.informeId === ref.informeId) {
     estadoX431(informeCargado.datos ? 'ok' : 'error');
@@ -827,6 +869,9 @@ async function cargarInforme(orden: OrdenDTO | undefined, forzar = false): Promi
   } catch {
     informeCargado = { informeId: ref.informeId, datos: null };
     estadoX431('error');
+    textoEmbed(
+      'El render nativo no está disponible en este momento. Puedes abrir el informe original aquí mismo.',
+    );
   }
 }
 
@@ -844,9 +889,14 @@ function pintarInforme(d: InformeX431DTO): void {
 
     const codigos = d.sistemas.flatMap((s) => s.fallas.map((f) => f.codigo)).filter(Boolean);
     if (codigos.length > 0) {
+      // Rótulo dentro del mismo grupo: sin él, los códigos sueltos parecen un
+      // resto de maquetación (detectado en QA visual, 26-sep).
+      const grupo = crear('div', 'cq-x431-codigos');
+      grupo.appendChild(crear('h5', 'cq-x431-codigos-titulo', 'Códigos detectados'));
       const fila = crear('div', 'cq-x431-pills');
       codigos.forEach((codigo) => fila.appendChild(crear('span', 'cq-pill is-falla', codigo)));
-      sistemas.appendChild(fila);
+      grupo.appendChild(fila);
+      sistemas.appendChild(grupo);
     }
 
     d.sistemas.forEach((sistema) => {
@@ -947,6 +997,7 @@ function pintarExpediente(exp: ExpedienteDTO): void {
   pintarRecepcion(exp.ordenes, exp.placa);
   pintarHistorial(exp.ordenes);
   pintarGarantia(exp.garantia);
+  reiniciarEmbedInforme();
   estadoX431('vacio');
   activarTab('cq-tab-recepcion');
   ponerTexto(document, 'actualizado', `Actualizado ${haceCuando(exp.actualizado)}`);

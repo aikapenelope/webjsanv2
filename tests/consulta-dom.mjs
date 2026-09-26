@@ -156,7 +156,12 @@ function crearEntorno(payloadExpediente, url, falla) {
     if (u.includes('/api/x431')) {
       globalThis.__x431Llamadas = (globalThis.__x431Llamadas ?? 0) + 1;
     }
-    const cuerpo = u.includes('/api/expediente') ? payloadExpediente : X431;
+    // Un escenario puede simular una segunda búsqueda con otro resultado por placa.
+    const porPlaca = globalThis.__payloadPorPlaca ?? {};
+    const placaPedida = Object.keys(porPlaca).find((p) => u.includes(`placa=${p}`));
+    const cuerpo = u.includes('/api/expediente')
+      ? (placaPedida ? porPlaca[placaPedida] : payloadExpediente)
+      : X431;
     return {
       ok: true,
       status: 200,
@@ -194,6 +199,7 @@ async function correr(nombre, { expediente, url, revision, extra, falla }) {
   const dom = crearEntorno(expediente, url, falla);
   const { window } = dom;
   globalThis.__x431Llamadas = 0;
+  globalThis.__payloadPorPlaca = undefined;
 
   await import(
     `${pathToFileURL(`${DIST}_astro/${bundle}`).href}?escenario=${encodeURIComponent(nombre)}`
@@ -317,6 +323,14 @@ await correr('A · expediente completo (deep-link)', {
           : visible(window, '#cq-x431-vacio');
       },
     ],
+    [
+      'sin informe: no se ofrece el iframe diferido',
+      () => {
+        const ref = ordenA?.informeX431;
+        const tieneInforme = Boolean(ref && 'informeId' in ref);
+        return window.document.getElementById('cq-x431-embed').hidden === !tieneInforme;
+      },
+    ],
   ],
 });
 
@@ -378,6 +392,12 @@ await correr('B · medios no accesibles + X431', {
       ['X431: total de fallas', () => texto(window, '#cq-x431 [data-campo="fallas"]') === String(X431.informe.totalFallas)],
       ['X431: sistema con nombre', () => texto(window, '#cq-x431-sistemas').includes('Transmisión')],
       ['X431: chip con el código P2714', () => texto(window, '#cq-x431-sistemas .cq-falla-codigo') === 'P2714'],
+      [
+        'X431: los códigos sueltos llevan rótulo',
+        () =>
+          texto(window, '#cq-x431-sistemas .cq-x431-codigos-titulo') === 'Códigos detectados' &&
+          window.document.querySelectorAll('#cq-x431-sistemas .cq-x431-codigos .cq-pill.is-falla').length > 0,
+      ],
       ['X431: descripción de la falla', () => texto(window, '#cq-x431-sistemas .cq-falla-desc').includes('Pressure Control')],
       ['X431: sistemas sin fallas como pills', () => window.document.querySelectorAll('#cq-x431-ok-lista .cq-pill.is-ok').length === 3],
       ['X431: enlace al informe original', () => (window.document.querySelector('#cq-x431-original')?.href ?? '').includes('usait.x431.com')],
@@ -388,6 +408,237 @@ await correr('B · medios no accesibles + X431', {
           window.document.getElementById('cq-tab-x431').click();
           return globalThis.__x431Llamadas === 1;
         },
+      ],
+      [
+        'iframe diferido: fachada sin red hasta que se pide',
+        () => {
+          const bloque = window.document.getElementById('cq-x431-embed');
+          const marco = window.document.getElementById('cq-x431-embed-marco');
+          const fachada = marco.querySelector('[data-lazy-embed-facade]');
+          return (
+            bloque.hidden === false &&
+            marco.dataset.src.includes('usait.x431.com') &&
+            marco.dataset.lazyEmbedState === 'idle' &&
+            fachada.hidden === false &&
+            marco.querySelector('iframe') === null
+          );
+        },
+      ],
+      [
+        'iframe diferido: enlaces "abrir en pestaña" con la URL del informe',
+        () =>
+          (window.document.getElementById('cq-x431-embed-original')?.href ?? '').includes('usait.x431.com') &&
+          (window.document.getElementById('cq-x431-embed-original-2')?.href ?? '').includes('usait.x431.com'),
+      ],
+      [
+        'iframe diferido: se crea un solo iframe al pedirlo (doble clic incluido)',
+        () => {
+          const marco = window.document.getElementById('cq-x431-embed-marco');
+          const boton = marco.querySelector('[data-lazy-embed-load]');
+          boton.click();
+          boton.click();
+          const iframes = marco.querySelectorAll('iframe');
+          return (
+            iframes.length === 1 &&
+            iframes[0].src.includes('usait.x431.com') &&
+            marco.dataset.lazyEmbedState === 'loading'
+          );
+        },
+      ],
+      [
+        'iframe diferido: al cargar, la fachada se oculta y se ve el marco',
+        () => {
+          const marco = window.document.getElementById('cq-x431-embed-marco');
+          marco.querySelector('iframe').dispatchEvent(new window.Event('load'));
+          return (
+            marco.dataset.lazyEmbedState === 'loaded' &&
+            marco.querySelector('[data-lazy-embed-facade]').hidden === true &&
+            marco.querySelector('[data-lazy-embed-loading]').hidden === true &&
+            marco.querySelector('[data-lazy-embed-slot]').hidden === false
+          );
+        },
+      ],
+    ];
+  },
+});
+
+/* ── E. Cambio de placa: el iframe diferido se desarma y se remonta ────────── */
+const informes = {
+  uno: 'https://usait.x431.com/Home/Report/index?diagnose_record_id=3323e370ge8c54nRoGAEDhnRLr&report_type=X2',
+  dos: 'https://usait.x431.com/Home/Report/index?diagnose_record_id=OTROINFORME0001&report_type=X2',
+};
+const expOtraPlaca = structuredClone(expCompleto); // sin otra llamada a Lark
+expOtraPlaca.ordenes[0].informeX431 = { informeId: 'OTROINFORME0001', reportType: 'X2', url: informes.dos };
+
+await correr('B2 · cambio de placa reinicia el iframe del informe', {
+  expediente: expMedia,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_MEDIA}`,
+  revision: (window) => [
+    ['placa inicial en pantalla', () => texto(window, '#cq-vehiculo [data-campo="placa"]') === PLACA_MEDIA],
+    [
+      'informe 1 montado como fachada (cero red)',
+      () => {
+        window.document.getElementById('cq-tab-x431').click();
+        const marco = window.document.getElementById('cq-x431-embed-marco');
+        return (
+          window.document.getElementById('cq-x431-embed').hidden === false &&
+          marco.dataset.src === informes.uno &&
+          marco.dataset.lazyEmbedState === 'idle' &&
+          marco.querySelector('iframe') === null
+        );
+      },
+    ],
+  ],
+  extra: async (window) => {
+    // Segunda búsqueda: otra placa con OTRO informe, sin haber cargado el iframe.
+    globalThis.__payloadPorPlaca = { [PLACA_COMPLETA]: expOtraPlaca };
+    const entrada = window.document.getElementById('cq-placa');
+    entrada.value = PLACA_COMPLETA;
+    window.document
+      .getElementById('cq-buscador')
+      .dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    await new Promise((r) => setTimeout(r, 400));
+
+    const marco = window.document.getElementById('cq-x431-embed-marco');
+    const trasBuscar = {
+      placa: texto(window, '#cq-vehiculo [data-campo="placa"]'),
+      resultado: window.document.querySelector('#cq-resultado').hidden === false,
+      embedOculto: window.document.getElementById('cq-x431-embed').hidden,
+      iframes: marco.querySelectorAll('iframe').length,
+    };
+
+    window.document.getElementById('cq-tab-x431').click();
+    const trasReabrir = {
+      src: marco.dataset.src,
+      estado: marco.dataset.lazyEmbedState,
+      iframes: marco.querySelectorAll('iframe').length,
+    };
+
+    const crearOriginal = window.document.createElement.bind(window.document);
+    let creados = 0;
+    window.document.createElement = (etiqueta, ...resto) => {
+      if (String(etiqueta).toLowerCase() === 'iframe') creados += 1;
+      return crearOriginal(etiqueta, ...resto);
+    };
+
+    // Timeout corto: si sobreviviera una escucha del informe anterior, borraría
+    // el iframe bueno al dispararse.
+    marco.dataset.timeoutMs = '80';
+    const boton = marco.querySelector('[data-lazy-embed-load]');
+    boton.click();
+    boton.click();
+    const trasClic = {
+      creados,
+      frames: [...window.document.querySelectorAll('iframe')].map((f) => f.src),
+      estado: marco.dataset.lazyEmbedState,
+    };
+
+    await new Promise((r) => setTimeout(r, 300)); // > timeout de la escucha vieja
+    const trasTimeout = {
+      frames: window.document.querySelectorAll('iframe').length,
+      estado: marco.dataset.lazyEmbedState,
+      fachadaOculta: marco.querySelector('[data-lazy-embed-facade]').hidden,
+      errorVisible: marco.querySelector('[data-lazy-embed-error]').hidden === false,
+    };
+
+    return [
+      ['la segunda placa reemplaza el resultado', () => trasBuscar.placa === PLACA_COMPLETA && trasBuscar.resultado],
+      ['el embed del informe anterior queda desarmado', () => trasBuscar.embedOculto === true && trasBuscar.iframes === 0],
+      [
+        'al reabrir la pestaña se monta el informe nuevo',
+        () => trasReabrir.src === informes.dos && trasReabrir.estado === 'idle' && trasReabrir.iframes === 0,
+      ],
+      [
+        'un solo iframe, del informe nuevo (sin escuchas del anterior)',
+        () =>
+          trasClic.creados === 1 &&
+          trasClic.frames.length === 1 &&
+          trasClic.frames[0].includes('OTROINFORME0001') &&
+          trasClic.estado === 'loading',
+      ],
+      [
+        'pasado el timeout el iframe nuevo sigue visible y sin error',
+        () =>
+          trasTimeout.frames === 1 &&
+          trasTimeout.estado === 'loading' &&
+          trasTimeout.fachadaOculta === true &&
+          trasTimeout.errorVisible === false,
+      ],
+    ];
+  },
+});
+
+/* ── B3. OT en curso: chip «días en taller» y banners del tracker ──────────── */
+const diasB = ordenB?.diasEnTaller;
+
+await correr('B3 · tracker en curso: días en taller y banners', {
+  expediente: expMedia,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_MEDIA}`,
+  revision: (window) => [
+    [
+      'chip «días en taller» con el valor real del API',
+      () =>
+        typeof diasB === 'number' &&
+        diasB > 0 &&
+        window.document.querySelector('#cq-tracker [data-campo="dias"]').hidden === false &&
+        texto(window, '#cq-tracker [data-campo="dias"]') ===
+          `⏱ ${diasB} ${diasB === 1 ? 'día' : 'días'} en taller`,
+    ],
+    [
+      'paso actual = el de la etapa del API',
+      () =>
+        window.document
+          .querySelector(`#cq-pasos li[data-paso="${ordenB.etapa}"]`)
+          ?.classList.contains('is-current') === true,
+    ],
+    [
+      'pie con la fecha de ingreso',
+      () => /ingres/i.test(texto(window, '#cq-tracker [data-campo="pie"]')),
+    ],
+    ['sin banner cuando la orden avanza normal', () => window.document.getElementById('cq-banner').hidden === true],
+  ],
+  extra: async (window) => {
+    const buscarCon = async (etapa, estado) => {
+      const clon = structuredClone(expMedia);
+      clon.ordenes[0].etapa = etapa;
+      clon.ordenes[0].estado = estado;
+      globalThis.__payloadPorPlaca = { [PLACA_MEDIA]: clon };
+      window.document
+        .getElementById('cq-buscador')
+        .dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+      await new Promise((r) => setTimeout(r, 350));
+      const banner = window.document.getElementById('cq-banner');
+      return {
+        visible: banner.hidden === false,
+        texto: banner.textContent.trim(),
+        cancelado: banner.classList.contains('is-cancelado'),
+        diasOculto: window.document.querySelector('#cq-tracker [data-campo="dias"]').hidden === true,
+      };
+    };
+
+    const imprevisto = await buscarCon(-2, '⚠️ Imprevisto');
+    const cancelado = await buscarCon(-1, '❌ Cancelado');
+
+    return [
+      [
+        'banner ⚠️ de imprevisto (sin estilo de cancelado)',
+        () =>
+          imprevisto.visible &&
+          imprevisto.texto.startsWith('⚠️') &&
+          /espera|imprevisto/i.test(imprevisto.texto) &&
+          imprevisto.cancelado === false,
+      ],
+      [
+        'banner ❌ de cancelado con su estilo propio',
+        () =>
+          cancelado.visible &&
+          cancelado.texto.startsWith('❌') &&
+          /cancelada/i.test(cancelado.texto) &&
+          cancelado.cancelado === true,
+      ],
+      [
+        'con imprevisto/cancelado no se muestran días en taller',
+        () => imprevisto.diasOculto === true && cancelado.diasOculto === true,
       ],
     ];
   },

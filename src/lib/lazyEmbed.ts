@@ -28,6 +28,12 @@
  *
  * El módulo es idempotente: puede llamarse en la carga inicial y en cada
  * navegación de ClientRouter (`astro:page-load`) sin duplicar listeners.
+ *
+ * REINICIO
+ * Si un mismo contenedor cambia de `data-src` (por ejemplo, el informe de otro
+ * vehículo) hay que desarmarlo antes de volver a inicializarlo:
+ *   resetLazyEmbed(root); root.dataset.src = nuevaUrl; setupLazyEmbeds();
+ * Así no quedan escuchas del contenido anterior ni dos iframes compitiendo.
  */
 
 type EmbedState = 'idle' | 'loading' | 'loaded' | 'failed';
@@ -87,6 +93,13 @@ function scheduleIdle(task: () => void): void {
   else window.setTimeout(task, 300);
 }
 
+/**
+ * Limpiadores de los embeds ya inicializados. Permiten desarmar un nodo que
+ * cambia de contenido (p. ej. el informe de otra visita) sin dejar escuchas,
+ * timeouts ni iframes del contenido anterior compitiendo por el mismo slot.
+ */
+const limpiadores = new WeakMap<HTMLElement, () => void>();
+
 function setupLazyEmbed(root: HTMLElement): void {
   if (root.dataset.lazyEmbedReady === '1') return;
   root.dataset.lazyEmbedReady = '1';
@@ -104,6 +117,7 @@ function setupLazyEmbed(root: HTMLElement): void {
   let timeoutId: number | undefined;
   let state: EmbedState = 'idle';
   let warmedUp = false;
+  let observador: IntersectionObserver | null = null;
 
   const paint = (next: EmbedState) => {
     state = next;
@@ -175,38 +189,59 @@ function setupLazyEmbed(root: HTMLElement): void {
     warmUp(src);
   };
 
-  WARM_EVENTS.forEach((event) =>
-    root.addEventListener(event, warm, { passive: true, once: true }),
+  const disparadores = root.querySelectorAll<HTMLElement>(
+    '[data-lazy-embed-load], [data-lazy-embed-retry]',
   );
-
-  root.querySelectorAll('[data-lazy-embed-load], [data-lazy-embed-retry]').forEach((trigger) => {
-    trigger.addEventListener('click', (event) => {
-      event.preventDefault();
-      load();
-    });
-  });
+  const alPedir = (event: Event) => {
+    event.preventDefault();
+    load();
+  };
+  disparadores.forEach((trigger) => trigger.addEventListener('click', alPedir));
 
   // Carga automática solo donde es seguro: pantalla grande, sin ahorro de datos
   // ni redes 2G, y únicamente cuando la tarjeta está por entrar en pantalla.
   if (root.dataset.auto === 'desktop' && 'IntersectionObserver' in window) {
     const isDesktop = window.matchMedia(`(min-width: ${MIN_DESKTOP_WIDTH}px)`).matches;
     if (isDesktop && !connectionIsConstrained()) {
-      const observer = new IntersectionObserver(
+      observador = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
-            observer.disconnect();
+            observador?.disconnect();
             scheduleIdle(load);
             return;
           }
         },
         { rootMargin: '300px 0px' },
       );
-      observer.observe(root);
+      observador.observe(root);
     }
   }
 
+  // Desarmado: imprescindible si el nodo cambia de `data-src` y se reinicializa,
+  // para no dejar escuchas ni iframes del contenido anterior.
+  limpiadores.set(root, () => {
+    teardown();
+    observador?.disconnect();
+    observador = null;
+    WARM_EVENTS.forEach((event) => root.removeEventListener(event, warm));
+    disparadores.forEach((trigger) => trigger.removeEventListener('click', alPedir));
+  });
+
   paint('idle');
+}
+
+/**
+ * Desarma un embed diferido ya inicializado: quita escuchas, cancela el timeout
+ * y descarga el iframe. Se usa antes de reinicializar un nodo cuyo `data-src`
+ * cambió (p. ej. el informe de otra visita): sin esto, las escuchas del
+ * contenido anterior seguirían vivas y dos iframes competirían por el slot.
+ */
+export function resetLazyEmbed(root: HTMLElement): void {
+  limpiadores.get(root)?.();
+  limpiadores.delete(root);
+  delete root.dataset.lazyEmbedReady;
+  delete root.dataset.lazyEmbedState;
 }
 
 /** Inicializa todos los embeds diferidos presentes en el documento. */

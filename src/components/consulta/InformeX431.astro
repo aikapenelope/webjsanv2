@@ -56,6 +56,52 @@
       </a>
     </div>
   </div>
+
+  <!-- Iframe diferido del informe original (patrón data-lazy-embed de lazyEmbed.ts):
+       fachada sin red; el iframe solo se inyecta al toque, con timeout y reintento.
+       La URL la fija `consulta-client.ts` cuando conoce el informe de la visita. -->
+  <div class="cq-x431-embed" id="cq-x431-embed" hidden>
+    <h5 class="cq-x431-embed-titulo">Informe original del scanner</h5>
+    <div
+      class="cq-x431-marco"
+      id="cq-x431-embed-marco"
+      data-lazy-embed
+      data-src=""
+      data-timeout-ms="12000"
+      data-frame-class="cq-x431-frame"
+      data-frame-title="Informe original del scanner X431"
+    >
+      <div class="cq-x431-fachada" data-lazy-embed-facade>
+        <p class="cq-x431-embed-texto" data-campo="embed-texto">
+          Puedes ver el informe tal como lo emite el scanner, aquí mismo.
+        </p>
+        <div class="cq-x431-acciones">
+          <button class="btn btn-primary btn-sm" type="button" data-lazy-embed-load>
+            Cargar informe original aquí
+          </button>
+          <a class="btn btn-ghost btn-sm" id="cq-x431-embed-original" href="#" target="_blank" rel="noopener">
+            Abrir en pestaña ↗
+          </a>
+        </div>
+      </div>
+
+      <p class="cq-x431-embed-estado" data-lazy-embed-loading hidden>Cargando el informe original…</p>
+
+      <div class="cq-x431-embed-error" data-lazy-embed-error hidden>
+        <p class="cq-x431-embed-estado">
+          El informe incrustado no cargó a tiempo. Puedes reintentar o abrirlo en una pestaña nueva.
+        </p>
+        <div class="cq-x431-acciones">
+          <button class="btn btn-ghost btn-sm" type="button" data-lazy-embed-retry>Reintentar</button>
+          <a class="btn btn-primary btn-sm" id="cq-x431-embed-original-2" href="#" target="_blank" rel="noopener">
+            Abrir en pestaña ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="cq-x431-slot" data-lazy-embed-slot hidden></div>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -202,7 +248,8 @@
     font-weight: 700;
   }
 
-  .cq-x431-sin-fallas h5 {
+  .cq-x431-sin-fallas h5,
+  .cq-x431-sistemas :global(.cq-x431-codigos-titulo) {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.14em;
@@ -225,5 +272,67 @@
   @keyframes cqShimmerX431 {
     0% { background-position: 100% 0; }
     100% { background-position: 0 0; }
+  }
+
+  /* ── Iframe diferido del informe original ── */
+  .cq-x431-embed {
+    margin-top: 1.4rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .cq-x431-embed-titulo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .cq-x431-fachada {
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 0.95rem 1.05rem;
+  }
+
+  .cq-x431-embed-texto {
+    font-size: 0.92rem;
+    color: var(--navy);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .cq-x431-embed-estado {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .cq-x431-embed-error {
+    background: #fff7e6;
+    border: 1px solid #f0d9a0;
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius-sm);
+    padding: 0.95rem 1.05rem;
+  }
+
+  /* El iframe lo crea lazyEmbed.ts (nodo fuera del scope Astro) */
+  .cq-x431-slot :global(iframe.cq-x431-frame) {
+    display: block;
+    width: 100%;
+    height: min(78vh, 760px);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+  }
+
+  @media (max-width: 520px) {
+    .cq-x431-fachada .cq-x431-acciones .btn,
+    .cq-x431-embed-error .cq-x431-acciones .btn {
+      width: 100%;
+      justify-content: center;
+    }
   }
 </style>

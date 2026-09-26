@@ -22,6 +22,23 @@ import {
 /** WhatsApp oficial del taller (fuente: src/data/site.ts). */
 const WA_TALLER = '584141066546';
 
+const DIA_MS = 86_400_000;
+
+/**
+ * Días en taller — VERIFICADO contra la Base el 26-sep-2026: la tabla de OT
+ * (`tbl1ay4M7RDyhxet`) HOY NO tiene el campo «Días en taller», así que se
+ * deriva de las fechas (100% lectura, sin fórmulas nuevas en Lark):
+ *   · orden entregada → ingreso → fecha de entrega
+ *   · orden en curso  → ingreso → ahora
+ * Si algún día el equipo agrega el campo en Lark, ese valor tiene prioridad.
+ */
+function diasEnTallerDe(ingresoMs, entregaMs, ahoraMs = Date.now()) {
+  if (!(ingresoMs > 0)) return undefined;
+  const hasta = entregaMs > 0 ? entregaMs : ahoraMs;
+  const dias = Math.floor((hasta - ingresoMs) / DIA_MS);
+  return dias >= 0 ? dias : undefined;
+}
+
 /* ───────────────────────── Estados → etapa del tracker ─────────────────────── */
 /** 0..6 = pipeline · -1 cancelado · -2 imprevisto / en espera */
 export function etapaDeEstado(estado) {
@@ -187,13 +204,16 @@ export async function construirExpediente(placa) {
       textoDe(rf['¿Qué le pasa al carro?']).trim() || textoDe(f['Síntoma reportado']).trim();
     const km = kmDe(rf['Km reportado']) ?? kmDe(f['Km entrada']);
 
+    const ingresoMs = ot.ts;
+    const entregaMs = numeroDe(f['Fecha entrega']);
+
     const dto = {
       nroOT: textoDe(f['# OT']).trim(),
       estado: textoDe(f['Estado']).trim(),
       etapa: etapaDeEstado(textoDe(f['Estado'])),
-      diasEnTaller: numeroDe(f['Días en taller']),
-      fechaIngreso: aISO(ot.ts),
-      fechaEntrega: aISO(numeroDe(f['Fecha entrega'])) || undefined,
+      diasEnTaller: numeroDe(f['Días en taller']) ?? diasEnTallerDe(ingresoMs, entregaMs),
+      fechaIngreso: aISO(ingresoMs),
+      fechaEntrega: aISO(entregaMs) || undefined,
       kmEntrada: kmDe(f['Km entrada']),
       sintoma: textoDe(f['Síntoma reportado']).trim() || undefined,
     };

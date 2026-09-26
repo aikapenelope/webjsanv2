@@ -81,6 +81,26 @@ const breadcrumbSchema = {
         </div>
       </div>
     </section>
+
+    <!-- CENTRAL DEL CLIENTE: CTA AL PORTAL DE CONSULTA -->
+    <section class="consulta-cta">
+      <div class="wrap consulta-cta-wrap">
+        <div class="consulta-cta-texto">
+          <span class="kicker">Central del Cliente</span>
+          <h2>¿Ya recibimos tu carro?</h2>
+          <p>
+            Entra con tu placa y mira las fotos del ingreso, el informe del scanner y en qué paso va
+            tu orden de trabajo. Sin datos personales y sin montos: solo tu vehículo.
+          </p>
+        </div>
+        <div class="consulta-cta-acciones">
+          <a class="btn btn-gold" href="/consulta/">Consultar mi expediente →</a>
+          <a class="btn btn-ghost" href={waDirecto} target="_blank" rel="noopener">
+            Escribir por WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 </BaseLayout>
 
@@ -175,6 +195,61 @@ const breadcrumbSchema = {
       flex-direction: column;
     }
     .guia-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* CTA al Portal de Consulta (Central del Cliente) */
+  .consulta-cta {
+    background: var(--sky);
+    border-top: 1px solid var(--sky-line);
+    border-bottom: 1px solid var(--sky-line);
+    padding: clamp(2.4rem, 5vw, 3.4rem) 0;
+  }
+
+  .consulta-cta-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem 2.4rem;
+  }
+
+  .consulta-cta-texto {
+    max-width: 40rem;
+  }
+
+  .consulta-cta-texto h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    line-height: 1.05;
+    margin-top: 0.35rem;
+  }
+
+  .consulta-cta-texto p {
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.55;
+    margin-top: 0.7rem;
+    text-wrap: pretty;
+  }
+
+  .consulta-cta-acciones {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 600px) {
+    .consulta-cta-acciones {
+      flex-direction: column;
+      width: 100%;
+    }
+    .consulta-cta-acciones .btn {
       width: 100%;
       justify-content: center;
     }
