@@ -198,24 +198,30 @@ export async function construirExpediente(placa) {
     };
 
     if (rec) {
+      const fotos =
+        idx === 0
+          ? imagenes
+              .map((a) => ({
+                nombre: String(a.name ?? 'foto'),
+                mime: String(a.type ?? 'image/jpeg'),
+                tamano: Number(a.size) || 0,
+                url: urlsFotos.get(a.file_token) ?? '',
+              }))
+              .filter((foto) => foto.url)
+          : [];
       dto.recepcion = {
         nroEntrada: textoDe(rf['🔢 N° entrada']).trim(),
         fecha: aISO(numeroDe(rf['📅 Fecha'])),
         km,
         sintoma,
-        fotos:
-          idx === 0
-            ? imagenes
-                .map((a) => ({
-                  nombre: String(a.name ?? 'foto'),
-                  mime: String(a.type ?? 'image/jpeg'),
-                  tamano: Number(a.size) || 0,
-                  url: urlsFotos.get(a.file_token) ?? '',
-                }))
-                .filter((foto) => foto.url)
-            : [],
+        fotos,
         videos: { cantidad: videos },
       };
+      // Fotos que existen pero cuyo acceso no puede firmarse (regla de permisos de Lark:
+      // adjuntos agregados después de creado el registro). La UI las ofrece por WhatsApp.
+      if (idx === 0 && imagenes.length > fotos.length) {
+        dto.recepcion.fotosSinAcceso = imagenes.length - fotos.length;
+      }
     }
 
     const informe = informeDeOrden(ot);
