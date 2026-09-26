@@ -37,6 +37,9 @@ import { SITE, SOCIAL } from '../data/site';
       <div>
         <h4>Navegación & Empresa</h4>
         <ul>
+          <li>
+            <a class="foot-portal" href="/consulta/">Central del Cliente → Consulta tu expediente</a>
+          </li>
           <li><a href="/nosotros/">Sobre Nosotros (Propósito & Valores)</a></li>
           <li><a href="/resenas/">Reseñas de Clientes (Google ★ 4.6)</a></li>
           <li><a href="/videos/">Videos y Trabajos en Taller</a></li>
@@ -208,6 +211,21 @@ import { SITE, SOCIAL } from '../data/site';
   footer a:hover {
     color: var(--gold-soft);
     text-decoration: underline;
+  }
+
+  /* Enlace destacado al Portal de Consulta (Central del Cliente) */
+  .foot-portal {
+    color: var(--gold-soft);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .foot-portal::before {
+    content: '★';
+    font-size: 0.72rem;
+    color: var(--gold);
   }
 
   .foot-contact-box {

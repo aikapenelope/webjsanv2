@@ -12,6 +12,8 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      // /consulta/ es una página privada-por-placa: fuera del sitemap y noindex.
+      filter: (page) => !page.includes('/consulta/'),
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: new Date(),

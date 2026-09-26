@@ -87,3 +87,34 @@ npm run check
 - **Teléfonos:** (0212) 235.1931 · (0212) 237.7340
 - **WhatsApp:** 0424-232.0424
 - **Fundación:** 2013
+
+---
+
+## 🔎 Portal de Consulta (`/consulta/`)
+
+Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente de su vehículo con la placa: recepción con fotos, informe del scanner X431, estado de la orden (tracker), historial y señal de garantía. Sin datos personales ni montos.
+
+- **Arquitectura:** Astro SSG + 2 funciones serverless **read-only** en `api/` (`expediente.js`, `x431.js`) con caché de borde (sin base de datos). El núcleo compartido vive en `api/_lib/` (no se expone como endpoint).
+- **Endpoints:**
+  - `GET /api/expediente?placa=AE473LM` → DTO del expediente (rate-limit 30 rpm/IP · `s-maxage=60` + SWR 600 s).
+  - `GET /api/x431?doc=<id>&rt=<tipo>` → informe nativo del scanner (caché 24 h + SWR 7 días).
+- **Variables de entorno** (Vercel, proyecto `webjsanv2`): `LARK_APP_ID`, `LARK_APP_SECRET`, `LARK_BASE_TOKEN` en Production + Preview + Development.
+- **Pruebas de runtime:** `tests/consulta-dom.mjs` ejecuta el bundle compilado en jsdom contra datos reales de la Base (requiere `jsdom` instalado aparte y las credenciales `LARK_*`; ver la cabecera del archivo).
+
+### Nota operativa (si algo cambia)
+
+| Si cambia… | Qué hacer |
+|---|---|
+| **Lark** (Base, tablas o campos) | Revisar los IDs en `TABLAS` (`api/_lib/expediente.js`) y la lista blanca de campos de `api/_lib/fanout.js`. Los campos nuevos **no** se exponen hasta agregarlos explícitamente. |
+| **El link del X431** | Se detecta por patrón `usait.x431.com` en los textos del Diagnóstico (`extraerInformeX431`); si cambia el dominio, actualizar el patrón. |
+| **Estados de la OT** | El mapeo a etapas vive en `etapaDeEstado()` (`api/_lib/fanout.js`). |
+| **Fotos** | El bot solo firma las subidas **con el formulario** al crear el registro (ver `MEJORAS-PENDIENTES-LARK.md` §8 en el workspace `Jsan/Lark`). Las demás se avisan por WhatsApp. |
+| **Caída de Lark o del X431** | El portal degrada con avisos y reintento; nunca deja la página en blanco. |
+
+### Checklist post-merge (verificar en producción)
+
+- [ ] La página `/consulta/` responde 200 y trae `<meta name="robots" content="noindex, follow">`.
+- [ ] `/consulta/` **no** aparece en `https://hidromaticosjsan.com/sitemap-0.xml`.
+- [ ] `GET /api/expediente?placa=AE473LM` responde 200 con el DTO real.
+- [ ] Segunda llamada seguida: cabecera `x-vercel-cache: HIT`.
+- [ ] Revisión en 360–430 px: buscador, tracker y carrusel operativos.

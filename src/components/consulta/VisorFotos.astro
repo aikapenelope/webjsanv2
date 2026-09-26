@@ -1,0 +1,163 @@
+---
+/**
+ * Visor de fotos a pantalla completa — diálogo con foco atrapado, cierre con
+ * ✕ / Esc / deslizar hacia abajo, navegación con flechas y swipe, doble toque
+ * para acercar. `consulta-client.ts` lo abre desde el carrusel y devuelve el
+ * foco a la foto de origen al cerrar.
+ */
+---
+
+<div class="cq-visor" id="cq-visor" role="dialog" aria-modal="true" aria-label="Visor de fotos" hidden>
+  <div class="cq-visor-top">
+    <span class="cq-visor-contador" data-campo="contador">1/1</span>
+    <button class="cq-visor-boton-cerrar" type="button" data-accion="cerrar" aria-label="Cerrar visor (Esc)">
+      <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+
+  <div class="cq-visor-escena">
+    <button class="cq-visor-nav cq-visor-prev" type="button" data-accion="prev" aria-label="Foto anterior">
+      <span aria-hidden="true">‹</span>
+    </button>
+    <img class="cq-visor-img" id="cq-visor-img" alt="" />
+    <button class="cq-visor-nav cq-visor-next" type="button" data-accion="next" aria-label="Foto siguiente">
+      <span aria-hidden="true">›</span>
+    </button>
+  </div>
+
+  <div class="cq-visor-acciones">
+    <a class="btn btn-white btn-sm" id="cq-visor-original" href="#" target="_blank" rel="noopener">
+      Abrir original ↗
+    </a>
+    <a class="btn btn-gold btn-sm" id="cq-visor-descargar" href="#" download>Descargar</a>
+  </div>
+
+  <p class="cq-visor-ayuda">Desliza para cambiar · doble toque para acercar · Esc para cerrar</p>
+</div>
+
+<style>
+  .cq-visor {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(10, 30, 64, 0.97);
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 0.7rem;
+    padding: clamp(0.8rem, 2.4vw, 1.4rem);
+    overscroll-behavior: contain;
+  }
+
+  .cq-visor[hidden] {
+    display: none;
+  }
+
+  .cq-visor-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .cq-visor-contador {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cq-visor-boton-cerrar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    font-size: 1.1rem;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .cq-visor-boton-cerrar:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .cq-visor-escena {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .cq-visor-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    transition: transform 0.2s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: pan-y;
+  }
+
+  .cq-visor-img.is-zoom {
+    transform: scale(2);
+    cursor: zoom-out;
+  }
+
+  .cq-visor-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 1.5rem;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .cq-visor-nav[disabled] {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .cq-visor-prev {
+    left: 0.2rem;
+  }
+
+  .cq-visor-next {
+    right: 0.2rem;
+  }
+
+  .cq-visor-acciones {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cq-visor-ayuda {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted-dark);
+  }
+
+  @media (max-width: 640px) {
+    .cq-visor-nav {
+      display: none;
+    }
+  }
+</style>
