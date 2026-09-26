@@ -638,7 +638,12 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
 
     const img = crear('img');
     img.alt = `Foto de recepción — placa ${placa} — ${i + 1} de ${fotos.length}`;
-    img.loading = 'lazy';
+    if (i === 0) {
+      img.loading = 'eager';
+      img.fetchPriority = 'high';
+    } else {
+      img.loading = 'lazy';
+    }
     img.decoding = 'async';
     img.dataset.src = foto.url;
     img.addEventListener('load', () => slide.classList.add('is-lista'), { once: true });
@@ -656,12 +661,9 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
     dots.appendChild(dot);
   });
 
-  viewport.scrollLeft = 0;
   actualizarCarrusel();
+  requestAnimationFrame(() => irAFoto(0, 'auto'));
 }
-
-const anchoDeSlide = (track: HTMLElement | null): number =>
-  (track?.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0;
 
 function actualizarCarrusel(): void {
   const viewport = porId('cq-fotos-viewport');
@@ -685,13 +687,16 @@ function actualizarCarrusel(): void {
   if (next) next.disabled = indice >= fotosActuales.length - 1;
 }
 
-function irAFoto(indice: number): void {
+function irAFoto(indice: number, forzar?: ScrollBehavior): void {
   const viewport = porId('cq-fotos-viewport');
   const track = porId('cq-fotos-track');
-  if (!viewport || !track) return;
+  const slide = track?.querySelectorAll<HTMLElement>('.cq-slide')[indice];
+  if (!viewport || !track || !slide) return;
+  const izquierda =
+    slide.offsetLeft - track.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
   viewport.scrollTo({
-    left: indice * anchoDeSlide(track),
-    behavior: prefiereMenosMovimiento() ? 'auto' : 'smooth',
+    left: Math.max(0, izquierda),
+    behavior: forzar ?? (prefiereMenosMovimiento() ? 'auto' : 'smooth'),
   });
 }
 
@@ -1040,7 +1045,18 @@ const indiceActualCarrusel = (): number => {
   const viewport = porId('cq-fotos-viewport');
   const track = porId('cq-fotos-track');
   if (!viewport || !track) return 0;
-  return Math.max(0, Math.round(viewport.scrollLeft / (anchoDeSlide(track) || 1)));
+  const centro = viewport.scrollLeft + viewport.clientWidth / 2;
+  let mejor = 0;
+  let mejorDist = Number.POSITIVE_INFINITY;
+  track.querySelectorAll<HTMLElement>('.cq-slide').forEach((slide, i) => {
+    const centroSlide = slide.offsetLeft - track.offsetLeft + slide.offsetWidth / 2;
+    const distancia = Math.abs(centroSlide - centro);
+    if (distancia < mejorDist) {
+      mejorDist = distancia;
+      mejor = i;
+    }
+  });
+  return Math.min(Math.max(fotosActuales.length - 1, 0), mejor);
 };
 
 function guardarPlacaLocal(placa: string): void {

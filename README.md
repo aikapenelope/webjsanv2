@@ -111,6 +111,15 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 | **Fotos** | El bot solo firma las subidas **con el formulario** al crear el registro (ver `MEJORAS-PENDIENTES-LARK.md` §8 en el workspace `Jsan/Lark`). Las demás se avisan por WhatsApp. |
 | **Caída de Lark o del X431** | El portal degrada con avisos y reintento; nunca deja la página en blanco. |
 
+### Rendimiento y caché (menos llamadas a Lark)
+
+- **Por consulta**: 5 búsquedas (una por tabla) + firma de fotos en lotes de 5 (en paralelo). El token se reutiliza ~2 h y las **firmas de fotos 20 h** en caché del proceso.
+- **Medido en vivo**: 5,3 s en frío (9 llamadas) y **1,8 s en caliente (5 llamadas)**; consultas concurrentes de la misma placa se deduplican (3 simultáneas = 1 sola consulta a Lark).
+- **Borde**: `s-maxage=120` + `stale-while-revalidate=900` (no encontrada 45/300); X431 24 h + SWR 7 días → cada placa golpea Lark como máximo ~1 vez cada 2 min.
+- **Fotos**: `preconnect` al CDN de Lark, carga diferida de la visible ±1 y primera foto con `fetchpriority=high`. El navegador cachea por URL firmada.
+- **Videos**: nunca se firman ni se exponen; solo se cuenta cuántos hay y se ofrecen por WhatsApp.
+- **Si el tráfico crece**: proxy `GET /api/foto?t=<file_token>` con caché inmutable por token (URL estable entre visitas) o KV para compartir firmas entre instancias.
+
 ### Checklist post-merge (verificar en producción)
 
 - [ ] La página `/consulta/` responde 200 y trae `<meta name="robots" content="noindex, follow">`.

@@ -180,18 +180,80 @@ import GarantiaSenal from './GarantiaSenal.astro';
     align-items: center;
     justify-content: space-between;
     gap: 0.7rem;
-    padding-top: 0.4rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--sky-line);
   }
 
   .cq-actualizado {
-    font-size: 0.84rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.38rem 0.85rem;
+    border-radius: 999px;
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
     color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 700;
   }
 
-  @media (max-width: 520px) {
+  .cq-actualizado::before {
+    content: '⟳';
+    color: var(--blue);
+    font-weight: 700;
+  }
+
+  .cq-result-pie .btn {
+    min-height: 40px;
+    padding-inline: 1.1rem;
+    border-color: var(--sky-line);
+    background: #ffffff;
+    font-weight: 700;
+  }
+
+  .cq-result-pie .btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  @media (max-width: 560px) {
+    .cq-result-pie {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 0.55rem;
+    }
+
     .cq-result-pie .btn {
       width: 100%;
       justify-content: center;
+    }
+
+    .cq-actualizado {
+      justify-content: center;
+    }
+  }
+  /* Desktop: los tabs centrados; móvil: deslizables con snap */
+  @media (min-width: 760px) {
+    .cq-tablist {
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .cq-tab {
+      padding-inline: 1.15rem;
+    }
+  }
+
+  @media (max-width: 759px) {
+    .cq-tablist {
+      scroll-snap-type: x proximity;
+      padding-inline: 0.15rem;
+    }
+
+    .cq-tab {
+      scroll-snap-align: start;
+      font-size: 0.9rem;
+      padding-inline: 0.85rem;
     }
   }
 </style>
