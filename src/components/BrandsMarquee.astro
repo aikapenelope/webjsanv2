@@ -8,7 +8,24 @@ const marcasSvg = import.meta.glob('../assets/marcas/*.svg', {
   eager: true,
 }) as Record<string, string>;
 
-const getSvg = (marca: string) => marcasSvg[`../assets/marcas/${marca}.svg`] ?? '';
+/**
+ * Cada escudo se emite UNA sola vez como <symbol> y el carrusel lo referencia con
+ * <use>. Antes el HTML repetía los 16 SVG completos (dos copias para el bucle
+ * infinito): eran ~59 KB de paths duplicados en la portada.
+ */
+const escudos = MARCAS.map((marca) => {
+  const raw = marcasSvg[`../assets/marcas/${marca}.svg`] ?? '';
+  const viewBox = raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 24 24';
+  const contenido = raw
+    .replace(/<\?xml[\s\S]*?\?>/g, '')
+    .replace(/<svg[^>]*>/i, '')
+    .replace(/<\/svg>\s*$/i, '')
+    .trim();
+
+  return { marca, id: `escudo-${marca}`, viewBox, contenido };
+});
+
+const idPorMarca = new Map(escudos.map((e) => [e.marca, e.id]));
 ---
 
 <section id="marcas" class="marcas-sec">
@@ -20,15 +37,26 @@ const getSvg = (marca: string) => marcasSvg[`../assets/marcas/${marca}.svg`] ?? 
     </div>
   </div>
 
+  <!-- SPRITE ÚNICO: los 16 escudos se definen una vez y se reutilizan con <use> -->
+  <svg class="mq-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    {escudos.map((e) => (
+      <symbol id={e.id} viewBox={e.viewBox} set:html={e.contenido}></symbol>
+    ))}
+  </svg>
+
   <div class="marquee-wrap" aria-label="Carrusel de marcas atendidas">
     <div class="marquee-track">
-      {[0, 1].map(() =>
+      {[0, 1].map((copia) =>
         MARCAS.map((m) => (
-          <div class="mq-item" title={`Especialistas en ${m}`}>
-            <span class="mq-icon" set:html={getSvg(m)} />
+          <div class="mq-item" title={`Especialistas en ${m}`} aria-hidden={copia === 1 ? 'true' : undefined}>
+            <span class="mq-icon" aria-hidden="true">
+              <svg focusable="false">
+                <use href={`#${idPorMarca.get(m)}`}></use>
+              </svg>
+            </span>
             <span class="mq-label">{m}</span>
           </div>
-        ))
+        )) 
       )}
     </div>
   </div>
@@ -39,6 +67,14 @@ const getSvg = (marca: string) => marcasSvg[`../assets/marcas/${marca}.svg`] ?? 
     padding: clamp(2.4rem, 4.5vw, 3.4rem) 0 0;
     background: #ffffff;
     border-top: 1px solid var(--sky-line);
+  }
+
+  /* Sprite de escudos: no genera caja ni se anuncia (solo define los <symbol>) */
+  .mq-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
   }
 
   .marquee-wrap {

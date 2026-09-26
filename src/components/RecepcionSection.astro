@@ -100,22 +100,103 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
         </div>
       </div>
 
-      <div class="iframe-wrapper" id="iframe-wrapper">
-        <div class="iframe-loading-indicator" id="iframe-loader" aria-hidden="true">
-          <div class="spinner"></div>
-          <span>Cargando formulario seguro de recepción...</span>
+      <div
+        class="iframe-wrapper"
+        id="iframe-wrapper"
+        data-lazy-embed
+        data-src={RECEPCION_FORM_URL}
+        data-auto="desktop"
+        data-timeout-ms="20000"
+        data-frame-class="recepcion-iframe"
+        data-frame-title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
+        data-frame-allow="camera; geolocation; clipboard-write; encrypted-media; fullscreen"
+        data-frame-sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+        data-frame-allow-fullscreen="true"
+      >
+        <!-- FACHADA LIGERA: se pinta sin tocar la red de Lark (0 KB de terceros) -->
+        <div class="embed-facade" data-lazy-embed-facade>
+          <div class="embed-facade-inner">
+            <span class="embed-facade-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <path d="m9 15 2 2 4-4"/>
+              </svg>
+            </span>
+            <span class="embed-kicker">Formulario oficial alojado en Lark Base</span>
+            <h3 class="embed-title">Planilla Digital de Recepción</h3>
+            <p class="embed-text">
+              Registra tu vehículo antes de llegar al taller y entra directo a la cola de diagnóstico.
+              Ten a mano estos datos:
+            </p>
+            <ul class="embed-points">
+              <li>Placa, marca, modelo y año del carro</li>
+              <li>Cédula del propietario y teléfono de contacto</li>
+              <li>Kilometraje y síntomas (patineo, golpes, fugas o testigo encendido)</li>
+            </ul>
+            <div class="embed-actions">
+              <button type="button" class="btn btn-primary embed-inline-btn" data-lazy-embed-load>
+                Llenar la planilla aquí mismo
+              </button>
+              <a
+                class="btn btn-ghost embed-external-btn"
+                href={RECEPCION_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Abrir formulario en pantalla completa ↗
+              </a>
+            </div>
+            <p class="embed-note">
+              En celular el formulario abre más rápido en pantalla completa.
+              ¿Prefieres que te ayudemos? <a href={waDudas} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>.
+            </p>
+          </div>
         </div>
 
-        <iframe
-          src={RECEPCION_FORM_URL}
-          class="recepcion-iframe"
-          id="recepcion-lark-iframe"
-          title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
-          loading="lazy"
-          allow="camera; geolocation; clipboard-write; encrypted-media; fullscreen"
-          allowfullscreen
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
-        ></iframe>
+        <!-- ESTADO DE CARGA REAL (spinner hasta el evento load del iframe) -->
+        <div
+          class="iframe-loading-indicator"
+          data-lazy-embed-loading
+          role="status"
+          aria-live="polite"
+          hidden
+        >
+          <div class="spinner" aria-hidden="true"></div>
+          <span>Cargando formulario seguro de recepción…</span>
+          <small class="loading-hint">Puede tardar unos segundos la primera vez.</small>
+        </div>
+
+        <!-- ESTADO DE ERROR CON SALIDAS DE EMERGENCIA -->
+        <div class="embed-error" data-lazy-embed-error role="alert" hidden>
+          <div class="embed-error-inner">
+            <span class="embed-error-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </span>
+            <h3 class="embed-error-title">El formulario tardó más de lo esperado</h3>
+            <p class="embed-error-text">
+              Puede ser tu conexión o una señal débil en el taller. Tus datos no se enviaron todavía:
+              prueba de nuevo o abre la planilla en una pestaña aparte.
+            </p>
+            <div class="embed-actions">
+              <button type="button" class="btn btn-primary" data-lazy-embed-retry>Reintentar carga</button>
+              <a class="btn btn-ghost" href={RECEPCION_FORM_URL} target="_blank" rel="noopener noreferrer">
+                Abrir en pestaña nueva ↗
+              </a>
+            </div>
+            <p class="embed-note">
+              También puedes enviarnos los datos del carro por
+              <a href={waDudas} target="_blank" rel="noopener">WhatsApp</a> y los registramos nosotros.
+            </p>
+          </div>
+        </div>
+
+        <!-- SLOT DONDE SE INYECTA EL IFRAME BAJO DEMANDA -->
+        <div class="iframe-slot" data-lazy-embed-slot hidden></div>
       </div>
 
       <div class="iframe-footer">
@@ -141,29 +222,13 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
 </section>
 
 <script>
-  function initRecepcionLoader() {
-    const iframe = document.getElementById('recepcion-lark-iframe') as HTMLIFrameElement | null;
-    const loader = document.getElementById('iframe-loader');
+  import { setupLazyEmbeds } from '../lib/lazyEmbed';
 
-    if (iframe && loader) {
-      const hideLoader = () => {
-        loader.classList.add('is-hidden');
-      };
-
-      iframe.addEventListener('load', hideLoader);
-
-      // Fallback de seguridad por si el evento load se retrasa en móviles
-      setTimeout(() => {
-        if (!loader.classList.contains('is-hidden')) {
-          hideLoader();
-        }
-      }, 4000);
-    }
-  }
-
-  // Inicializar en primera carga y en cada navegación de ClientRouter
-  initRecepcionLoader();
-  document.addEventListener('astro:page-load', initRecepcionLoader);
+  // Idempotente: el módulo ignora los nodos ya inicializados, por lo que se puede
+  // invocar en la carga inicial y en cada navegación de ClientRouter sin duplicar
+  // listeners ni temporizadores (el bug anterior registraba todo dos veces).
+  setupLazyEmbeds();
+  document.addEventListener('astro:page-load', setupLazyEmbeds);
 </script>
 
 <style>
@@ -384,6 +449,190 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
     overflow: hidden;
   }
 
+  /* Los overlays usan [hidden] para el estado: hay que forzar display:none
+     porque las reglas de autor con display:flex anulan el valor del navegador */
+  .iframe-loading-indicator[hidden],
+  .embed-facade[hidden],
+  .embed-error[hidden],
+  .iframe-slot[hidden] {
+    display: none;
+  }
+
+  /* FACHADA LIGERA (0 KB de terceros hasta que el usuario decide cargar) */
+  .embed-facade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.4rem, 3.5vw, 2.4rem);
+    background:
+      radial-gradient(circle at 12% 8%, rgba(45, 88, 147, 0.07), transparent 42%),
+      repeating-linear-gradient(0deg, rgba(15, 42, 87, 0.035) 0 1px, transparent 1px 34px),
+      repeating-linear-gradient(90deg, rgba(15, 42, 87, 0.035) 0 1px, transparent 1px 34px),
+      #fbfcfe;
+  }
+
+  .embed-facade-inner {
+    width: min(100%, 34rem);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: clamp(1.5rem, 3vw, 2.1rem);
+    text-align: left;
+  }
+
+  .embed-facade-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--blue-soft);
+    color: var(--blue-corporate);
+    margin-bottom: 0.9rem;
+  }
+
+  .embed-facade-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .embed-kicker {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue-corporate);
+    margin-bottom: 0.35rem;
+  }
+
+  .embed-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.6vw, 1.95rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.06;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .embed-text {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .embed-points {
+    list-style: none;
+    margin: 1rem 0 1.3rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .embed-points li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--navy);
+    line-height: 1.45;
+  }
+
+  .embed-points li::before {
+    content: "";
+    position: absolute;
+    left: 0.25rem;
+    top: 0.5rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .embed-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+
+  .embed-note {
+    margin-top: 0.95rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .embed-note a {
+    color: var(--blue-corporate);
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  /* ESTADO DE ERROR: misma retícula visual, sin callejones sin salida */
+  .embed-error {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.4rem, 3.5vw, 2.4rem);
+    background: #fbfcfe;
+  }
+
+  .embed-error-inner {
+    width: min(100%, 34rem);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: clamp(1.5rem, 3vw, 2.1rem);
+  }
+
+  .embed-error-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(201, 162, 39, 0.14);
+    color: #8f6f12;
+    margin-bottom: 0.85rem;
+  }
+
+  .embed-error-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .embed-error-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--navy);
+    line-height: 1.08;
+    margin-bottom: 0.45rem;
+  }
+
+  .embed-error-text {
+    font-size: 0.93rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin-bottom: 1.15rem;
+    text-wrap: pretty;
+  }
+
+  .iframe-slot {
+    position: relative;
+    width: 100%;
+  }
+
   .iframe-loading-indicator {
     position: absolute;
     inset: 0;
@@ -398,12 +647,15 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
     font-size: 0.92rem;
     font-weight: 600;
     color: var(--muted);
+    padding: 1.5rem;
+    text-align: center;
   }
 
-  .iframe-loading-indicator.is-hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+  .loading-hint {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    opacity: 0.85;
   }
 
   .spinner {
@@ -421,7 +673,9 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
     }
   }
 
-  .recepcion-iframe {
+  /* El iframe se inyecta con JS: sin :global() Astro le exigiria el
+     atributo data-astro-cid que nunca recibe y perderia alto y estilos. */
+  :global(.recepcion-iframe) {
     width: 100%;
     height: 820px;
     min-height: 780px;
@@ -489,11 +743,39 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
       gap: 0.9rem;
     }
 
+    /* En teléfonos y tablets el formulario de Lark abre mejor en pestaña completa:
+       invertimos el peso visual de las acciones sin quitar ninguna opción. */
+    .embed-actions {
+      flex-direction: column;
+    }
+
+    .embed-actions .btn {
+      width: 100%;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .embed-inline-btn {
+      order: 2;
+      background: #ffffff;
+      color: var(--navy);
+      border-color: var(--navy);
+      box-shadow: none;
+    }
+
+    .embed-external-btn {
+      order: 1;
+      background: var(--blue);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(45, 88, 147, 0.28);
+    }
+
     .iframe-wrapper {
       min-height: 720px;
     }
 
-    .recepcion-iframe {
+    :global(.recepcion-iframe) {
       height: 740px;
       min-height: 720px;
     }
@@ -542,7 +824,7 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
       min-height: 680px;
     }
 
-    .recepcion-iframe {
+    :global(.recepcion-iframe) {
       height: 700px;
       min-height: 680px;
     }

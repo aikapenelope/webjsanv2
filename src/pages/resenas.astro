@@ -442,6 +442,8 @@ const jsonLdResenas = {
     const extraCards = document.querySelectorAll<HTMLElement>('.r-card.r-card-extra');
 
     if (!btn || extraCards.length === 0) return;
+    if (btn.dataset.toggleReady === '1') return;
+    btn.dataset.toggleReady = '1';
 
     btn.addEventListener('click', () => {
       extraCards.forEach((card) => {

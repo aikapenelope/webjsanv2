@@ -516,6 +516,11 @@ const SINTOMAS: SintomaTecnico[] = [
     const panels = document.querySelectorAll<HTMLElement>('.diag-panel');
 
     tabs.forEach((tab) => {
+      // Guarda de idempotencia: evita registrar el mismo listener dos veces
+      // (llamada directa + astro:page-load en la carga inicial).
+      if (tab.dataset.diagBound === '1') return;
+      tab.dataset.diagBound = '1';
+
       tab.addEventListener('click', () => {
         const targetId = tab.getAttribute('data-target');
         if (!targetId) return;

@@ -469,6 +469,11 @@ const { activePath = '/' } = Astro.props;
     const drawer = drawerEl;
     const closeBtn = closeBtnEl;
 
+    // Idempotente: `astro:page-load` también se dispara en la carga inicial, así
+    // que sin esta guarda los listeners se registraban dos veces por visita.
+    if (drawer.dataset.menuReady === '1') return;
+    drawer.dataset.menuReady = '1';
+
     function open() {
       drawer.classList.add('open');
       drawer.setAttribute('aria-hidden', 'false');
