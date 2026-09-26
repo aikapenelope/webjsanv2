@@ -1,0 +1,134 @@
+---
+/**
+ * Buscador de placa — tarjeta blanca flotante sobre el hero navy.
+ * La lógica vive en `src/lib/consulta-client.ts` (normalización al teclear,
+ * deep-link ?placa=, memoria local y submit).
+ */
+import { waLink } from '../../data/site';
+
+const waAyuda = waLink(
+  'Hola J-SAN, intenté consultar mi vehículo en el portal con mi placa y necesito ayuda.',
+);
+---
+
+<form class="cq-buscador" id="cq-buscador" novalidate autocomplete="off">
+  <div class="cq-buscador-campo">
+    <label class="cq-buscador-label" for="cq-placa">Placa del vehículo</label>
+    <div class="cq-buscador-fila">
+      <input
+        id="cq-placa"
+        class="cq-input"
+        name="placa"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        autocapitalize="characters"
+        autocorrect="off"
+        spellcheck="false"
+        maxlength="10"
+        placeholder="Ej: AE473LM"
+        aria-describedby="cq-placa-ayuda"
+      />
+      <button class="btn btn-gold cq-buscar" type="submit" id="cq-buscar">
+        <span>Consultar expediente</span>
+      </button>
+    </div>
+  </div>
+  <p class="cq-ayuda" id="cq-placa-ayuda">
+    Escríbela sin guiones ni espacios (AE-473-LM → <b>AE473LM</b>). ¿No aparece tu placa?
+    <a href={waAyuda} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+  </p>
+</form>
+
+<style>
+  .cq-buscador {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card-hover);
+    padding: clamp(1.1rem, 2.4vw, 1.6rem);
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .cq-buscador-label {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 0.45rem;
+  }
+
+  .cq-buscador-fila {
+    display: flex;
+    gap: 0.7rem;
+    align-items: stretch;
+  }
+
+  .cq-input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: var(--sky);
+    border: 1.5px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1rem;
+    min-height: 54px;
+  }
+
+  .cq-input::placeholder {
+    color: #8fa3c4;
+    letter-spacing: 0.12em;
+  }
+
+  .cq-input:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+    background: #ffffff;
+  }
+
+  .cq-input[aria-invalid='true'] {
+    border-color: #c0392b;
+    background: #fff6f5;
+  }
+
+  .cq-buscar {
+    flex: none;
+  }
+
+  .cq-ayuda {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .cq-ayuda b {
+    color: var(--navy);
+  }
+
+  .cq-ayuda a {
+    color: var(--blue);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 640px) {
+    .cq-buscador-fila {
+      flex-direction: column;
+    }
+
+    .cq-input {
+      font-size: 1.4rem;
+      text-align: center;
+    }
+  }
+</style>

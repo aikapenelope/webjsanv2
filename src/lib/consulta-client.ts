@@ -1,0 +1,1219 @@
+/**
+ * Cliente del Portal de Consulta (`/consulta/`) — Sprint 2.
+ *
+ * Orquesta: buscador de placa → GET /api/expediente → render del resultado
+ * (tarjeta del vehículo, tracker, tabs con carrusel/visor de fotos, informe
+ * X431 en diferido, historial y garantía) + estados de carga/vacío/error.
+ *
+ * Reglas del proyecto:
+ *  · 100% lectura: los endpoints no escriben en Lark y aquí tampoco.
+ *  · El contenido dinámico se inserta con createElement/textContent
+ *    (nunca innerHTML con datos que vengan de la Base).
+ *  · Compatible con ClientRouter: `initConsulta()` es idempotente por DOM
+ *    (marca `data-cq-listo` en la página) y se re-ejecuta en `astro:page-load`.
+ */
+import { SITE } from '../data/site';
+
+/* ───────────────────────────── DTO (espejo del API) ─────────────────────────── */
+
+export interface FotoDTO {
+  nombre: string;
+  mime: string;
+  tamano: number;
+  url: string;
+}
+
+export interface RecepcionDTO {
+  nroEntrada: string;
+  fecha: string;
+  km?: number;
+  sintoma?: string;
+  fotos: FotoDTO[];
+  /** Fotos que existen pero no son firmables con el bot (se piden por WhatsApp). */
+  fotosSinAcceso?: number;
+  videos: { cantidad: number };
+}
+
+type InformeRef = { informeId: string; reportType: string; url: string } | { pendiente: true };
+
+export interface OrdenDTO {
+  nroOT: string;
+  estado: string;
+  /** 0..6 pipeline · -1 cancelado · -2 imprevisto / en espera */
+  etapa: number;
+  diasEnTaller?: number;
+  fechaIngreso: string;
+  fechaEntrega?: string;
+  kmEntrada?: number;
+  sintoma?: string;
+  recepcion?: RecepcionDTO;
+  informeX431?: InformeRef;
+}
+
+export interface VehiculoDTO {
+  marcaModelo: string;
+  ano?: number;
+  color?: string;
+  vin?: string;
+  kmUltimaVisita?: number;
+  totalOTs: number;
+}
+
+export interface GarantiaDTO {
+  activa: boolean;
+  estado?: string;
+  desde?: string;
+  ref?: string;
+  vigencia?: string;
+  whatsappUrl: string;
+}
+
+export interface ExpedienteDTO {
+  ok: true;
+  encontrado: true;
+  placa: string;
+  actualizado: string;
+  vehiculo: VehiculoDTO;
+  ordenes: OrdenDTO[];
+  garantia: GarantiaDTO;
+}
+
+interface NoEncontradoDTO {
+  ok: true;
+  encontrado: false;
+  placa: string;
+  actualizado: string;
+}
+
+interface FallaDTO {
+  codigo: string;
+  descripcion: string;
+  estado: string;
+}
+
+interface InformeX431DTO {
+  informeId: string;
+  reportType: string;
+  reportCode: string;
+  fecha: string;
+  tester: string;
+  vehiculo: string;
+  duracionSeg?: number;
+  totalSistemas: number;
+  totalFallas: number;
+  sistemas: { nombre: string; fallas: FallaDTO[] }[];
+  sistemasOk: string[];
+}
+
+/* ──────────────────────────────── Utilidades ────────────────────────────────── */
+
+const TZ = 'America/Caracas';
+const CLAVE_PLACA = 'jsan.consulta.placa';
+
+const wa = (texto: string) => `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(texto)}`;
+
+/** Misma normalización que la fórmula `Placa Norm` de Lark y el API. */
+export function normalizarPlaca(entrada: string): string {
+  return String(entrada ?? '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+}
+
+export function placaValida(placa: string): boolean {
+  return /^[A-Z0-9]{5,8}$/.test(placa);
+}
+
+const fmtFecha = (iso?: string): string => {
+  if (!iso) return '';
+  const fecha = new Date(iso);
+  if (Number.isNaN(fecha.getTime())) return '';
+  return new Intl.DateTimeFormat('es-VE', {
+    timeZone: TZ,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(fecha);
+};
+
+const fmtFechaHora = (iso?: string): string => {
+  if (!iso) return '';
+  const fecha = new Date(iso);
+  if (Number.isNaN(fecha.getTime())) return '';
+  return new Intl.DateTimeFormat('es-VE', {
+    timeZone: TZ,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).format(fecha);
+};
+
+const fmtNumero = (n?: number): string =>
+  typeof n === 'number' && Number.isFinite(n)
+    ? new Intl.NumberFormat('es-VE').format(n)
+    : '';
+
+const fmtKm = (n?: number): string => {
+  const texto = fmtNumero(n);
+  return texto ? `${texto} km` : '';
+};
+
+const fmtDuracion = (seg?: number): string => {
+  if (!seg || seg <= 0) return '';
+  const min = Math.floor(seg / 60);
+  const resto = Math.round(seg % 60);
+  if (min === 0) return `${resto} s`;
+  return resto > 0 ? `${min} min ${resto} s` : `${min} min`;
+};
+
+/** "hace unos segundos / 5 min / 2 h / 3 días" a partir del ISO `actualizado`. */
+const haceCuando = (iso: string): string => {
+  const ms = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(ms) || ms < 0) return 'hace un momento';
+  const min = Math.floor(ms / 60_000);
+  if (min < 1) return 'hace unos segundos';
+  if (min < 60) return `hace ${min} min`;
+  const horas = Math.floor(min / 60);
+  if (horas < 24) return `hace ${horas} h`;
+  const dias = Math.floor(horas / 24);
+  return dias === 1 ? 'hace 1 día' : `hace ${dias} días`;
+};
+
+const prefiereMenosMovimiento = (): boolean =>
+  typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ──────────────────────────────── Estado en memoria ─────────────────────────── */
+
+let placaActual = '';
+let expedienteActual: ExpedienteDTO | null = null;
+let fotosActuales: FotoDTO[] = [];
+let visorIndice = 0;
+let visorFocoPrevio: HTMLElement | null = null;
+let informeCargado: { informeId: string; datos: InformeX431DTO | null } | null = null;
+let peticionEnCurso: AbortController | null = null;
+let observadorFotos: IntersectionObserver | null = null;
+
+/* ──────────────────────────────── Helpers de DOM ────────────────────────────── */
+
+const porId = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
+  document.getElementById(id) as T | null;
+
+const porSel = <T extends HTMLElement = HTMLElement>(
+  sel: string,
+  raiz: ParentNode | null = document,
+): T | null => raiz?.querySelector<T>(sel) ?? null;
+
+function mostrar(el: Element | null, visible: boolean): void {
+  if (el instanceof HTMLElement) el.hidden = !visible;
+}
+
+function ponerTexto(raiz: ParentNode | null, campo: string, valor: string): void {
+  const el = porSel<HTMLElement>(`[data-campo="${campo}"]`, raiz);
+  if (el && el.textContent !== valor) el.textContent = valor;
+}
+
+function anunciar(texto: string): void {
+  const el = porId('cq-anuncio');
+  if (el) el.textContent = texto;
+}
+
+function crear<K extends keyof HTMLElementTagNameMap>(
+  etiqueta: K,
+  clases?: string,
+  texto?: string,
+): HTMLElementTagNameMap[K] {
+  const el = document.createElement(etiqueta);
+  if (clases) el.className = clases;
+  if (texto !== undefined) el.textContent = texto;
+  return el;
+}
+
+type Vista = 'inicio' | 'cargando' | 'resultado' | 'noencontrada' | 'aviso';
+
+function mostrarVista(vista: Vista): void {
+  mostrar(porId('cq-inicio'), vista === 'inicio');
+  mostrar(porId('cq-skeleton'), vista === 'cargando');
+  mostrar(porId('cq-resultado'), vista === 'resultado');
+  mostrar(porId('cq-noencontrada'), vista === 'noencontrada');
+  mostrar(porId('cq-aviso'), vista === 'aviso');
+  const zona = porId('cq-zona');
+  if (zona) zona.setAttribute('aria-busy', vista === 'cargando' ? 'true' : 'false');
+}
+
+function mostrarAviso(
+  titulo: string,
+  texto: string,
+  opciones: { reintentar?: boolean; whatsapp?: boolean } = {},
+): void {
+  ponerTexto(porId('cq-aviso'), 'titulo', titulo);
+  ponerTexto(porId('cq-aviso'), 'texto', texto);
+  mostrar(porId('cq-reintentar'), opciones.reintentar !== false);
+  mostrar(porId('cq-aviso-wa'), opciones.whatsapp !== false);
+  mostrarVista('aviso');
+}
+
+/* ────────────────────────────── Render: vehículo ────────────────────────────── */
+
+function pintarVehiculo(exp: ExpedienteDTO): void {
+  const v = exp.vehiculo;
+  const tarjeta = porId('cq-vehiculo');
+  ponerTexto(tarjeta, 'placa', exp.placa);
+  ponerTexto(tarjeta, 'titulo', [exp.placa, v.marcaModelo].filter(Boolean).join(' · ') || 'Expediente del vehículo');
+  ponerTexto(tarjeta, 'ano', v.ano ? String(v.ano) : '');
+  ponerTexto(tarjeta, 'color', v.color ?? '');
+  ponerTexto(tarjeta, 'km', fmtKm(v.kmUltimaVisita));
+  ponerTexto(tarjeta, 'visitas', v.totalOTs > 0 ? String(v.totalOTs) : '');
+
+  const datos: [string, boolean][] = [
+    ['ano', Boolean(v.ano)],
+    ['color', Boolean(v.color)],
+    ['km', Boolean(fmtKm(v.kmUltimaVisita))],
+    ['visitas', v.totalOTs > 0],
+  ];
+  for (const [dato, hay] of datos) mostrar(porSel(`[data-dato="${dato}"]`, tarjeta), hay);
+  mostrar(tarjeta, true);
+}
+
+/* ────────────────────────────── Render: tracker ─────────────────────────────── */
+
+const ULTIMO_PASO = 6;
+
+function pintarTracker(ordenes: OrdenDTO[]): void {
+  const tracker = porId('cq-tracker');
+  const actual = ordenes[0];
+  if (!tracker || !actual) {
+    mostrar(tracker, false);
+    return;
+  }
+
+  ponerTexto(tracker, 'nroOT', actual.nroOT || '—');
+  ponerTexto(tracker, 'estado', actual.estado || 'En taller');
+
+  const dias = porSel<HTMLSpanElement>('[data-campo="dias"]', tracker);
+  const hayDias =
+    typeof actual.diasEnTaller === 'number' &&
+    actual.diasEnTaller > 0 &&
+    actual.etapa >= 0 &&
+    actual.etapa < ULTIMO_PASO;
+  if (dias) {
+    dias.textContent = hayDias
+      ? `⏱ ${actual.diasEnTaller} ${actual.diasEnTaller === 1 ? 'día' : 'días'} en taller`
+      : '';
+    dias.hidden = !hayDias;
+  }
+
+  const banner = porId('cq-banner');
+  if (banner) {
+    banner.classList.toggle('is-cancelado', actual.etapa === -1);
+    banner.hidden = actual.etapa >= 0;
+    banner.textContent =
+      actual.etapa === -1
+        ? '❌ Esta orden fue cancelada. Si tienes dudas del motivo, escríbenos por WhatsApp.'
+        : actual.etapa === -2
+          ? '⚠️ Hay un imprevisto o la orden está en espera. El equipo está gestionando una novedad y te contactará por WhatsApp.'
+          : '';
+  }
+
+  const pasos = porId('cq-pasos');
+  if (pasos) {
+    pasos.classList.toggle('is-detenido', actual.etapa < 0);
+    pasos.querySelectorAll<HTMLElement>('li[data-paso]').forEach((li) => {
+      const indice = Number(li.dataset.paso ?? -1);
+      li.classList.toggle('is-done', actual.etapa >= 0 && indice < actual.etapa);
+      li.classList.toggle('is-current', actual.etapa >= 0 && indice === actual.etapa);
+    });
+  }
+
+  const pie: string[] = [];
+  if (fmtFecha(actual.fechaIngreso)) pie.push(`Ingresó el ${fmtFecha(actual.fechaIngreso)}`);
+  if (actual.etapa === ULTIMO_PASO && actual.fechaEntrega) {
+    pie.push(`Entregado el ${fmtFecha(actual.fechaEntrega)}`);
+  }
+  ponerTexto(tracker, 'pie', pie.join(' · '));
+
+  mostrar(tracker, true);
+}
+
+/* ───────────────────────────── Render: recepción ────────────────────────────── */
+
+function pintarRecepcion(ordenes: OrdenDTO[], placa: string): void {
+  const actual = ordenes[0];
+  const rec = actual?.recepcion;
+  const ficha = porId('cq-recep-ficha');
+
+  if (!rec) {
+    mostrar(ficha, false);
+    mostrar(porId('cq-recep-vacio'), true);
+    pintarFotos([], placa);
+    pintarAvisos(undefined, placa);
+    return;
+  }
+
+  mostrar(porId('cq-recep-vacio'), false);
+  ponerTexto(ficha, 'nroEntrada', rec.nroEntrada ? `N.º ${rec.nroEntrada}` : '—');
+  ponerTexto(ficha, 'fecha', fmtFecha(rec.fecha) || '—');
+  ponerTexto(ficha, 'km', fmtKm(rec.km ?? actual?.kmEntrada) || '—');
+
+  const sintoma = (rec.sintoma ?? actual?.sintoma ?? '').trim();
+  const elSintoma = porSel<HTMLParagraphElement>('[data-campo="sintoma"]', ficha);
+  if (elSintoma) {
+    elSintoma.textContent = sintoma ? `“${sintoma}”` : '';
+    elSintoma.hidden = !sintoma;
+  }
+  mostrar(ficha, true);
+
+  pintarFotos(rec.fotos, placa);
+  pintarAvisos(rec, placa);
+}
+
+/* ──────────────────────── Render: avisos de video / fotos ───────────────────── */
+
+function pintarAvisos(rec: RecepcionDTO | undefined, placa: string): void {
+  const entrada = rec?.nroEntrada ? ` (entrada N.º ${rec.nroEntrada})` : '';
+
+  const avisoVideo = porId('cq-aviso-video');
+  const cantidad = rec?.videos?.cantidad ?? 0;
+  if (avisoVideo) {
+    if (cantidad > 0) {
+      ponerTexto(
+        avisoVideo,
+        'titulo',
+        cantidad === 1 ? 'Poseemos 1 video de tu ingreso' : `Poseemos ${cantidad} videos de tu ingreso`,
+      );
+      ponerTexto(
+        avisoVideo,
+        'texto',
+        'Por privacidad el video no se reproduce aquí: pídelo por WhatsApp y te lo enviamos.',
+      );
+      const enlace = porSel<HTMLAnchorElement>('[data-campo="wa"]', avisoVideo);
+      if (enlace) {
+        enlace.href = wa(
+          `Hola J-SAN, quiero ver el video del ingreso de mi vehículo placa ${placa}${entrada}.`,
+        );
+      }
+      avisoVideo.hidden = false;
+    } else {
+      avisoVideo.hidden = true;
+    }
+  }
+
+  const avisoFotos = porId('cq-aviso-fotos');
+  const sinAcceso = rec?.fotosSinAcceso ?? 0;
+  if (avisoFotos) {
+    if (sinAcceso > 0) {
+      ponerTexto(
+        avisoFotos,
+        'titulo',
+        sinAcceso === 1
+          ? 'Tenemos 1 foto adicional de tu vehículo'
+          : `Tenemos ${sinAcceso} fotos adicionales de tu vehículo`,
+      );
+      ponerTexto(
+        avisoFotos,
+        'texto',
+        'Están guardadas en el taller: pídelas por WhatsApp y te las enviamos.',
+      );
+      const enlace = porSel<HTMLAnchorElement>('[data-campo="wa"]', avisoFotos);
+      if (enlace) {
+        enlace.href = wa(
+          `Hola J-SAN, quiero recibir las fotos adicionales del ingreso de mi vehículo placa ${placa}${entrada}.`,
+        );
+      }
+      avisoFotos.hidden = false;
+    } else {
+      avisoFotos.hidden = true;
+    }
+  }
+}
+
+/* ───────────────────────────── Render: historial ────────────────────────────── */
+
+function claseEstadoHistorial(etapa: number): string {
+  if (etapa === -1) return ' is-cancelado';
+  if (etapa === -2) return ' is-imprevisto';
+  if (etapa === ULTIMO_PASO) return ' is-entregado';
+  return '';
+}
+
+function tarjetaHistorial(orden: OrdenDTO, esActual: boolean): HTMLElement {
+  const card = crear('article', `cq-hist-card${esActual ? ' is-actual' : ''}`);
+
+  const cabecera = crear('div', 'cq-hist-cabecera');
+  const bloqueOt = crear('div');
+  bloqueOt.appendChild(
+    crear('span', 'cq-hist-ot', orden.nroOT ? `OT ${orden.nroOT}` : 'Orden de trabajo'),
+  );
+  if (esActual) bloqueOt.appendChild(crear('span', 'cq-hist-badge', 'Visita actual'));
+  cabecera.append(
+    bloqueOt,
+    crear('span', `cq-hist-estado${claseEstadoHistorial(orden.etapa)}`, orden.estado || 'En taller'),
+  );
+  card.appendChild(cabecera);
+
+  const meta = crear('div', 'cq-hist-meta');
+  if (fmtFecha(orden.fechaIngreso)) {
+    meta.appendChild(crear('span', undefined, `Ingreso: ${fmtFecha(orden.fechaIngreso)}`));
+  }
+  if (fmtKm(orden.kmEntrada)) {
+    meta.appendChild(crear('span', undefined, `Km: ${fmtKm(orden.kmEntrada)}`));
+  }
+  if (orden.etapa === ULTIMO_PASO && orden.fechaEntrega) {
+    meta.appendChild(crear('span', undefined, `Entrega: ${fmtFecha(orden.fechaEntrega)}`));
+  } else if (
+    typeof orden.diasEnTaller === 'number' &&
+    orden.diasEnTaller > 0 &&
+    orden.etapa >= 0 &&
+    orden.etapa < ULTIMO_PASO
+  ) {
+    meta.appendChild(
+      crear('span', undefined, `⏱ ${orden.diasEnTaller} ${orden.diasEnTaller === 1 ? 'día' : 'días'}`),
+    );
+  }
+  if (meta.childElementCount > 0) card.appendChild(meta);
+
+  const sintoma = (orden.sintoma ?? orden.recepcion?.sintoma ?? '').trim();
+  if (sintoma) card.appendChild(crear('p', 'cq-hist-sintoma', `“${sintoma}”`));
+
+  return card;
+}
+
+function pintarHistorial(ordenes: OrdenDTO[]): void {
+  const lista = porId('cq-hist-lista');
+  if (!lista) return;
+  lista.textContent = '';
+  mostrar(porId('cq-hist-vacio'), ordenes.length === 0);
+  ordenes.forEach((orden, i) => lista.appendChild(tarjetaHistorial(orden, i === 0)));
+}
+
+/* ────────────────────────────── Render: garantía ────────────────────────────── */
+
+function pintarGarantia(g: GarantiaDTO): void {
+  const caja = porId('cq-garantia');
+  if (!caja) return;
+
+  ponerTexto(caja, 'desde', fmtFecha(g.desde) || '—');
+
+  const ref = porSel<HTMLSpanElement>('[data-campo="ref"]', caja);
+  if (ref) {
+    ref.textContent = g.ref ?? '';
+    ref.hidden = !g.ref;
+  }
+
+  const vigencia = porSel<HTMLParagraphElement>('[data-campo="vigencia"]', caja);
+  if (vigencia) {
+    vigencia.textContent = g.vigencia ? `Vigencia: ${g.vigencia}` : '';
+    vigencia.hidden = !g.vigencia;
+  }
+
+  mostrar(porId('cq-garantia-activa'), g.activa);
+  mostrar(porId('cq-garantia-inactiva'), !g.activa);
+
+  const enlace = porId<HTMLAnchorElement>('cq-garantia-wa');
+  if (enlace && g.whatsappUrl) enlace.href = g.whatsappUrl;
+
+  mostrar(caja, true);
+}
+
+/* ─────────────────────────────── Carrusel de fotos ──────────────────────────── */
+
+function pintarFotos(fotos: FotoDTO[], placa: string): void {
+  fotosActuales = fotos;
+  const contenedor = porId('cq-fotos');
+  const viewport = porId('cq-fotos-viewport');
+  const track = porId('cq-fotos-track');
+  const dots = porId('cq-fotos-dots');
+  if (!contenedor || !viewport || !track || !dots) return;
+
+  observadorFotos?.disconnect();
+  track.textContent = '';
+  dots.textContent = '';
+
+  if (fotos.length === 0) {
+    mostrar(contenedor, false);
+    return;
+  }
+  mostrar(contenedor, true);
+
+  // Carga diferida real: solo la foto visible ±1 (rootMargin del ancho del viewport)
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      for (const entrada of entradas) {
+        if (!entrada.isIntersecting) continue;
+        const img = porSel<HTMLImageElement>('img[data-src]', entrada.target);
+        if (img) {
+          img.src = img.dataset.src ?? '';
+          delete img.dataset.src;
+        }
+        observador.unobserve(entrada.target);
+      }
+    },
+    { root: viewport, rootMargin: '0px 100% 0px 100%' },
+  );
+  observadorFotos = observador;
+
+  fotos.forEach((foto, i) => {
+    const slide = crear('figure', 'cq-slide');
+    const boton = crear('button', 'cq-slide-btn');
+    boton.type = 'button';
+    boton.setAttribute('aria-label', `Ver foto ${i + 1} de ${fotos.length} en pantalla completa`);
+    boton.addEventListener('click', () => abrirVisor(i, boton));
+
+    const img = crear('img');
+    img.alt = `Foto de recepción — placa ${placa} — ${i + 1} de ${fotos.length}`;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.dataset.src = foto.url;
+    img.addEventListener('load', () => slide.classList.add('is-lista'), { once: true });
+
+    boton.appendChild(img);
+    slide.appendChild(boton);
+    track.appendChild(slide);
+    observador.observe(slide);
+
+    const dot = crear('button', 'cq-dot');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', `Ir a la foto ${i + 1}`);
+    dot.appendChild(crear('i'));
+    dot.addEventListener('click', () => irAFoto(i));
+    dots.appendChild(dot);
+  });
+
+  viewport.scrollLeft = 0;
+  actualizarCarrusel();
+}
+
+const anchoDeSlide = (track: HTMLElement | null): number =>
+  (track?.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0;
+
+function actualizarCarrusel(): void {
+  const viewport = porId('cq-fotos-viewport');
+  const track = porId('cq-fotos-track');
+  const dots = porId('cq-fotos-dots');
+  if (!viewport || !track || !dots) return;
+
+  const indice = Math.min(Math.max(fotosActuales.length - 1, 0), indiceActualCarrusel());
+
+  const contador = porSel<HTMLElement>('[data-campo="contador"]', porId('cq-fotos'));
+  if (contador) contador.textContent = `${fotosActuales.length ? indice + 1 : 0}/${fotosActuales.length}`;
+
+  dots.querySelectorAll<HTMLElement>('.cq-dot').forEach((dot, i) => {
+    dot.classList.toggle('is-activo', i === indice);
+    dot.setAttribute('aria-current', i === indice ? 'true' : 'false');
+  });
+
+  const prev = porSel<HTMLButtonElement>('[data-accion="prev"]', porId('cq-fotos'));
+  const next = porSel<HTMLButtonElement>('[data-accion="next"]', porId('cq-fotos'));
+  if (prev) prev.disabled = indice === 0;
+  if (next) next.disabled = indice >= fotosActuales.length - 1;
+}
+
+function irAFoto(indice: number): void {
+  const viewport = porId('cq-fotos-viewport');
+  const track = porId('cq-fotos-track');
+  if (!viewport || !track) return;
+  viewport.scrollTo({
+    left: indice * anchoDeSlide(track),
+    behavior: prefiereMenosMovimiento() ? 'auto' : 'smooth',
+  });
+}
+
+/* ──────────────────────────────── Visor de fotos ───────────────────────────── */
+
+const visorAbierto = (): boolean => {
+  const visor = porId('cq-visor');
+  return Boolean(visor && !visor.hidden);
+};
+
+function abrirVisor(indice: number, origen?: HTMLElement): void {
+  const visor = porId('cq-visor');
+  if (!visor || fotosActuales.length === 0) return;
+
+  visorIndice = indice;
+  visorFocoPrevio = origen ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+  pintarVisor();
+  visor.hidden = false;
+  document.documentElement.style.overflow = 'hidden';
+  porSel<HTMLButtonElement>('[data-accion="cerrar"]', visor)?.focus();
+}
+
+function pintarVisor(): void {
+  const visor = porId('cq-visor');
+  const foto = fotosActuales[visorIndice];
+  if (!visor || !foto) return;
+
+  const img = porId<HTMLImageElement>('cq-visor-img');
+  if (img) {
+    img.classList.remove('is-zoom');
+    img.src = foto.url;
+    img.alt = `Foto de recepción — ${visorIndice + 1} de ${fotosActuales.length}`;
+  }
+
+  const contador = porSel<HTMLElement>('[data-campo="contador"]', visor);
+  if (contador) contador.textContent = `${visorIndice + 1}/${fotosActuales.length}`;
+
+  const original = porId<HTMLAnchorElement>('cq-visor-original');
+  if (original) original.href = foto.url;
+
+  const descargar = porId<HTMLAnchorElement>('cq-visor-descargar');
+  if (descargar) {
+    descargar.href = foto.url;
+    descargar.setAttribute('download', foto.nombre || 'foto.jpg');
+  }
+
+  const prev = porSel<HTMLButtonElement>('.cq-visor-prev', visor);
+  const next = porSel<HTMLButtonElement>('.cq-visor-next', visor);
+  if (prev) prev.disabled = visorIndice === 0;
+  if (next) next.disabled = visorIndice === fotosActuales.length - 1;
+}
+
+function moverVisor(paso: number): void {
+  if (fotosActuales.length === 0) return;
+  visorIndice = (visorIndice + paso + fotosActuales.length) % fotosActuales.length;
+  pintarVisor();
+}
+
+function cerrarVisor(): void {
+  const visor = porId('cq-visor');
+  if (!visor || visor.hidden) return;
+  visor.hidden = true;
+  document.documentElement.style.overflow = '';
+  const img = porId<HTMLImageElement>('cq-visor-img');
+  if (img) img.src = '';
+  visorFocoPrevio?.focus();
+  visorFocoPrevio = null;
+}
+
+function alternarZoom(): void {
+  const img = porId<HTMLImageElement>('cq-visor-img');
+  if (img) img.classList.toggle('is-zoom');
+}
+
+/** Mantiene el foco dentro del diálogo mientras el visor está abierto. */
+function atraparFoco(evento: KeyboardEvent): void {
+  const visor = porId('cq-visor');
+  if (!visor) return;
+  const focos = Array.from(visor.querySelectorAll<HTMLElement>('button:not([hidden]), a[href]')).filter(
+    (el) => !el.hasAttribute('disabled'),
+  );
+  if (focos.length === 0) return;
+  const primero = focos[0];
+  const ultimo = focos[focos.length - 1];
+  const activo = document.activeElement;
+  if (evento.shiftKey && (activo === primero || !visor.contains(activo))) {
+    evento.preventDefault();
+    ultimo.focus();
+  } else if (!evento.shiftKey && activo === ultimo) {
+    evento.preventDefault();
+    primero.focus();
+  }
+}
+
+function manejarTecladoGlobal(evento: KeyboardEvent): void {
+  if (!visorAbierto()) return;
+  if (evento.key === 'Escape') {
+    evento.preventDefault();
+    cerrarVisor();
+  } else if (evento.key === 'ArrowLeft') {
+    moverVisor(-1);
+  } else if (evento.key === 'ArrowRight') {
+    moverVisor(1);
+  } else if (evento.key === 'Tab') {
+    atraparFoco(evento);
+  }
+}
+
+/** Swipe horizontal (cambiar) y vertical hacia abajo (cerrar) + doble toque (zoom). */
+function vincularGestosDelVisor(escena: HTMLElement): void {
+  let x0 = 0;
+  let y0 = 0;
+  let ultimoToque = 0;
+
+  escena.addEventListener(
+    'touchstart',
+    (evento) => {
+      const toque = evento.changedTouches[0];
+      x0 = toque.clientX;
+      y0 = toque.clientY;
+      const ahora = Date.now();
+      if (ahora - ultimoToque < 320) {
+        alternarZoom();
+        ultimoToque = 0;
+      } else {
+        ultimoToque = ahora;
+      }
+    },
+    { passive: true },
+  );
+
+  escena.addEventListener(
+    'touchend',
+    (evento) => {
+      const toque = evento.changedTouches[0];
+      const dx = toque.clientX - x0;
+      const dy = toque.clientY - y0;
+      const img = porId<HTMLImageElement>('cq-visor-img');
+      if (img?.classList.contains('is-zoom')) return;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        moverVisor(dx < 0 ? 1 : -1);
+      } else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) {
+        cerrarVisor();
+      }
+    },
+    { passive: true },
+  );
+
+  escena.addEventListener('dblclick', (evento) => {
+    evento.preventDefault();
+    alternarZoom();
+  });
+}
+
+/* ────────────────────────────── Informe X431 ────────────────────────────────── */
+
+type EstadoX431 = 'vacio' | 'carga' | 'error' | 'ok';
+
+function estadoX431(estado: EstadoX431): void {
+  mostrar(porId('cq-x431-vacio'), estado === 'vacio');
+  mostrar(porId('cq-x431-carga'), estado === 'carga');
+  mostrar(porId('cq-x431-error'), estado === 'error');
+  mostrar(porId('cq-x431-ok'), estado === 'ok');
+}
+
+const referenciaInforme = (
+  orden: OrdenDTO | undefined,
+): { informeId: string; reportType: string; url: string } | null => {
+  const ref = orden?.informeX431;
+  return ref && 'informeId' in ref ? ref : null;
+};
+
+function fijarEnlaceOriginal(id: string, url: string): void {
+  const enlace = porId<HTMLAnchorElement>(id);
+  if (enlace) enlace.href = url;
+}
+
+async function cargarInforme(orden: OrdenDTO | undefined, forzar = false): Promise<void> {
+  const ref = referenciaInforme(orden);
+  if (!ref) {
+    informeCargado = null;
+    estadoX431('vacio');
+    return;
+  }
+
+  fijarEnlaceOriginal('cq-x431-original', ref.url);
+  fijarEnlaceOriginal('cq-x431-original-error', ref.url);
+
+  if (!forzar && informeCargado?.informeId === ref.informeId) {
+    estadoX431(informeCargado.datos ? 'ok' : 'error');
+    return;
+  }
+
+  estadoX431('carga');
+  try {
+    const respuesta = await fetch(
+      `/api/x431?doc=${encodeURIComponent(ref.informeId)}&rt=${encodeURIComponent(ref.reportType || 'X2')}`,
+      { headers: { Accept: 'application/json' } },
+    );
+    const datos = (await respuesta.json().catch(() => null)) as
+      | { ok: true; informe: InformeX431DTO }
+      | { ok: false; error?: string }
+      | null;
+
+    if (!respuesta.ok || !datos || !datos.ok) throw new Error('sin_informe');
+    informeCargado = { informeId: ref.informeId, datos: datos.informe };
+    pintarInforme(datos.informe);
+    estadoX431('ok');
+  } catch {
+    informeCargado = { informeId: ref.informeId, datos: null };
+    estadoX431('error');
+  }
+}
+
+function pintarInforme(d: InformeX431DTO): void {
+  const caja = porId('cq-x431');
+  ponerTexto(caja, 'fecha', fmtFechaHora(d.fecha) || '—');
+  ponerTexto(caja, 'tester', d.tester || 'Scanner X431');
+  ponerTexto(caja, 'duracion', fmtDuracion(d.duracionSeg) || '—');
+  ponerTexto(caja, 'sistemas', String(d.totalSistemas || d.sistemas.length + d.sistemasOk.length));
+  ponerTexto(caja, 'fallas', String(d.totalFallas));
+
+  const sistemas = porId('cq-x431-sistemas');
+  if (sistemas) {
+    sistemas.textContent = '';
+
+    const codigos = d.sistemas.flatMap((s) => s.fallas.map((f) => f.codigo)).filter(Boolean);
+    if (codigos.length > 0) {
+      const fila = crear('div', 'cq-x431-pills');
+      codigos.forEach((codigo) => fila.appendChild(crear('span', 'cq-pill is-falla', codigo)));
+      sistemas.appendChild(fila);
+    }
+
+    d.sistemas.forEach((sistema) => {
+      const bloque = crear('div', 'cq-sistema');
+      bloque.appendChild(crear('span', 'cq-sistema-nombre', sistema.nombre || 'Sistema'));
+      sistema.fallas.forEach((falla) => {
+        const fila = crear('div', 'cq-falla');
+        fila.appendChild(crear('span', 'cq-falla-codigo', falla.codigo));
+        fila.appendChild(crear('span', 'cq-falla-desc', falla.descripcion || 'Sin descripción'));
+        if (falla.estado) fila.appendChild(crear('span', 'cq-falla-estado', falla.estado));
+        bloque.appendChild(fila);
+      });
+      sistemas.appendChild(bloque);
+    });
+  }
+
+  const listaOk = porId('cq-x431-ok-lista');
+  if (listaOk) {
+    listaOk.textContent = '';
+    d.sistemasOk.forEach((nombre) => listaOk.appendChild(crear('span', 'cq-pill is-ok', nombre)));
+  }
+  mostrar(porId('cq-x431-ok-wrap'), d.sistemasOk.length > 0);
+}
+
+/* ───────────────────────────── Tabs del resultado ───────────────────────────── */
+
+const TABS: { boton: string; panel: string }[] = [
+  { boton: 'cq-tab-recepcion', panel: 'cq-panel-recepcion' },
+  { boton: 'cq-tab-x431', panel: 'cq-panel-x431' },
+  { boton: 'cq-tab-historial', panel: 'cq-panel-historial' },
+  { boton: 'cq-tab-garantia', panel: 'cq-panel-garantia' },
+];
+
+function activarTab(botonId: string, conFoco = false): void {
+  for (const { boton, panel } of TABS) {
+    const btn = porId<HTMLButtonElement>(boton);
+    const pnl = porId(panel);
+    const activo = boton === botonId;
+    if (btn) {
+      btn.classList.toggle('is-activo', activo);
+      btn.setAttribute('aria-selected', activo ? 'true' : 'false');
+      btn.tabIndex = activo ? 0 : -1;
+      if (activo && conFoco) btn.focus();
+    }
+    mostrar(pnl, activo);
+  }
+  if (botonId === 'cq-tab-x431') void cargarInforme(expedienteActual?.ordenes[0]);
+}
+
+function tecladoTabs(evento: KeyboardEvent): void {
+  const id = (evento.target as HTMLElement | null)?.id ?? '';
+  const indice = TABS.findIndex(({ boton }) => boton === id);
+  if (indice < 0) return;
+
+  let destino = -1;
+  if (evento.key === 'ArrowRight') destino = (indice + 1) % TABS.length;
+  else if (evento.key === 'ArrowLeft') destino = (indice - 1 + TABS.length) % TABS.length;
+  else if (evento.key === 'Home') destino = 0;
+  else if (evento.key === 'End') destino = TABS.length - 1;
+  if (destino < 0) return;
+
+  evento.preventDefault();
+  activarTab(TABS[destino].boton, true);
+}
+
+/* ─────────────────────────────── Consulta ───────────────────────────────────── */
+
+const indiceActualCarrusel = (): number => {
+  const viewport = porId('cq-fotos-viewport');
+  const track = porId('cq-fotos-track');
+  if (!viewport || !track) return 0;
+  return Math.max(0, Math.round(viewport.scrollLeft / (anchoDeSlide(track) || 1)));
+};
+
+function guardarPlacaLocal(placa: string): void {
+  try {
+    localStorage.setItem(CLAVE_PLACA, placa);
+  } catch {
+    /* modo privado: sin memoria local */
+  }
+}
+
+function leerPlacaLocal(): string {
+  try {
+    return localStorage.getItem(CLAVE_PLACA) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+function pintarExpediente(exp: ExpedienteDTO): void {
+  expedienteActual = exp;
+  placaActual = exp.placa;
+  informeCargado = null;
+
+  pintarVehiculo(exp);
+  pintarTracker(exp.ordenes);
+  pintarRecepcion(exp.ordenes, exp.placa);
+  pintarHistorial(exp.ordenes);
+  pintarGarantia(exp.garantia);
+  estadoX431('vacio');
+  activarTab('cq-tab-recepcion');
+  ponerTexto(document, 'actualizado', `Actualizado ${haceCuando(exp.actualizado)}`);
+}
+
+async function buscar(placaBruta: string): Promise<void> {
+  const placa = normalizarPlaca(placaBruta);
+  const entrada = porId<HTMLInputElement>('cq-placa');
+
+  if (!placaValida(placa)) {
+    if (entrada) {
+      entrada.setAttribute('aria-invalid', 'true');
+      entrada.focus();
+    }
+    mostrarAviso('Revisa la placa', 'Escríbela sin guiones ni espacios. Ejemplo: AE473LM.', {
+      reintentar: false,
+    });
+    anunciar('Placa inválida. Escribe una placa válida, por ejemplo: AE473LM.');
+    return;
+  }
+  entrada?.removeAttribute('aria-invalid');
+
+  peticionEnCurso?.abort();
+  const control = new AbortController();
+  peticionEnCurso = control;
+  let expirado = false;
+  const temporizador = window.setTimeout(() => {
+    expirado = true;
+    control.abort();
+  }, 15_000);
+
+  placaActual = placa;
+  if (entrada) entrada.value = placa;
+  mostrarVista('cargando');
+  anunciar(`Consultando el expediente de la placa ${placa}…`);
+
+  try {
+    const respuesta = await fetch(`/api/expediente?placa=${encodeURIComponent(placa)}`, {
+      signal: control.signal,
+      headers: { Accept: 'application/json' },
+    });
+    const datos = (await respuesta.json().catch(() => null)) as
+      | ExpedienteDTO
+      | NoEncontradoDTO
+      | { ok: false; error?: string; mensaje?: string }
+      | null;
+
+    if (respuesta.status === 429) {
+      const espera = Number(respuesta.headers.get('Retry-After') ?? 0) || 30;
+      mostrarAviso('Demasiadas consultas seguidas', `Espera unos ${espera} segundos y vuelve a intentarlo.`);
+      anunciar('Demasiadas consultas seguidas. Espera unos segundos.');
+      return;
+    }
+
+    if (respuesta.status === 400) {
+      mostrarAviso('Revisa la placa', 'Escríbela sin guiones ni espacios. Ejemplo: AE473LM.', {
+        reintentar: false,
+      });
+      return;
+    }
+
+    if (!respuesta.ok || !datos || !datos.ok) {
+      mostrarAviso(
+        'No pudimos consultar el taller',
+        'Intenta de nuevo en unos segundos. Si el problema continúa, escríbenos por WhatsApp.',
+      );
+      anunciar('No pudimos completar la consulta.');
+      return;
+    }
+
+    if (!datos.encontrado) {
+      ponerTexto(porId('cq-noencontrada'), 'placa', placa);
+      mostrarVista('noencontrada');
+      anunciar(`No encontramos la placa ${placa} en el sistema del taller.`);
+      return;
+    }
+
+    guardarPlacaLocal(placa);
+    pintarExpediente(datos);
+    mostrarVista('resultado');
+    anunciar(`Expediente de la placa ${placa} cargado.`);
+    try {
+      history.replaceState(null, '', `${location.pathname}?placa=${encodeURIComponent(placa)}`);
+    } catch {
+      /* algunos navegadores restringen replaceState */
+    }
+    porId('cq-resultado-titulo')?.focus({ preventScroll: true });
+    porId('cq-zona')?.scrollIntoView({
+      behavior: prefiereMenosMovimiento() ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  } catch {
+    // Si otra consulta la reemplazó, no se muestra nada (la nueva manda).
+    if (control.signal.aborted && !expirado) return;
+
+    if (expirado) {
+      mostrarAviso(
+        'La consulta tardó demasiado',
+        'El taller está tardando en responder. Intenta de nuevo en unos segundos.',
+      );
+      anunciar('La consulta tardó demasiado.');
+    } else {
+      mostrarAviso(
+        'No pudimos consultar el taller',
+        'Revisa tu conexión e intenta de nuevo en unos segundos. Si el problema continúa, escríbenos por WhatsApp.',
+      );
+      anunciar('No pudimos completar la consulta.');
+    }
+  } finally {
+    window.clearTimeout(temporizador);
+    if (peticionEnCurso === control) peticionEnCurso = null;
+  }
+}
+
+/* ─────────────────────────────── Enlaces de UI ─────────────────────────────── */
+
+function vincular(): void {
+  const form = porId<HTMLFormElement>('cq-buscador');
+  const entrada = porId<HTMLInputElement>('cq-placa');
+  const refrescar = porId<HTMLButtonElement>('cq-refrescar');
+  const reintentar = porId<HTMLButtonElement>('cq-reintentar');
+
+  if (entrada && entrada.dataset.cqVinculado !== '1') {
+    entrada.dataset.cqVinculado = '1';
+    entrada.addEventListener('input', () => {
+      entrada.value = normalizarPlaca(entrada.value).slice(0, 8);
+      entrada.removeAttribute('aria-invalid');
+    });
+    entrada.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Enter') {
+        evento.preventDefault();
+        form?.requestSubmit();
+      }
+    });
+  }
+
+  if (form && form.dataset.cqVinculado !== '1') {
+    form.dataset.cqVinculado = '1';
+    form.addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      void buscar(entrada?.value ?? '');
+    });
+  }
+
+  if (refrescar && refrescar.dataset.cqVinculado !== '1') {
+    refrescar.dataset.cqVinculado = '1';
+    refrescar.addEventListener('click', () => {
+      if (!placaActual) return;
+      refrescar.disabled = true;
+      refrescar.textContent = 'Actualizando…';
+      void buscar(placaActual).finally(() => {
+        refrescar.disabled = false;
+        refrescar.textContent = 'Actualizar ↻';
+      });
+    });
+  }
+
+  if (reintentar && reintentar.dataset.cqVinculado !== '1') {
+    reintentar.dataset.cqVinculado = '1';
+    reintentar.addEventListener('click', () => {
+      if (placaActual) void buscar(placaActual);
+    });
+  }
+
+  const pestañas = porSel<HTMLElement>('[role="tablist"]', porId('cq-tabs'));
+  if (pestañas && pestañas.dataset.cqVinculado !== '1') {
+    pestañas.dataset.cqVinculado = '1';
+    pestañas.addEventListener('click', (evento) => {
+      const boton = (evento.target as HTMLElement | null)?.closest<HTMLElement>('[role="tab"]');
+      if (boton?.id) activarTab(boton.id);
+    });
+    pestañas.addEventListener('keydown', tecladoTabs);
+  }
+
+  const viewport = porId('cq-fotos-viewport');
+  if (viewport && viewport.dataset.cqVinculado !== '1') {
+    viewport.dataset.cqVinculado = '1';
+    let pendiente = false;
+    viewport.addEventListener(
+      'scroll',
+      () => {
+        if (pendiente) return;
+        pendiente = true;
+        requestAnimationFrame(() => {
+          pendiente = false;
+          actualizarCarrusel();
+        });
+      },
+      { passive: true },
+    );
+  }
+
+  const carrusel = porId('cq-fotos');
+  if (carrusel && carrusel.dataset.cqVinculado !== '1') {
+    carrusel.dataset.cqVinculado = '1';
+    carrusel.addEventListener('click', (evento) => {
+      const boton = (evento.target as HTMLElement | null)?.closest<HTMLElement>('[data-accion]');
+      const accion = boton?.dataset.accion;
+      if (accion === 'prev') irAFoto(Math.max(0, indiceActualCarrusel() - 1));
+      else if (accion === 'next') {
+        irAFoto(Math.min(Math.max(fotosActuales.length - 1, 0), indiceActualCarrusel() + 1));
+      }
+    });
+  }
+
+  const visor = porId('cq-visor');
+  if (visor && visor.dataset.cqVinculado !== '1') {
+    visor.dataset.cqVinculado = '1';
+    visor.addEventListener('click', (evento) => {
+      const boton = (evento.target as HTMLElement | null)?.closest<HTMLElement>('[data-accion]');
+      const accion = boton?.dataset.accion;
+      if (accion === 'cerrar') cerrarVisor();
+      else if (accion === 'prev') moverVisor(-1);
+      else if (accion === 'next') moverVisor(1);
+    });
+    const escena = porSel<HTMLElement>('.cq-visor-escena', visor);
+    if (escena) vincularGestosDelVisor(escena);
+  }
+}
+
+let enlacesGlobales = false;
+
+/** Listeners de documento: se registran una sola vez por sesión de página. */
+function vincularGlobales(): void {
+  if (enlacesGlobales) return;
+  enlacesGlobales = true;
+  document.addEventListener('keydown', manejarTecladoGlobal);
+  // Si el usuario navega fuera con el visor abierto, restaurar el scroll.
+  document.addEventListener('astro:before-swap', () => {
+    document.documentElement.style.overflow = '';
+    const visor = porId('cq-visor');
+    if (visor) visor.hidden = true;
+  });
+}
+
+/* ──────────────────────────────── Arranque ──────────────────────────────────── */
+
+function estadoInicial(): void {
+  const parametros = new URLSearchParams(location.search);
+  const deEnlace = normalizarPlaca(parametros.get('placa') ?? '');
+  const guardada = leerPlacaLocal();
+  const entrada = porId<HTMLInputElement>('cq-placa');
+  if (entrada) entrada.value = deEnlace || guardada;
+
+  if (deEnlace) {
+    // buscar() valida el formato: si viene sucia o incompleta, muestra el aviso.
+    void buscar(deEnlace);
+    return;
+  }
+
+  expedienteActual = null;
+  placaActual = '';
+  mostrarVista('inicio');
+}
+
+/**
+ * Arranque idempotente del portal: se ejecuta en la carga inicial y en cada
+ * navegación del ClientRouter. Si no estamos en /consulta/, no hace nada.
+ */
+export function initConsulta(): void {
+  const pagina = document.querySelector<HTMLElement>('.cq-page');
+  if (!pagina) return;
+
+  vincularGlobales();
+  if (pagina.dataset.cqListo === '1') return;
+  pagina.dataset.cqListo = '1';
+
+  vincular();
+  estadoInicial();
+}

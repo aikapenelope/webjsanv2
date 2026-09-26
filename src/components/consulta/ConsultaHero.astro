@@ -1,0 +1,102 @@
+---
+/**
+ * Hero del portal — navy institucional con la tarjeta de búsqueda flotante
+ * (patrón del sitio v2). Todo estático; la interacción vive en el cliente.
+ */
+import BuscadorPlaca from './BuscadorPlaca.astro';
+---
+
+<header class="cq-hero">
+  <div class="wrap cq-hero-wrap">
+    <span class="kicker kicker-gold">Central del Cliente</span>
+    <h1 class="cq-hero-titulo">Consulta el expediente de tu vehículo</h1>
+    <p class="cq-hero-lead">
+      Entra con tu placa y mira la recepción con fotos, el informe del scanner, el estado en vivo de
+      tu orden de trabajo y tu garantía. Sin datos personales y sin montos.
+    </p>
+
+    <div class="cq-hero-card">
+      <BuscadorPlaca />
+    </div>
+
+    <ul class="cq-hero-sellos">
+      <li>Solo necesitas tu placa</li>
+      <li>Sin datos personales</li>
+      <li>Información directa del taller</li>
+    </ul>
+  </div>
+</header>
+
+<style>
+  .cq-hero {
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #ffffff;
+    padding: clamp(2.6rem, 6vw, 4.2rem) 0 clamp(2.4rem, 5vw, 3.6rem);
+    border-bottom: 1px solid var(--navy-deep);
+  }
+
+  .cq-hero-wrap {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+  }
+
+  .cq-hero-titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.3rem, 5.2vw, 3.6rem);
+    line-height: 1.02;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+
+  .cq-hero-lead {
+    color: var(--muted-dark);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 46rem;
+    text-wrap: pretty;
+  }
+
+  .cq-hero-card {
+    width: min(46rem, 100%);
+    margin-top: 0.6rem;
+  }
+
+  .cq-hero-sellos {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.4rem;
+    margin-top: 0.4rem;
+    padding: 0;
+  }
+
+  .cq-hero-sellos li {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--muted-dark);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .cq-hero-sellos li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex: none;
+  }
+
+  @media (max-width: 480px) {
+    .cq-hero-titulo {
+      font-size: clamp(1.9rem, 9vw, 2.5rem);
+    }
+  }
+</style>

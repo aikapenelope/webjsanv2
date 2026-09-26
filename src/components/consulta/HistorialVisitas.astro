@@ -1,0 +1,118 @@
+---
+/**
+ * Historial de visitas — una tarjeta por orden de trabajo (más reciente
+ * primero). `consulta-client.ts` construye las tarjetas con createElement +
+ * textContent (nunca innerHTML con datos de Lark).
+ */
+---
+
+<div class="cq-historial" id="cq-historial">
+  <p class="cq-hist-vacio" id="cq-hist-vacio" hidden>
+    Aún no hay visitas registradas para este vehículo en nuestro sistema.
+  </p>
+  <div class="cq-hist-lista" id="cq-hist-lista"></div>
+</div>
+
+<style>
+  .cq-hist-lista {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .cq-hist-vacio {
+    font-size: 0.95rem;
+    color: var(--muted);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+  }
+
+  /* Tarjetas creadas por JS: reglas globales */
+  .cq-hist-lista :global(.cq-hist-card) {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-left: 4px solid var(--blue);
+    border-radius: var(--radius-sm);
+    padding: 0.95rem 1.05rem;
+    display: grid;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .cq-hist-lista :global(.cq-hist-card.is-actual) {
+    border-left-color: var(--gold);
+    box-shadow: var(--shadow-card);
+  }
+
+  .cq-hist-lista :global(.cq-hist-cabecera) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.8rem;
+    justify-content: space-between;
+  }
+
+  .cq-hist-lista :global(.cq-hist-ot) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .cq-hist-lista :global(.cq-hist-badge) {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy-deep);
+    background: var(--gold);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .cq-hist-lista :global(.cq-hist-estado) {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.28rem 0.7rem;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .cq-hist-lista :global(.cq-hist-estado.is-cancelado) {
+    background: #c0392b;
+  }
+
+  .cq-hist-lista :global(.cq-hist-estado.is-imprevisto) {
+    background: #b8860b;
+  }
+
+  .cq-hist-lista :global(.cq-hist-estado.is-entregado) {
+    background: #178a42;
+  }
+
+  .cq-hist-lista :global(.cq-hist-meta) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.2rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cq-hist-lista :global(.cq-hist-meta b) {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .cq-hist-lista :global(.cq-hist-sintoma) {
+    font-size: 0.9rem;
+    color: var(--navy);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+</style>

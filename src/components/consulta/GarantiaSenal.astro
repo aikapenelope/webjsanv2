@@ -1,0 +1,111 @@
+---
+/**
+ * Señal de garantía — activa (con fecha, referencia y vigencia) o sin registro.
+ * El enlace de WhatsApp llega ya prellenado desde el DTO
+ * (`garantia.whatsappUrl`), calculado en el servidor.
+ */
+---
+
+<div class="cq-garantia" id="cq-garantia" hidden>
+  <div class="cq-garantia-caja is-activa" id="cq-garantia-activa" hidden>
+    <span class="cq-garantia-icono" aria-hidden="true">🛡️</span>
+    <div class="cq-garantia-texto">
+      <h4 class="cq-garantia-titulo">Garantía activa</h4>
+      <p class="cq-garantia-linea">
+        Desde <b data-campo="desde">—</b>
+        <span class="cq-garantia-ref" data-campo="ref" hidden></span>
+      </p>
+      <p class="cq-garantia-vigencia" data-campo="vigencia" hidden></p>
+    </div>
+  </div>
+
+  <div class="cq-garantia-caja is-inactiva" id="cq-garantia-inactiva" hidden>
+    <span class="cq-garantia-icono" aria-hidden="true">🛡️</span>
+    <div class="cq-garantia-texto">
+      <h4 class="cq-garantia-titulo">Sin garantía registrada</h4>
+      <p class="cq-garantia-linea">
+        Aún no registramos una garantía para este vehículo. Si hiciste una reparación reciente con
+        nosotros, escríbenos y la revisamos.
+      </p>
+    </div>
+  </div>
+
+  <a class="btn btn-gold" id="cq-garantia-wa" href="#" target="_blank" rel="noopener">
+    Pedir detalles por WhatsApp →
+  </a>
+</div>
+
+<style>
+  .cq-garantia {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+
+  .cq-garantia-caja {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+    width: 100%;
+  }
+
+  .cq-garantia-caja.is-activa {
+    background: #eefaf1;
+    border-color: #bfe4c9;
+    border-left: 5px solid #178a42;
+  }
+
+  .cq-garantia-icono {
+    font-size: 1.9rem;
+    line-height: 1;
+    flex: none;
+  }
+
+  .cq-garantia-texto {
+    min-width: 0;
+  }
+
+  .cq-garantia-titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .cq-garantia-linea {
+    font-size: 0.94rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 0.25rem;
+  }
+
+  .cq-garantia-linea b {
+    color: var(--navy);
+  }
+
+  .cq-garantia-ref {
+    display: inline-block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy-deep);
+    background: var(--gold);
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
+    margin-left: 0.4rem;
+  }
+
+  .cq-garantia-vigencia {
+    font-size: 0.86rem;
+    color: var(--navy);
+    font-weight: 600;
+    margin-top: 0.3rem;
+  }
+</style>

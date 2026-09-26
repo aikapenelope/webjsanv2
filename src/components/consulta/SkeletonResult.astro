@@ -1,0 +1,122 @@
+---
+/**
+ * Esqueleto de carga (shimmer) — mismas proporciones que el resultado final
+ * para que no haya saltos de layout. `consulta-client.ts` lo muestra/oculta.
+ */
+---
+
+<section class="cq-skeleton" id="cq-skeleton" hidden aria-hidden="true">
+  <div class="cq-sk-card">
+    <div class="cq-sk-placa"></div>
+    <div class="cq-sk-datos">
+      <div class="cq-sk-line cq-w60"></div>
+      <div class="cq-sk-line cq-w40"></div>
+      <div class="cq-sk-line cq-w80"></div>
+    </div>
+  </div>
+
+  <div class="cq-sk-panel">
+    <div class="cq-sk-line cq-w30"></div>
+    <div class="cq-sk-pasos">
+      {[0, 1, 2, 3, 4, 5, 6].map(() => <span class="cq-sk-dot"></span>)}
+    </div>
+  </div>
+
+  <div class="cq-sk-panel">
+    <div class="cq-sk-line cq-w45"></div>
+    <div class="cq-sk-line cq-w95"></div>
+    <div class="cq-sk-line cq-w85"></div>
+  </div>
+</section>
+
+<style>
+  .cq-skeleton {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .cq-sk-card,
+  .cq-sk-panel {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: clamp(1.1rem, 2.4vw, 1.6rem);
+  }
+
+  .cq-sk-card {
+    display: grid;
+    grid-template-columns: 168px 1fr;
+    gap: 1.6rem;
+    align-items: center;
+  }
+
+  .cq-sk-placa {
+    height: 76px;
+    border-radius: 12px;
+  }
+
+  .cq-sk-datos {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .cq-sk-line {
+    height: 14px;
+    border-radius: 999px;
+  }
+
+  .cq-sk-placa,
+  .cq-sk-line,
+  .cq-sk-dot {
+    background: linear-gradient(90deg, var(--sky) 25%, #dfe9f7 37%, var(--sky) 63%);
+    background-size: 400% 100%;
+    animation: cqShimmer 1.4s ease-in-out infinite;
+  }
+
+  .cq-w30 { width: 30%; }
+  .cq-w40 { width: 40%; }
+  .cq-w45 { width: 45%; }
+  .cq-w60 { width: 60%; }
+  .cq-w80 { width: 80%; }
+  .cq-w85 { width: 85%; }
+  .cq-w95 { width: 95%; }
+
+  .cq-sk-pasos {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+  }
+
+  .cq-sk-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  @keyframes cqShimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+  }
+
+  .cq-sk-panel .cq-sk-line + .cq-sk-line {
+    margin-top: 0.7rem;
+  }
+
+  @media (max-width: 620px) {
+    .cq-sk-card {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+
+    .cq-sk-placa {
+      width: 168px;
+    }
+
+    .cq-sk-datos {
+      width: 100%;
+    }
+  }
+</style>

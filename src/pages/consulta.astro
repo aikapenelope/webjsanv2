@@ -1,0 +1,177 @@
+---
+/**
+ * /consulta/ — Central del Cliente: el cliente entra con la placa de su carro y
+ * ve recepción (fotos), informe del scanner X431, estado en vivo de la OT,
+ * historial y garantía. Sin datos personales ni montos.
+ *
+ * Página noindex y excluida del sitemap (astro.config.mjs). Todo el resultado se
+ * renderiza en el cliente desde `src/lib/consulta-client.ts` (fetch a
+ * /api/expediente y /api/x431).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ConsultaHero from '../components/consulta/ConsultaHero.astro';
+import SkeletonResult from '../components/consulta/SkeletonResult.astro';
+import EmptyState from '../components/consulta/EmptyState.astro';
+import TarjetaVehiculo from '../components/consulta/TarjetaVehiculo.astro';
+import EstadoTracker from '../components/consulta/EstadoTracker.astro';
+import TabsResult from '../components/consulta/TabsResult.astro';
+import VisorFotos from '../components/consulta/VisorFotos.astro';
+import { SITE } from '../data/site';
+
+const title = `Consulta el expediente de tu vehículo · ${SITE.shortName}`;
+const description =
+  'Entra con la placa de tu carro y mira las fotos de la recepción, el informe del scanner, el estado de tu orden de trabajo y tu garantía. Información directa del taller J-SAN en Caracas.';
+
+const pasos = [
+  {
+    icono: '📥',
+    titulo: 'Recepción con fotos',
+    texto: 'Revisa las fotos y los datos con los que tu carro entró al taller.',
+  },
+  {
+    icono: '🔍',
+    titulo: 'Informe del scanner',
+    texto: 'Las fallas que detectó el escáner computarizado, explicadas por sistema.',
+  },
+  {
+    icono: '🔎',
+    titulo: 'Estado en vivo',
+    texto: 'En qué paso va tu orden de trabajo, desde que llega hasta que se entrega.',
+  },
+  {
+    icono: '🛡️',
+    titulo: 'Garantía',
+    texto: 'Si tu reparación tiene garantía activa y desde cuándo.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path="/consulta/"
+  noindex
+  topbarTagline="Central del Cliente · Consulta tu expediente"
+>
+  <main class="cq-page">
+    <ConsultaHero />
+
+    <section class="section section-sky" id="cq-zona" aria-busy="false">
+      <div class="wrap cq-zona-wrap">
+        <p class="cq-anuncio" id="cq-anuncio" role="status" aria-live="polite"></p>
+
+        <!-- Estado inicial: qué encontrará el cliente -->
+        <div class="cq-inicio" id="cq-inicio">
+          <div class="sec-head">
+            <span class="kicker">Expediente del vehículo</span>
+            <h2 class="sec-title">¿Qué verás al consultar tu placa?</h2>
+            <p class="sec-lead">
+              Escribe la placa en el buscador de arriba y verás el expediente completo de tu carro.
+              No mostramos datos personales, notas internas ni montos.
+            </p>
+          </div>
+          <div class="cq-inicio-grid">
+            {pasos.map((paso) => (
+              <article class="cq-inicio-card">
+                <span class="cq-inicio-icono" aria-hidden="true">{paso.icono}</span>
+                <h3>{paso.titulo}</h3>
+                <p>{paso.texto}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <SkeletonResult />
+        <EmptyState />
+
+        <div class="cq-resultado" id="cq-resultado" hidden>
+          <TarjetaVehiculo />
+          <EstadoTracker />
+          <TabsResult />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <VisorFotos />
+</BaseLayout>
+
+<script>
+  import { initConsulta } from '../lib/consulta-client';
+
+  // Idempotente: `astro:page-load` también se dispara en la carga inicial.
+  document.addEventListener('astro:page-load', initConsulta);
+  if (document.readyState !== 'loading') initConsulta();
+</script>
+
+<style>
+  .cq-zona-wrap {
+    display: grid;
+    gap: 1.4rem;
+  }
+
+  .cq-resultado {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .cq-resultado[hidden] {
+    display: none;
+  }
+
+  /* Región de anuncios para lectores de pantalla (sin contenido visual) */
+  .cq-anuncio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .cq-inicio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+  }
+
+  .cq-inicio-card {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 1.3rem 1.25rem;
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+
+  .cq-inicio-icono {
+    font-size: 1.7rem;
+    line-height: 1;
+  }
+
+  .cq-inicio-card h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .cq-inicio-card p {
+    font-size: 0.92rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 480px) {
+    .cq-inicio-card {
+      padding: 1.1rem 1rem;
+    }
+  }
+</style>

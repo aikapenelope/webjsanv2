@@ -1,0 +1,75 @@
+---
+/**
+ * Avisos de medios no reproducibles: VIDEO (solo conteo, nunca URL) y fotos
+ * adicionales que el bot no puede firmar (`fotosSinAcceso`). Ambos ofrecen
+ * WhatsApp con mensaje prellenado (placa + N.º de entrada).
+ * `consulta-client.ts` los muestra y rellena el enlace.
+ */
+---
+
+<div class="cq-aviso-media" id="cq-aviso-video" hidden>
+  <span class="cq-aviso-media-icono" aria-hidden="true">🎥</span>
+  <div class="cq-aviso-media-texto">
+    <b data-campo="titulo">Poseemos video de tu ingreso</b>
+    <p data-campo="texto">El video no se reproduce por privacidad: pídelo por WhatsApp y te lo enviamos.</p>
+  </div>
+  <a class="btn btn-primary btn-sm" data-campo="wa" href="#" target="_blank" rel="noopener">
+    Pedir por WhatsApp →
+  </a>
+</div>
+
+<div class="cq-aviso-media" id="cq-aviso-fotos" hidden>
+  <span class="cq-aviso-media-icono" aria-hidden="true">📷</span>
+  <div class="cq-aviso-media-texto">
+    <b data-campo="titulo">Hay fotos adicionales de tu vehículo</b>
+    <p data-campo="texto">Las tenemos en el taller; pídelas por WhatsApp y te las enviamos.</p>
+  </div>
+  <a class="btn btn-primary btn-sm" data-campo="wa" href="#" target="_blank" rel="noopener">
+    Pedir por WhatsApp →
+  </a>
+</div>
+
+<style>
+  .cq-aviso-media {
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-left: 5px solid var(--blue);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem 1rem;
+  }
+
+  .cq-aviso-media-icono {
+    font-size: 1.6rem;
+    line-height: 1;
+    flex: none;
+  }
+
+  .cq-aviso-media-texto {
+    flex: 1;
+    min-width: 12rem;
+  }
+
+  .cq-aviso-media-texto b {
+    display: block;
+    font-size: 0.98rem;
+    color: var(--navy);
+  }
+
+  .cq-aviso-media-texto p {
+    font-size: 0.86rem;
+    color: var(--muted);
+    line-height: 1.45;
+    margin-top: 0.15rem;
+  }
+
+  @media (max-width: 520px) {
+    .cq-aviso-media .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

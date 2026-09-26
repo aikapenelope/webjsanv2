@@ -1,0 +1,223 @@
+---
+/**
+ * Carrusel de fotos de recepción — scroll-snap nativo, una foto por vista,
+ * contador n/N, flechas en desktop y puntos de progreso. `consulta-client.ts`
+ * crea los slides, carga solo la visible ±1 (IntersectionObserver) y controla
+ * flechas/contador/dots. Nunca se reproducen videos: eso lo cubre AvisoVideo.
+ */
+---
+
+<div class="cq-fotos" id="cq-fotos" hidden>
+  <div class="cq-fotos-head">
+    <h4 class="cq-fotos-titulo">Fotos de la recepción</h4>
+    <span class="cq-fotos-contador" data-campo="contador">0/0</span>
+  </div>
+
+  <div class="cq-fotos-marco">
+    <button class="cq-flecha cq-flecha-prev" type="button" data-accion="prev" aria-label="Foto anterior">
+      <span aria-hidden="true">‹</span>
+    </button>
+
+    <div
+      class="cq-fotos-viewport"
+      id="cq-fotos-viewport"
+      tabindex="0"
+      role="group"
+      aria-label="Carrusel de fotos de la recepción. Usa las flechas para navegar."
+    >
+      <div class="cq-fotos-track" id="cq-fotos-track"></div>
+    </div>
+
+    <button class="cq-flecha cq-flecha-next" type="button" data-accion="next" aria-label="Foto siguiente">
+      <span aria-hidden="true">›</span>
+    </button>
+  </div>
+
+  <div class="cq-fotos-dots" id="cq-fotos-dots"></div>
+  <p class="cq-fotos-pie">Toca una foto para verla en pantalla completa.</p>
+</div>
+
+<style>
+  .cq-fotos {
+    --cq-foto-alto: clamp(260px, 52vh, 460px);
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .cq-fotos-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+  }
+
+  .cq-fotos-titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .cq-fotos-contador {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cq-fotos-marco {
+    position: relative;
+  }
+
+  .cq-fotos-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-radius: var(--radius);
+    background: var(--navy-deep);
+    border: 1px solid var(--sky-line);
+  }
+
+  .cq-fotos-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cq-fotos-viewport:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  .cq-fotos-track {
+    display: flex;
+    gap: 0;
+    width: max-content;
+  }
+
+  /* Slides creados por JS: estilo global necesario (nodos fuera del scope Astro) */
+  .cq-fotos-track :global(.cq-slide) {
+    width: min(88vw, 720px);
+    flex: none;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    padding: 0;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    height: var(--cq-foto-alto);
+    display: block;
+  }
+
+  .cq-fotos-track :global(.cq-slide-btn) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: linear-gradient(90deg, #12294f 25%, #1b3a68 37%, #12294f 63%);
+    background-size: 400% 100%;
+    animation: cqShimmerFoto 1.4s ease-in-out infinite;
+    cursor: zoom-in;
+    border-radius: 0;
+  }
+
+  .cq-fotos-track :global(.cq-slide.is-lista .cq-slide-btn) {
+    background: var(--navy-deep);
+    animation: none;
+  }
+
+  .cq-fotos-track :global(.cq-slide img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .cq-fotos-track :global(.cq-slide.is-lista img) {
+    opacity: 1;
+  }
+
+  .cq-flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--sky-line);
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--navy);
+    font-size: 1.4rem;
+    line-height: 1;
+    display: none;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+  }
+
+  .cq-flecha[disabled] {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .cq-flecha-prev {
+    left: 0.7rem;
+  }
+
+  .cq-flecha-next {
+    right: 0.7rem;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cq-flecha {
+      display: grid;
+    }
+  }
+
+  .cq-fotos-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: center;
+  }
+
+  .cq-fotos-dots :global(.cq-dot) {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .cq-fotos-dots :global(.cq-dot i) {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sky-line);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .cq-fotos-dots :global(.cq-dot.is-activo i) {
+    background: var(--gold);
+    transform: scale(1.35);
+  }
+
+  .cq-fotos-pie {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  @keyframes cqShimmerFoto {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+  }
+</style>

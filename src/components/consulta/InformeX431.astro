@@ -1,0 +1,229 @@
+---
+/**
+ * Informe del scanner X431 — render nativo desde /api/x431 (sistemas con fallas,
+ * códigos, descripciones, estado + sistemas sin fallas) y botón al informe
+ * original. Estados: vacío/pendiente · cargando · error · ok.
+ * `consulta-client.ts` lo carga en diferido al abrir la pestaña.
+ */
+---
+
+<div class="cq-x431" id="cq-x431">
+  <div class="cq-x431-bloque" id="cq-x431-vacio">
+    <p class="cq-x431-msg">
+      Aún no hay un informe del scanner para esta visita. Cuando el taller lo emita, aparecerá
+      aquí automáticamente.
+    </p>
+  </div>
+
+  <div class="cq-x431-bloque" id="cq-x431-carga" hidden>
+    <div class="cq-x431-sk-line cq-w40"></div>
+    <div class="cq-x431-sk-line cq-w85"></div>
+    <div class="cq-x431-sk-line cq-w70"></div>
+  </div>
+
+  <div class="cq-x431-bloque" id="cq-x431-error" hidden>
+    <p class="cq-x431-msg">
+      No pudimos cargar el informe del scanner en este momento. Puedes abrirlo directamente en la
+      página original.
+    </p>
+    <div class="cq-x431-acciones">
+      <a class="btn btn-primary btn-sm" id="cq-x431-original-error" href="#" target="_blank" rel="noopener">
+        Ver informe original ↗
+      </a>
+      <button class="btn btn-ghost btn-sm" type="button" id="cq-x431-reintentar">Reintentar</button>
+    </div>
+  </div>
+
+  <div class="cq-x431-bloque" id="cq-x431-ok" hidden>
+    <dl class="cq-x431-resumen">
+      <div><dt>Fecha del escaneo</dt><dd data-campo="fecha">—</dd></div>
+      <div><dt>Equipo</dt><dd data-campo="tester">—</dd></div>
+      <div><dt>Duración</dt><dd data-campo="duracion">—</dd></div>
+      <div><dt>Sistemas escaneados</dt><dd data-campo="sistemas">—</dd></div>
+      <div><dt>Fallas detectadas</dt><dd data-campo="fallas">—</dd></div>
+    </dl>
+
+    <div class="cq-x431-sistemas" id="cq-x431-sistemas"></div>
+
+    <div class="cq-x431-sin-fallas" id="cq-x431-ok-wrap" hidden>
+      <h5>Sistemas sin fallas</h5>
+      <div class="cq-x431-pills" id="cq-x431-ok-lista"></div>
+    </div>
+
+    <div class="cq-x431-acciones">
+      <a class="btn btn-primary btn-sm" id="cq-x431-original" href="#" target="_blank" rel="noopener">
+        Ver informe original ↗
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cq-x431 {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .cq-x431-msg {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.55;
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+  }
+
+  .cq-x431-sk-line {
+    height: 14px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--sky) 25%, #dfe9f7 37%, var(--sky) 63%);
+    background-size: 400% 100%;
+    animation: cqShimmerX431 1.4s ease-in-out infinite;
+  }
+
+  .cq-x431-sk-line + .cq-x431-sk-line {
+    margin-top: 0.7rem;
+  }
+
+  .cq-x431-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.85rem 1.2rem;
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.1rem;
+  }
+
+  .cq-x431-resumen dt {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.15rem;
+  }
+
+  .cq-x431-resumen dd {
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--navy);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cq-x431-sistemas {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  /* Nodos creados por JS: reglas globales */
+  .cq-x431-sistemas :global(.cq-sistema) {
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .cq-x431-sistemas :global(.cq-sistema-nombre) {
+    display: block;
+    background: var(--navy);
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.98rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.9rem;
+  }
+
+  .cq-x431-sistemas :global(.cq-falla) {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.4rem 0.8rem;
+    align-items: center;
+    padding: 0.7rem 0.9rem;
+    border-top: 1px solid var(--sky-line);
+  }
+
+  .cq-x431-sistemas :global(.cq-falla-codigo) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.06em;
+    color: var(--navy-deep);
+    background: var(--gold);
+    border-radius: 6px;
+    padding: 0.18rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .cq-x431-sistemas :global(.cq-falla-desc) {
+    font-size: 0.9rem;
+    color: var(--navy);
+    line-height: 1.4;
+  }
+
+  .cq-x431-sistemas :global(.cq-falla-estado) {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .cq-x431-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .cq-x431-pills :global(.cq-pill) {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--navy);
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+  }
+
+  .cq-x431-pills :global(.cq-pill.is-ok) {
+    background: #eefaf1;
+    border-color: #bfe4c9;
+    color: #14572c;
+  }
+
+  .cq-x431-pills :global(.cq-pill.is-falla) {
+    background: #fdf1f0;
+    border-color: #f0c4be;
+    color: #8e2a1f;
+    font-weight: 700;
+  }
+
+  .cq-x431-sin-fallas h5 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .cq-x431-sin-fallas {
+    margin-top: 1.1rem;
+  }
+
+  .cq-x431-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.1rem;
+  }
+
+  @keyframes cqShimmerX431 {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+  }
+</style>

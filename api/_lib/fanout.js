@@ -11,6 +11,7 @@ import {
   porPlacaNorm,
   textoDe,
   numeroDe,
+  kmDe,
   linkIdsDe,
   firmarFotos,
   extraerInformeX431,
@@ -184,7 +185,7 @@ export async function construirExpediente(placa) {
     const rf = rec?.f ?? {};
     const sintoma =
       textoDe(rf['¿Qué le pasa al carro?']).trim() || textoDe(f['Síntoma reportado']).trim();
-    const km = numeroDe(rf['Km reportado']) ?? numeroDe(f['Km entrada']);
+    const km = kmDe(rf['Km reportado']) ?? kmDe(f['Km entrada']);
 
     const dto = {
       nroOT: textoDe(f['# OT']).trim(),
@@ -193,7 +194,7 @@ export async function construirExpediente(placa) {
       diasEnTaller: numeroDe(f['Días en taller']),
       fechaIngreso: aISO(ot.ts),
       fechaEntrega: aISO(numeroDe(f['Fecha entrega'])) || undefined,
-      kmEntrada: numeroDe(f['Km entrada']),
+      kmEntrada: kmDe(f['Km entrada']),
       sintoma: textoDe(f['Síntoma reportado']).trim() || undefined,
     };
 
@@ -263,7 +264,7 @@ export async function construirExpediente(placa) {
     ano: numeroDe(vehiculoBase?.['Año']),
     color: textoDe(vehiculoBase?.['Color']).trim() || undefined,
     vin: textoDe(vehiculoBase?.['VIN']).trim() || undefined,
-    kmUltimaVisita: numeroDe(vehiculoBase?.['Km última visita']),
+    kmUltimaVisita: kmDe(vehiculoBase?.['Km última visita']),
     totalOTs: linkIdsDe(vehiculoBase?.['OTs del vehículo']).length || ordenesDto.length,
   };
 

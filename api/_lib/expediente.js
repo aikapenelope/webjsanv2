@@ -136,6 +136,22 @@ export function numeroDe(valor) {
   return undefined;
 }
 
+/**
+ * Kilómetros — los campos «Km última visita», «Km entrada» y «Km reportado»
+ * llegan con DOS convenciones (verificado en la Base, 26-sep-2026):
+ *   · enteros correctos:   269435, 132500, 97435…
+ *   · con punto de miles:  221.532 (= 221 532 km), 249.688, 166.989, 325.722…
+ * Los km son enteros, así que un número con exactamente 3 decimales es una
+ * captura con separador de miles mal escrito (los vehículos de la Base tienen
+ * entre 90 000 y 330 000 km). Se normaliza a entero.
+ */
+export function kmDe(valor) {
+  const n = numeroDe(valor);
+  if (n === undefined) return undefined;
+  const conPuntoDeMiles = !Number.isInteger(n) && /\.\d{3}$/.test(String(n));
+  return Math.round(conPuntoDeMiles ? n * 1000 : n);
+}
+
 export function linkIdsDe(valor) {
   if (!valor) return [];
   if (Array.isArray(valor)) return valor.flatMap(linkIdsDe);

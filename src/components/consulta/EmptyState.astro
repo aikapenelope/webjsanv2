@@ -1,0 +1,116 @@
+---
+/**
+ * Estados vacíos y de aviso:
+ *  · `#cq-noencontrada` — la placa no existe en la Base (200 amable).
+ *  · `#cq-aviso` — error de red/Lark, límite de consultas o placa inválida
+ *    (título, texto, botón de reintentar y WhatsApp se ajustan por JS).
+ */
+import { RECEPCION_FORM_URL, waLink } from '../../data/site';
+
+const waNoAparece = waLink(
+  'Hola J-SAN, consulté mi placa en el portal y no aparece mi vehículo. ¿Me ayudan?',
+);
+---
+
+<section class="cq-noencontrada" id="cq-noencontrada" hidden>
+  <span class="cq-noencontrada-icono" aria-hidden="true">🔎</span>
+  <h3 class="cq-noencontrada-titulo">
+    No encontramos la placa <span data-campo="placa">—</span>
+  </h3>
+  <p class="cq-noencontrada-texto">
+    Revisa que esté escrita sin guiones y sin espacios. Si es la primera vez que tu vehículo viene
+    al taller, completa la planilla de recepción y aparecerá aquí.
+  </p>
+  <div class="cq-noencontrada-acciones">
+    <a class="btn btn-gold" href={RECEPCION_FORM_URL} target="_blank" rel="noopener">
+      Completar planilla de recepción →
+    </a>
+    <a class="btn btn-ghost" href={waNoAparece} target="_blank" rel="noopener">
+      Escribir por WhatsApp
+    </a>
+  </div>
+</section>
+
+<section class="cq-aviso" id="cq-aviso" hidden>
+  <span class="cq-aviso-icono" aria-hidden="true">⚠️</span>
+  <div class="cq-aviso-cuerpo">
+    <h3 class="cq-aviso-titulo" data-campo="titulo">No pudimos completar la consulta</h3>
+    <p class="cq-aviso-texto" data-campo="texto">
+      Intenta de nuevo en unos segundos.
+    </p>
+    <div class="cq-aviso-acciones">
+      <button class="btn btn-primary" type="button" id="cq-reintentar">Reintentar</button>
+      <a class="btn btn-ghost" id="cq-aviso-wa" href={waNoAparece} target="_blank" rel="noopener">
+        Escribir por WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cq-noencontrada,
+  .cq-aviso {
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: clamp(1.4rem, 3.4vw, 2.2rem);
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 0.6rem;
+  }
+
+  .cq-noencontrada-icono,
+  .cq-aviso-icono {
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+
+  .cq-noencontrada-titulo,
+  .cq-aviso-titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .cq-noencontrada-titulo span {
+    color: var(--blue);
+  }
+
+  .cq-noencontrada-texto,
+  .cq-aviso-texto {
+    font-size: 0.98rem;
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 38rem;
+    text-wrap: pretty;
+  }
+
+  .cq-noencontrada-acciones,
+  .cq-aviso-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .cq-aviso-cuerpo {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: center;
+  }
+
+  @media (max-width: 520px) {
+    .cq-noencontrada-acciones .btn,
+    .cq-aviso-acciones .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
