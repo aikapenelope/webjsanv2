@@ -48,6 +48,15 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
           <span>Detectamos la falla antes de abrir tu transmisión</span>
         </div>
       </div>
+
+      <a class="hero-consulta" href="/consulta/">
+        <span class="hero-consulta-kicker">Central del Cliente</span>
+        <span class="hero-consulta-titulo">¿Ya recibimos tu carro?</span>
+        <span class="hero-consulta-texto">
+          Consulta con tu placa las fotos del ingreso, el diagnóstico del scanner y el estado de tu orden.
+        </span>
+        <span class="hero-consulta-cta">Ver mi expediente →</span>
+      </a>
     </div>
   </div>
 </section>
@@ -217,4 +226,59 @@ const waHero = waLink('Hola J-SAN, quiero consultar por una falla en mi caja aut
       justify-content: center;
     }
   }
+  /* Acceso destacado al Portal de Consulta (Central del Cliente) */
+  .hero-consulta {
+    display: grid;
+    gap: 0.2rem;
+    padding: 1.05rem 1.2rem 1.15rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+
+  .hero-consulta:hover {
+    transform: translateY(-2px);
+    border-color: rgba(201, 162, 39, 0.55);
+  }
+
+  .hero-consulta-kicker {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+  }
+
+  .hero-consulta-titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  .hero-consulta-texto {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.76);
+    text-wrap: pretty;
+  }
+
+  .hero-consulta-cta {
+    margin-top: 0.45rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--gold-soft);
+  }
+
+  @media (max-width: 560px) {
+    .hero-consulta-titulo {
+      font-size: 1.25rem;
+    }
+  }
+
 </style>

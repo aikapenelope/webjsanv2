@@ -1,8 +1,9 @@
 ---
 /**
- * Tracker del estado de la OT — 7 pasos (0..6), horizontal en desktop y vertical
- * en móvil. `consulta-client.ts` marca `is-done` / `is-current`, muestra el
- * banner de imprevisto/cancelado y los chips de estado y días en taller.
+ * Tracker del estado de la OT — panel visual: estado actual con icono y
+ * explicación humana, barra de progreso y los 7 pasos (horizontal en desktop,
+ * vertical en móvil). `consulta-client.ts` marca is-done/is-current, rellena
+ * la barra y muestra el banner de imprevisto/cancelado.
  * Etapas: 0 Recibido · 1 En diagnóstico · 2 Por aprobar · 3 Aprobado ·
  *         4 En trabajo · 5 Listo · 6 Entregado · (-1 cancelado · -2 imprevisto)
  */
@@ -18,9 +19,34 @@ const PASOS = ['Recibido', 'En diagnóstico', 'Por aprobar', 'Aprobado', 'En tra
       </h3>
     </div>
     <div class="cq-chips">
-      <span class="cq-chip cq-chip-estado" data-campo="estado">—</span>
       <span class="cq-chip cq-chip-dias" data-campo="dias" hidden></span>
     </div>
+  </div>
+
+  <!-- Respuesta rápida: ¿en qué va mi carro? -->
+  <div class="cq-estado-hero" data-campo="estado-hero">
+    <span class="cq-estado-icono" data-campo="estado-icono" aria-hidden="true">📥</span>
+    <div class="cq-estado-info">
+      <h4 class="cq-estado-titulo" data-campo="estado-titulo">Recibimos tu carro</h4>
+      <p class="cq-estado-detalle" data-campo="estado-detalle">
+        Ya está registrado en el taller; en breve pasa al diagnóstico.
+      </p>
+    </div>
+  </div>
+
+  <div class="cq-progreso" data-campo="progreso">
+    <div
+      class="cq-progreso-carril"
+      role="progressbar"
+      aria-valuemin="1"
+      aria-valuemax="7"
+      aria-valuenow="1"
+      aria-label="Progreso de la orden"
+      data-campo="progreso-carril"
+    >
+      <span class="cq-progreso-relleno" data-campo="progreso-relleno"></span>
+    </div>
+    <p class="cq-progreso-texto" data-campo="progreso-texto">Paso 1 de 7</p>
   </div>
 
   <p class="cq-banner" id="cq-banner" role="note" hidden></p>
@@ -86,16 +112,90 @@ const PASOS = ['Recibido', 'En diagnóstico', 'Por aprobar', 'Aprobado', 'En tra
     white-space: nowrap;
   }
 
-  .cq-chip-estado {
-    background: var(--navy);
-    border-color: var(--navy);
-    color: #ffffff;
-  }
-
   .cq-chip-dias {
     background: #fffaf0;
     border-color: #ecd9a8;
     color: #7a5c06;
+  }
+
+  /* ── Estado actual en grande ── */
+  .cq-estado-hero {
+    display: flex;
+    align-items: center;
+    gap: 0.95rem;
+    margin-top: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-sm);
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .cq-estado-hero.is-detenido {
+    background: #fdf1f0;
+    border-color: #f0c4be;
+  }
+
+  .cq-estado-icono {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    background: #ffffff;
+    border: 1px solid var(--sky-line);
+    box-shadow: 0 2px 8px rgba(10, 30, 64, 0.08);
+  }
+
+  .cq-estado-titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.2rem, 2.6vw, 1.5rem);
+    text-transform: uppercase;
+    color: var(--navy);
+    line-height: 1.05;
+  }
+
+  .cq-estado-detalle {
+    font-size: 0.92rem;
+    color: var(--muted);
+    line-height: 1.45;
+    margin-top: 0.25rem;
+    text-wrap: pretty;
+  }
+
+  /* ── Barra de progreso ── */
+  .cq-progreso {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .cq-progreso-carril {
+    height: 12px;
+    border-radius: 999px;
+    background: var(--sky);
+    border: 1px solid var(--sky-line);
+    overflow: hidden;
+  }
+
+  .cq-progreso-relleno {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--gold) 100%);
+    transition: width 0.35s ease;
+  }
+
+  .cq-progreso-texto {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
 
   .cq-banner {
@@ -123,7 +223,7 @@ const PASOS = ['Recibido', 'En diagnóstico', 'Por aprobar', 'Aprobado', 'En tra
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 0.4rem;
-    margin: 1.35rem 0 0.4rem;
+    margin: 1.25rem 0 0.4rem;
     padding: 0;
   }
 
@@ -232,6 +332,28 @@ const PASOS = ['Recibido', 'En diagnóstico', 'Por aprobar', 'Aprobado', 'En tra
 
     .cq-paso-texto {
       max-width: none;
+      font-size: 0.86rem;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .cq-estado-hero {
+      align-items: flex-start;
+      padding: 0.9rem 0.95rem;
+    }
+
+    .cq-estado-icono {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      font-size: 1.4rem;
+    }
+
+    .cq-estado-titulo {
+      font-size: 1.12rem;
+    }
+
+    .cq-estado-detalle {
       font-size: 0.86rem;
     }
   }

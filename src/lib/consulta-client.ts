@@ -281,6 +281,55 @@ function pintarVehiculo(exp: ExpedienteDTO): void {
 
 const ULTIMO_PASO = 6;
 
+/** Copia visual por etapa: icono + explicación humana del estado. */
+const ESTADO_META: Record<number, { icono: string; titulo: string; detalle: string }> = {
+  0: {
+    icono: '📥',
+    titulo: 'Recibimos tu carro',
+    detalle: 'Ya está registrado en el taller; en breve pasa al diagnóstico.',
+  },
+  1: {
+    icono: '🔍',
+    titulo: 'Lo estamos diagnosticando',
+    detalle: 'El especialista está leyendo el scanner y revisando el sistema.',
+  },
+  2: {
+    icono: '💰',
+    titulo: 'Presupuesto por aprobar',
+    detalle: 'Te enviamos el presupuesto; esperamos tu aprobación por WhatsApp.',
+  },
+  3: {
+    icono: '✅',
+    titulo: 'Trabajo aprobado',
+    detalle: 'Aprobaste el trabajo: tu carro entra a reparación.',
+  },
+  4: {
+    icono: '🔧',
+    titulo: 'Estamos trabajando',
+    detalle: 'El equipo está reparando tu transmisión ahora mismo.',
+  },
+  5: {
+    icono: '🏁',
+    titulo: 'Tu carro está listo',
+    detalle: 'La reparación terminó; coordinamos la entrega.',
+  },
+  6: {
+    icono: '📦',
+    titulo: 'Entregado',
+    detalle: 'El trabajo quedó cerrado y entregado. ¡Gracias por confiar en J-SAN!',
+  },
+  '-1': {
+    icono: '❌',
+    titulo: 'Orden cancelada',
+    detalle: 'Si tienes dudas del motivo, escríbenos por WhatsApp.',
+  },
+  '-2': {
+    icono: '⚠️',
+    titulo: 'Imprevisto / en espera',
+    detalle: 'Hay una novedad en proceso; el equipo te contactará por WhatsApp.',
+  },
+};
+
 function pintarTracker(ordenes: OrdenDTO[]): void {
   const tracker = porId('cq-tracker');
   const actual = ordenes[0];
@@ -290,7 +339,33 @@ function pintarTracker(ordenes: OrdenDTO[]): void {
   }
 
   ponerTexto(tracker, 'nroOT', actual.nroOT || '—');
-  ponerTexto(tracker, 'estado', actual.estado || 'En taller');
+
+  // Estado actual en grande (la respuesta rápida a «¿dónde está mi carro?»)
+  const meta = ESTADO_META[actual.etapa] ?? ESTADO_META[0];
+  ponerTexto(tracker, 'estado-icono', meta.icono);
+  ponerTexto(tracker, 'estado-titulo', meta.titulo);
+  ponerTexto(tracker, 'estado-detalle', meta.detalle);
+  const hero = porSel<HTMLElement>('[data-campo="estado-hero"]', tracker);
+  if (hero) hero.classList.toggle('is-detenido', actual.etapa < 0);
+
+  // Barra de progreso: se oculta si la orden está cancelada o en imprevisto.
+  const progreso = porSel<HTMLElement>('[data-campo="progreso"]', tracker);
+  if (progreso) {
+    const avanzando = actual.etapa >= 0;
+    mostrar(progreso, avanzando);
+    if (avanzando) {
+      const pct = Math.round(((actual.etapa + 1) / (ULTIMO_PASO + 1)) * 100);
+      const relleno = porSel<HTMLElement>('[data-campo="progreso-relleno"]', tracker);
+      if (relleno) relleno.style.width = `${pct}%`;
+      const carril = porSel<HTMLElement>('[data-campo="progreso-carril"]', tracker);
+      if (carril) carril.setAttribute('aria-valuenow', String(actual.etapa + 1));
+      ponerTexto(
+        tracker,
+        'progreso-texto',
+        actual.etapa === ULTIMO_PASO ? 'Completado · 7 de 7' : `Paso ${actual.etapa + 1} de 7`,
+      );
+    }
+  }
 
   const dias = porSel<HTMLSpanElement>('[data-campo="dias"]', tracker);
   const hayDias =
@@ -653,9 +728,6 @@ function pintarVisor(): void {
 
   const contador = porSel<HTMLElement>('[data-campo="contador"]', visor);
   if (contador) contador.textContent = `${visorIndice + 1}/${fotosActuales.length}`;
-
-  const original = porId<HTMLAnchorElement>('cq-visor-original');
-  if (original) original.href = foto.url;
 
   const descargar = porId<HTMLAnchorElement>('cq-visor-descargar');
   if (descargar) {
