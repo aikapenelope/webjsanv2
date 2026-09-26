@@ -1,11 +1,9 @@
 /**
  * GET /api/x431?doc=<diagnose_record_id>&rt=<report_type>
  *
- * Sprint 0: valida parámetros y devuelve un resumen mínimo del informe del scanner
- *           (lectura externa al cloud de Launch — el mismo enlace que se pega en Lark).
- * Sprint 1: DTO completo (sistemas + fallas con descripción) y caché de 24 h.
- *
- * Nota: el informe es inmutable una vez emitido; se cachea agresivamente.
+ * Informe del scanner X431 (nube de Launch) listo para el render nativo:
+ * resumen + sistemas con fallas (código, descripción, estado) + sistemas OK.
+ * El informe es inmutable: caché de borde 24 h (SWR 7 días).
  */
 const X431 = 'https://usait.x431.com';
 
@@ -35,32 +33,50 @@ export default async function handler(req, res) {
     if (!upstream.ok || data.code !== 0 || !data.data) throw new Error('sin_respuesta');
 
     const d = data.data;
-    const sistemas = Array.isArray(d.technician_result) ? d.technician_result : [];
-    const fallasDetectadas = sistemas.reduce(
-      (total, s) => total + (s?.subsystem_info?.fault_code_list?.length ?? 0),
-      0,
-    );
-    const inicio = Number(d.diagnose_start_time) || 0;
+    const crudos = Array.isArray(d.technician_result) ? d.technician_result : [];
+    const sistemas = [];
+    const sistemasOk = [];
+    let totalFallas = 0;
 
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    for (const s of crudos) {
+      const nombre = String(s?.system_name ?? '').trim();
+      const fallas = (s?.subsystem_info?.fault_code_list ?? [])
+        .map((fc) => ({
+          codigo: String(fc?.fault_code ?? '').trim(),
+          descripcion: String(fc?.fault_description ?? '').trim(),
+          estado: String(fc?.fault_status ?? '').trim(),
+        }))
+        .filter((fc) => fc.codigo);
+      if (fallas.length > 0) {
+        sistemas.push({ nombre, fallas });
+        totalFallas += fallas.length;
+      } else if (nombre) {
+        sistemasOk.push(nombre);
+      }
+    }
+
+    const inicio = Number(d.diagnose_start_time) || 0;
+    res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
     res.status(200).json({
       ok: true,
       informe: {
         informeId: doc,
         reportType: rt,
-        reportCode: String(d.report_code ?? ''),
+        reportCode: String(d.report_code ?? '').trim(),
         fecha: inicio > 0 ? new Date(inicio * 1000).toISOString() : '',
         tester: String(d.tester ?? '').trim(),
         vehiculo: String(d.theme ?? '').trim(),
-        totalSistemas: Number(d.sys_num) || sistemas.length,
-        totalFallas: Number(d.fault_n) || fallasDetectadas,
+        vin: String(d.vin ?? '').trim() || undefined,
+        duracionSeg: Number(d.time_consuming) || undefined,
+        totalSistemas: Number(d.sys_num) || crudos.length,
+        totalFallas,
+        sistemas,
+        sistemasOk,
       },
-      _sprint: 'Sprint 0 · resumen mínimo. Sistemas y fallas detalladas llegan en el Sprint 1.',
     });
   } catch (err) {
     console.error('[x431] informe no disponible:', err?.message ?? err);
     res.setHeader('Cache-Control', 'no-store');
-    // 200 con ok:false para que la web muestre su respaldo (enlace al original) sin romperse.
     res.status(200).json({ ok: false, error: 'x431_no_disponible' });
   }
 }

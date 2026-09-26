@@ -26,11 +26,10 @@ export const TABLAS = {
 /* ─────────────────────────────── Autenticación ─────────────────────────────── */
 
 let cacheToken = { valor: '', expira: 0 };
+let tokenEnVuelo = null;
 
-/** tenant_access_token del bot con caché de módulo (mientras viva la instancia). */
-export async function getTenantToken() {
-  if (cacheToken.valor && Date.now() < cacheToken.expira) return cacheToken.valor;
-
+/** Pide un token nuevo al API de Lark (interno). */
+async function pedirToken() {
   const res = await fetch(`${LARK}/open-apis/auth/v3/tenant_access_token/internal`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -43,10 +42,24 @@ export async function getTenantToken() {
   if (!res.ok || data.code !== 0 || !data.tenant_access_token) {
     throw new Error(`Lark auth (${data.code ?? res.status}): ${data.msg ?? 'sin detalle'}`);
   }
-
   const segundos = Math.max(60, (Number(data.expire) || 7200) - 300);
   cacheToken = { valor: data.tenant_access_token, expira: Date.now() + segundos * 1000 };
   return cacheToken.valor;
+}
+
+/**
+ * tenant_access_token del bot con caché de módulo (mientras viva la instancia).
+ * Concurrency-safe: si varias búsquedas piden token a la vez, comparten la
+ * misma petición en vuelo (evita pedir N tokens en paralelo).
+ */
+export async function getTenantToken() {
+  if (cacheToken.valor && Date.now() < cacheToken.expira) return cacheToken.valor;
+  if (!tokenEnVuelo) {
+    tokenEnVuelo = pedirToken().finally(() => {
+      tokenEnVuelo = null;
+    });
+  }
+  return tokenEnVuelo;
 }
 
 /* ──────────────────────────── Normalización de placa ───────────────────────── */
