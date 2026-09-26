@@ -40,9 +40,12 @@ export default async function handler(req, res) {
     return;
   }
 
+  // IP confiable: `x-real-ip` la calcula el proxy de Vercel (la guía oficial
+  // de @vercel/functions usa esta cabecera; `x-forwarded-for` puede venir
+  // influida por el cliente, así que solo se usa como respaldo).
   const ip =
+    String(req.headers?.['x-real-ip'] ?? '').trim() ||
     String(req.headers?.['x-forwarded-for'] ?? '').split(',')[0].trim() ||
-    String(req.headers?.['x-real-ip'] ?? '') ||
     'desconocida';
   const esperar = excesoDeLimite(ip);
   if (esperar > 0) {
