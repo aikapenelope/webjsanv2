@@ -88,19 +88,54 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
           </div>
         </div>
 
-        <!-- MINI MAPA INTERACTIVO / RESPONSIVE MAP EMBED -->
+        <!-- MINI MAPA INTERACTIVO / RESPONSIVE MAP EMBED (CARGA DIFERIDA) -->
         <div class="loc-map-col">
           <div class="map-frame-wrapper">
-            <iframe
-              title="Ubicación de Hidromáticos J-SAN en Monte Cristo Caracas"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.0039209539316!2d-66.83999!3d10.4965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a584065604169%3A0xc31633cf4839cf9e!2sHidromaticos%20J-San%2C%20C.A.!5e0!3m2!1ses!2sve!4v1700000000000!5m2!1ses!2sve"
-              width="100%"
-              height="100%"
-              style="border:0;"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+            <div
+              class="map-embed"
+              data-lazy-embed
+              data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3923.0039209539316!2d-66.83999!3d10.4965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a584065604169%3A0xc31633cf4839cf9e!2sHidromaticos%20J-San%2C%20C.A.!5e0!3m2!1ses!2sve!4v1700000000000!5m2!1ses!2sve"
+              data-auto="desktop"
+              data-timeout-ms="12000"
+              data-frame-class="map-embed-frame"
+              data-frame-title="Ubicación de Hidromáticos J-SAN en Monte Cristo Caracas"
+              data-frame-allow="fullscreen"
+              data-frame-allow-fullscreen="true"
+            >
+              <!-- FACHADA: 0 KB de Google Maps hasta que el usuario lo pide -->
+              <div class="map-facade" data-lazy-embed-facade>
+                <span class="map-facade-pin" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8Z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                </span>
+                <strong class="map-facade-title">Monte Cristo, Los Ruices</strong>
+                <span class="map-facade-sub">Qta. Leonor Nro. 3 · Caracas</span>
+                <div class="map-facade-actions">
+                  <button type="button" class="btn btn-primary btn-sm" data-lazy-embed-load>
+                    Ver mapa aquí
+                  </button>
+                  <a class="btn btn-ghost btn-sm" href={mapsUrl} target="_blank" rel="noopener">
+                    Google Maps ↗
+                  </a>
+                </div>
+              </div>
+
+              <div class="map-state" data-lazy-embed-loading role="status" aria-live="polite" hidden>
+                <div class="map-spinner" aria-hidden="true"></div>
+                <span>Cargando mapa interactivo…</span>
+              </div>
+
+              <div class="map-state map-state-error" data-lazy-embed-error role="alert" hidden>
+                <span>No pudimos cargar el mapa aquí.</span>
+                <a class="btn btn-primary btn-sm" href={mapsUrl} target="_blank" rel="noopener">
+                  Abrir en Google Maps ↗
+                </a>
+              </div>
+
+              <div class="map-slot" data-lazy-embed-slot hidden></div>
+            </div>
           </div>
         </div>
       </div>
@@ -320,11 +355,122 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     background: var(--sky);
   }
 
-  .map-frame-wrapper iframe {
+  .map-embed {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 330px;
+  }
+
+  /* El slot no genera caja: el iframe queda como hijo directo del contenedor
+     y hereda el layout 100% alto que ya existía antes de la carga diferida. */
+  .map-slot {
+    display: contents;
+  }
+
+  .map-slot[hidden],
+  .map-facade[hidden],
+  .map-state[hidden] {
+    display: none;
+  }
+
+  /* Iframe inyectado por JS: requiere :global() para no depender del scoping. */
+  .map-frame-wrapper :global(iframe) {
     width: 100%;
     height: 100%;
     min-height: 330px;
     display: block;
+  }
+
+  /* FACHADA DEL MAPA (sin red de Google hasta que el usuario la pide) */
+  .map-facade {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    text-align: center;
+    padding: 1.4rem 1.1rem;
+    background:
+      radial-gradient(circle at 50% 34%, rgba(45, 88, 147, 0.12), transparent 58%),
+      repeating-linear-gradient(45deg, rgba(15, 42, 87, 0.03) 0 1px, transparent 1px 22px),
+      repeating-linear-gradient(-45deg, rgba(15, 42, 87, 0.03) 0 1px, transparent 1px 22px),
+      var(--sky);
+  }
+
+  .map-facade-pin {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--blue-corporate);
+    border: 1px solid var(--sky-line);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 0.35rem;
+  }
+
+  .map-facade-pin svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .map-facade-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--navy);
+    line-height: 1.1;
+  }
+
+  .map-facade-sub {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .map-facade-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.85rem;
+  }
+
+  .map-state {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.2rem;
+    text-align: center;
+    background: var(--sky);
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .map-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--sky-line);
+    border-top-color: var(--blue-corporate);
+    border-radius: 50%;
+    animation: map-spin 0.8s linear infinite;
+  }
+
+  @keyframes map-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @media (max-width: 960px) {
@@ -356,3 +502,11 @@ const waAgendar = waLink('Hola J-SAN, quiero agendar una cita para revisión y d
     }
   }
 </style>
+
+<script>
+  import { setupLazyEmbeds } from '../lib/lazyEmbed';
+
+  setupLazyEmbeds();
+  document.addEventListener('astro:page-load', setupLazyEmbeds);
+</script>
+
