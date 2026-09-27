@@ -111,6 +111,7 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
         data-recepcion-embed
         data-auto="desktop"
         data-timeout-ms="20000"
+        data-timeout-soft="true"
         data-frame-class="recepcion-iframe"
         data-frame-title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
         data-frame-allow="camera; geolocation; clipboard-write; encrypted-media; fullscreen"
@@ -199,8 +200,8 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
             </span>
             <h3 class="embed-error-title">El formulario tardó más de lo esperado</h3>
             <p class="embed-error-text">
-              Puede ser tu conexión o una señal débil en el taller. Tus datos no se enviaron todavía:
-              prueba de nuevo o abre la planilla en una pestaña aparte.
+              La planilla puede seguir cargando en redes lentas: si no aparece en unos segundos,
+              reintenta o ábrela en una pestaña aparte. Tus datos no se enviaron todavía.
             </p>
             <div class="embed-actions">
               <button type="button" class="btn btn-primary" data-lazy-embed-retry>Reintentar carga</button>

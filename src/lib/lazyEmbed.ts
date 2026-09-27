@@ -19,7 +19,8 @@
  * USO (marcado declarativo)
  *   <div data-lazy-embed data-src="https://…" data-auto="desktop"
  *        data-frame-class="recepcion-iframe" data-frame-title="…"
- *        data-frame-allow="camera; geolocation" data-frame-sandbox="allow-scripts …">
+ *        data-frame-allow="camera; geolocation" data-frame-sandbox="allow-scripts …"
+ *        data-timeout-soft="true"  (opcional: avisa al vencer sin descartar el iframe)>
  *     <div data-lazy-embed-facade> … botón con [data-lazy-embed-load] … </div>
  *     <div data-lazy-embed-loading hidden> … </div>
  *     <div data-lazy-embed-error hidden> … botón con [data-lazy-embed-retry] … </div>
@@ -36,7 +37,7 @@
  * Así no quedan escuchas del contenido anterior ni dos iframes compitiendo.
  */
 
-type EmbedState = 'idle' | 'loading' | 'loaded' | 'failed';
+type EmbedState = 'idle' | 'loading' | 'loaded' | 'failed' | 'slow';
 
 const MIN_DESKTOP_WIDTH = 1024;
 const DEFAULT_TIMEOUT_MS = 15000;
@@ -118,6 +119,7 @@ function setupLazyEmbed(root: HTMLElement): void {
   const loading = first<HTMLElement>(root, '[data-lazy-embed-loading]');
   const error = first<HTMLElement>(root, '[data-lazy-embed-error]');
   const timeoutMs = Number(root.dataset.timeoutMs) || DEFAULT_TIMEOUT_MS;
+  const timeoutSoft = root.dataset.timeoutSoft === 'true';
 
   let iframe: HTMLIFrameElement | null = null;
   let timeoutId: number | undefined;
@@ -130,7 +132,7 @@ function setupLazyEmbed(root: HTMLElement): void {
     root.dataset.lazyEmbedState = next;
     setHidden(facade, next !== 'idle');
     setHidden(loading, next !== 'loading');
-    setHidden(error, next !== 'failed');
+    setHidden(error, next !== 'failed' && next !== 'slow');
     slot.hidden = next === 'idle' || next === 'failed';
   };
 
@@ -158,6 +160,16 @@ function setupLazyEmbed(root: HTMLElement): void {
     paint('failed');
   };
 
+  /**
+   * Timeout amable (`data-timeout-soft="true"`): NO descarta el iframe — puede
+   * seguir cargando en redes lentas. Muestra el aviso y lo deja terminar.
+   */
+  const slow = () => {
+    stopTimeout();
+    if (!root.isConnected) return;
+    paint('slow');
+  };
+
   const succeed = () => {
     stopTimeout();
     if (!root.isConnected) return;
@@ -168,6 +180,8 @@ function setupLazyEmbed(root: HTMLElement): void {
     // Si ClientRouter ya cambió de página, el nodo está desconectado: no gastamos red
     if (!root.isConnected) return;
     if (state === 'loading' || state === 'loaded') return;
+    // Un reintento explícito reemplaza el marco anterior (p. ej. tras timeout amable).
+    if (iframe) teardown();
     paint('loading');
 
     const frame = document.createElement('iframe');
@@ -181,12 +195,18 @@ function setupLazyEmbed(root: HTMLElement): void {
       frame.allowFullscreen = true;
     }
 
-    frame.addEventListener('load', succeed, { once: true });
+    frame.addEventListener(
+      'load',
+      () => {
+        if (iframe === frame) succeed();
+      },
+      { once: true },
+    );
     iframe = frame;
     frame.src = src;
     slot.replaceChildren(frame);
 
-    timeoutId = window.setTimeout(fail, timeoutMs);
+    timeoutId = window.setTimeout(timeoutSoft ? slow : fail, timeoutMs);
   };
 
   cargadores.set(root, load);

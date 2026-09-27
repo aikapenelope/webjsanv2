@@ -3,24 +3,12 @@
  *
  * Reglas:
  *  · La URL real del formulario de Lark NO vive en el código ni en el HTML:
- *    se lee de la variable de entorno LARK_FORM_URL.
- *  · El navegador pasa primero Cloudflare Turnstile (token de un solo uso) y
- *    canjea ese token por una URL firmada (HMAC-SHA256) de vida corta.
- *  · Sin estado: la firma es `exp.firma` (exp en segundos UNIX, firma base64url).
+ *    se lee de la variable de entorno LARK_FORM_URL y solo se entrega después
+ *    de pasar Cloudflare Turnstile (token de un solo uso, ~5 min).
+ *  · Sin estado: no se firma nada; la protección es el propio token de
+ *    Turnstile + el rate-limit por IP del endpoint.
  */
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
 export const TURNSTILE_SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-
-/** Vida del enlace firmado que se entrega tras pasar el gate (10 min). */
-export const TTL_ACCESO_S = 10 * 60;
-/** Tolerancia de reloj al validar `exp`. */
-const MARGEN_S = 120;
-
-/** Secreto para firmar la URL de acceso (el de Turnstile sirve de respaldo). */
-export function secretoHmac() {
-  return String(process.env.RECEPCION_HMAC_SECRET || process.env.TURNSTILE_SECRET_KEY || '');
-}
 
 export function turnstileConfigurado() {
   return Boolean(process.env.TURNSTILE_SECRET_KEY);
@@ -28,8 +16,8 @@ export function turnstileConfigurado() {
 
 /**
  * URL oficial del formulario (solo servidor). Se valida que sea https en un
- * dominio de Lark para que un error de configuración no pueda redirigir a otro
- * sitio.
+ * dominio de Lark para que un error de configuración no pueda entregar otra
+ * cosa.
  */
 export function urlFormulario() {
   const bruto = String(process.env.LARK_FORM_URL ?? '').trim();
@@ -42,31 +30,6 @@ export function urlFormulario() {
   } catch {
     return '';
   }
-}
-
-const firmar = (payload) =>
-  createHmac('sha256', secretoHmac()).update(payload).digest('base64url');
-
-/** Firma un acceso corto: `exp.firma(exp)` (exp en segundos UNIX). */
-export function firmarAcceso(ahoraMs = Date.now()) {
-  const exp = Math.floor(ahoraMs / 1000) + TTL_ACCESO_S;
-  return exp + '.' + firmar(String(exp));
-}
-
-/** Valida la firma y su ventana temporal (± MARGEN_S). */
-export function validarAcceso(token, ahoraMs = Date.now()) {
-  const t = String(token ?? '');
-  const punto = t.indexOf('.');
-  if (punto <= 0) return false;
-  const exp = Number(t.slice(0, punto));
-  const firma = t.slice(punto + 1);
-  if (!Number.isFinite(exp) || !firma) return false;
-  const ahora = Math.floor(ahoraMs / 1000);
-  if (exp < ahora - MARGEN_S || exp > ahora + TTL_ACCESO_S + MARGEN_S) return false;
-  const esperada = firmar(String(exp));
-  const a = Buffer.from(firma);
-  const b = Buffer.from(esperada);
-  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 /**

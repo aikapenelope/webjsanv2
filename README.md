@@ -130,9 +130,10 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 
 ## 🛡️ Recepción blindada (`/recepcion/` · Sprint A)
 
-La URL del formulario de Lark **ya no viaja en el HTML**: la página monta el formulario solo después de pasar una verificación anti-bots de **Cloudflare Turnstile**, canjeada en `api/recepcion-acceso.js` por una URL firmada (HMAC, 10 min) que `api/recepcion-form.js` redirige al formulario real.
+La URL del formulario de Lark **ya no viaja en el HTML**: la página monta el formulario solo después de pasar una verificación anti-bots de **Cloudflare Turnstile**; `api/recepcion-acceso.js` valida el token (de un solo uso) y entrega la URL del formulario, que vive solo en el servidor.
 
-- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (se carga recién ahí: 0 bytes de terceros antes de la intención) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL firmada → iframe y enlaces «Pantalla completa» recién generados.
+- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (se carga recién ahí: 0 bytes de terceros antes de la intención) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL del formulario → iframe y enlaces «Pantalla completa» recién generados.
+- **Timeout amable:** si la planilla tarda (redes lentas), el aviso aparece sin descartar la carga: el iframe sigue vivo y se muestra cuando termina.
 - **Degradación:** sin claves o si Cloudflare falla, la tarjeta muestra un aviso amable + WhatsApp del taller (nunca una página rota).
 - **Variables de entorno nuevas** (Vercel, proyecto `webjsanv2`; las `PUBLIC_*` exigen redeploy para tomarse en el build):
   - `PUBLIC_TURNSTILE_SITE_KEY` — Site Key del widget Turnstile (pública).
