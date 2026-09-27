@@ -111,11 +111,13 @@ const pasos = [
   .cq-zona-wrap {
     display: grid;
     gap: 1.4rem;
+    min-width: 0;
   }
 
   .cq-resultado {
     display: grid;
     gap: 1.1rem;
+    min-width: 0;
   }
 
   .cq-resultado[hidden] {
@@ -177,4 +179,15 @@ const pasos = [
       padding: 1.1rem 1rem;
     }
   }
+  /* Blindaje móvil: nada puede ensanchar la página (carrusel, textos largos) */
+  .cq-page {
+    max-width: 100%;
+    overflow-x: clip;
+    overflow-wrap: break-word;
+  }
+
+  .cq-page :where(section, article, div, header, footer, ul, ol, dl) {
+    min-width: 0;
+  }
+
 </style>
