@@ -141,6 +141,14 @@ if (!existsSync(htmlRuta)) {
     'el HTML trae la puerta de verificación',
   );
   comprobar(html.includes('data-timeout-soft="true"'), 'el embed usa timeout amable (no descarta la carga)');
+  comprobar(
+    html.includes('rel="preconnect"') && html.includes('challenges.cloudflare.com'),
+    'el HTML precalienta el anti-bots (preconnect)',
+  );
+  comprobar(
+    html.includes('allow-storage-access-by-user-activation'),
+    'el sandbox habilita storage access (login de Lark en iframe)',
+  );
 }
 
 console.log('\nPruebas: ' + (pasan + fallan) + ' · Fallos: ' + fallan);

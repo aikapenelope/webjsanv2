@@ -133,8 +133,10 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 
 La URL del formulario de Lark **ya no viaja en el HTML**: la página monta el formulario solo después de pasar una verificación anti-bots de **Cloudflare Turnstile**; `api/recepcion-acceso.js` valida el token (de un solo uso) y entrega la URL del formulario, que vive solo en el servidor.
 
-- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (se carga recién ahí: 0 bytes de terceros antes de la intención) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL del formulario → iframe y enlaces «Pantalla completa» recién generados.
+- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (precalentado tras el «idle» + preconnect) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL del formulario → iframe y enlaces «Pantalla completa» recién generados.
 - **Timeout amable:** si la planilla tarda (redes lentas), el aviso aparece sin descartar la carga: el iframe sigue vivo y se muestra cuando termina.
+- **Precalentamiento medido (27-sep-2026):** el share de Lark encadena ~6 redirects (accounts → login-sg → accounts-sg → … con `auth_token`) antes de servir el formulario (~733 KB): TTFB ~8 s con conexiones frías. El portal ahora preconecta `challenges.cloudflare.com` y precarga su script tras el idle, preconecta los hosts del login de Lark justo después del gate y usa el widget en modo `interaction-only`.
+- **Recomendación al taller:** revisar los ajustes de compartición del formulario en Lark (si exige login de invitado, la carga en iframe es lenta y frágil, sobre todo con cookies de terceros bloqueadas tipo Safari); si existe la opción de enlace público sin login, activarla.
 - **Degradación:** sin claves o si Cloudflare falla, la tarjeta muestra un aviso amable + WhatsApp del taller (nunca una página rota).
 - **Variables de entorno nuevas** (Vercel, proyecto `webjsanv2`; las `PUBLIC_*` exigen redeploy para tomarse en el build):
   - `PUBLIC_TURNSTILE_SITE_KEY` — Site Key del widget Turnstile (pública).

@@ -13,6 +13,10 @@ const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de 
 const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
 ---
 
+<!-- Precalentamiento del anti-bots: el script de Turnstile se precarga tras el idle. -->
+<link rel="preconnect" href="https://challenges.cloudflare.com" data-gate-preconnect="https://challenges.cloudflare.com" />
+<link rel="dns-prefetch" href="https://challenges.cloudflare.com" data-gate-preconnect="https://challenges.cloudflare.com" />
+
 <section id="recepcion" class:list={['recepcion-section', isPage ? 'recepcion-page-mode' : 'section']}>
   <div class="wrap">
     <!-- CABECERA DEL SECTOR CON CONTEXTO INSTITUCIONAL -->
@@ -115,7 +119,7 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
         data-frame-class="recepcion-iframe"
         data-frame-title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
         data-frame-allow="camera; geolocation; clipboard-write; encrypted-media; fullscreen"
-        data-frame-sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+        data-frame-sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-storage-access-by-user-activation"
         data-frame-allow-fullscreen="true"
       >
         <!-- FACHADA LIGERA: se pinta sin tocar la red de Lark (0 KB de terceros) -->
