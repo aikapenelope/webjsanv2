@@ -9,7 +9,7 @@
  * Caché de borde: 60 s + SWR 600 s. Errores y excesos de límite: sin caché.
  */
 import { normalizarPlaca, placaValida } from './_lib/expediente.js';
-import { construirExpediente } from './_lib/fanout.js';
+import { construirExpediente, verificarTelefono } from './_lib/fanout.js';
 
 /* Rate-limit básico por IP (best-effort por instancia): 30 rpm */
 const LIMITE_POR_MINUTO = 30;
@@ -72,11 +72,60 @@ export default async function handler(req, res) {
     return;
   }
 
+  const t4 = String(req.query?.t4 ?? url.searchParams.get('t4') ?? '').trim();
+  if (!/^\d{4}$/.test(t4)) {
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(400).json({
+      ok: false,
+      error: 't4_invalido',
+      mensaje: 'Escribe los últimos 4 dígitos del teléfono con el que registramos tu vehículo.',
+    });
+    return;
+  }
+
+  // Segundo factor ANTES del fan-out: los intentos inválidos no gastan las 5
+  // búsquedas completas ni permiten enumerar expedientes con solo la placa.
+  try {
+    const acceso = await verificarTelefono(placa, t4);
+    if (acceso !== 'ok') {
+      const sinTelefono = acceso === 'sin_telefono';
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(403).json({
+        ok: false,
+        error: sinTelefono ? 'telefono_no_registrado' : 'telefono_no_coincide',
+        mensaje: sinTelefono
+          ? 'Aún no tenemos un teléfono registrado para esta placa. Escríbenos por WhatsApp y lo registramos en minutos.'
+          : 'Los últimos 4 dígitos no coinciden con el teléfono registrado en la recepción.',
+        whatsappUrl:
+          'https://wa.me/584141066546?text=' +
+          encodeURIComponent(
+            (sinTelefono
+              ? 'Hola J-SAN, quiero consultar el expediente de mi vehículo placa '
+              : 'Hola J-SAN, no puedo consultar el expediente de mi vehículo placa ') +
+              placa +
+              ' y necesito ayuda con el teléfono registrado.',
+          ),
+      });
+      return;
+    }
+  } catch (err) {
+    console.error('[expediente] verificación de teléfono falló:', err?.message ?? err);
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(502).json({
+      ok: false,
+      error: 'lark_no_disponible',
+      mensaje: 'No pudimos verificar tus datos en este momento. Intenta de nuevo en unos segundos.',
+    });
+    return;
+  }
+
   try {
     const expediente = await construirExpediente(placa);
 
     if (!expediente) {
-      res.setHeader('Cache-Control', 'public, s-maxage=45, stale-while-revalidate=300');
+      // Una placa inexistente también cuesta 5 búsquedas: se cachea 3 min.
+      console.log('[expediente] fanout sin resultado');
+      res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=180, stale-while-revalidate=1800');
       res.status(200).json({
         ok: true,
         encontrado: false,
@@ -86,7 +135,18 @@ export default async function handler(req, res) {
       return;
     }
 
-    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=900');
+    // Consumo de API: una orden entregada o cancelada ya no cambia (10 min de
+    // caché en el borde y 2 min en el navegador); una activa se refresca cada
+    // 2,5 min. Así una placa popular no golpea a Lark más de lo necesario.
+    const etapa = expediente.ordenes?.[0]?.etapa;
+    const estable = etapa === 6 || etapa === -1;
+    console.log('[expediente] fanout ok · etapa=' + (etapa ?? '?'));
+    res.setHeader(
+      'Cache-Control',
+      estable
+        ? 'public, max-age=120, s-maxage=600, stale-while-revalidate=86400'
+        : 'public, max-age=45, s-maxage=150, stale-while-revalidate=900',
+    );
     res.status(200).json({ ok: true, encontrado: true, ...expediente });
   } catch (err) {
     console.error('[expediente] Lark no disponible:', err?.message ?? err);

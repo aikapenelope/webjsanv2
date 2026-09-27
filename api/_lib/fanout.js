@@ -62,13 +62,34 @@ function adjuntosDe(valor) {
 const esImagen = (a) => String(a?.type ?? '').startsWith('image/');
 const esVideo = (a) => String(a?.type ?? '').startsWith('video/');
 
-/** Campos de texto del diagnóstico donde puede vivir la URL del informe X431. */
+/** Campos conocidos donde suele pegarse la URL del informe X431 (se prueban primero). */
+const CAMPOS_URL_DX = [
+  'DTCs / Errores computadora',
+  'Relato completo del diagnóstico',
+  '🔧 Hallazgos del desmontaje',
+];
+
+/**
+ * Textos del diagnóstico donde puede vivir la URL del X431: primero los campos
+ * conocidos y después CUALQUIER otro campo del registro (adjuntos excluidos).
+ * Así sigue funcionando si mañana la pegan en un campo nuevo o dedicado.
+ */
 function textosDiagnostico(f = {}) {
-  return [
-    textoDe(f['DTCs / Errores computadora']),
-    textoDe(f['Relato completo del diagnóstico']),
-    textoDe(f['🔧 Hallazgos del desmontaje']),
-  ].filter(Boolean);
+  const vistos = new Set();
+  const salida = [];
+  const empujar = (valor) => {
+    const texto = textoDe(valor);
+    if (!texto || vistos.has(texto)) return;
+    vistos.add(texto);
+    salida.push(texto);
+  };
+  for (const campo of CAMPOS_URL_DX) empujar(f[campo]);
+  for (const [campo, valor] of Object.entries(f)) {
+    if (CAMPOS_URL_DX.includes(campo)) continue;
+    if (Array.isArray(valor) && valor[0]?.file_token) continue; // adjuntos
+    empujar(valor);
+  }
+  return salida;
 }
 
 /* ────────────── Correlación Recepción ↔ OT (placa + cercanía temporal) ─────── */
@@ -119,6 +140,35 @@ const waGarantia = (placa) =>
   `https://wa.me/${WA_TALLER}?text=${encodeURIComponent(
     `Hola J-SAN, quiero detalles de la garantía de mi vehículo placa ${placa}.`,
   )}`;
+
+/* ─────────────────── Segundo factor: placa + 4 dígitos ─────────────────────── */
+/**
+ * Verifica los últimos 4 dígitos del teléfono registrado en la Recepción (o en
+ * la OT como respaldo). Devuelve 'ok' | 'sin_telefono' | 'no_coincide'.
+ * Cuesta 1–2 búsquedas: se usa ANTES del fan-out completo para no gastar la
+ * cuota de Lark en intentos inválidos ni filtrar datos con solo la placa.
+ */
+export async function verificarTelefono(placa, t4) {
+  const CAMPOS_RECEPCION = ['Teléfono', 'Tel dígitos', 'Tel Norm', 'Tel wa.me'];
+  const candidatos = [];
+  const rec = await buscarRegistros(TABLAS.recepcion, porPlacaNorm(placa), { pageSize: 20 });
+  for (const it of rec.items) {
+    const f = it.fields ?? {};
+    for (const campo of CAMPOS_RECEPCION) candidatos.push(textoDe(f[campo]));
+  }
+  if (!candidatos.some((c) => String(c ?? '').trim())) {
+    const ots = await buscarRegistros(TABLAS.ordenes, porPlacaNorm(placa), { pageSize: 20 });
+    for (const it of ots.items) {
+      const f = it.fields ?? {};
+      candidatos.push(textoDe(f['Teléfono cliente']));
+    }
+  }
+  const digitos = candidatos
+    .map((c) => String(c ?? '').replace(/\D/g, ''))
+    .filter((d) => d.length >= 7);
+  if (digitos.length === 0) return 'sin_telefono';
+  return digitos.some((d) => d.endsWith(t4)) ? 'ok' : 'no_coincide';
+}
 
 /* ───────────────────────────── Expediente completo ─────────────────────────── */
 

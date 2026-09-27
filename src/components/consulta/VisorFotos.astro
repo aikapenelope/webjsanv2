@@ -107,10 +107,29 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, opacity 0.2s ease;
     user-select: none;
     -webkit-user-drag: none;
     touch-action: pan-y;
+    opacity: 0;
+    background: linear-gradient(90deg, #12294f 25%, #1b3a68 37%, #12294f 63%);
+    background-size: 400% 100%;
+    animation: cqVisorShimmer 1.4s ease-in-out infinite;
+  }
+
+  .cq-visor-img.is-lista {
+    opacity: 1;
+    background: transparent;
+    animation: none;
+  }
+
+  @keyframes cqVisorShimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: 0 0;
+    }
   }
 
   .cq-visor-img.is-zoom {

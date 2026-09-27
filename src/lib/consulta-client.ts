@@ -621,6 +621,18 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
         if (img) {
           img.src = img.dataset.src ?? '';
           delete img.dataset.src;
+
+          // Precarga de la 2.ª foto: el primer swipe arranca instantáneo.
+          const slide = entrada.target as HTMLElement;
+          if (slide === track.firstElementChild) {
+            const segundo = track.querySelectorAll<HTMLElement>('.cq-slide')[1];
+            const img2 = segundo ? porSel<HTMLImageElement>('img[data-src]', segundo) : null;
+            if (img2 && segundo) {
+              img2.src = img2.dataset.src ?? '';
+              delete img2.dataset.src;
+              img2.addEventListener('load', () => segundo.classList.add('is-lista'), { once: true });
+            }
+          }
         }
         observador.unobserve(entrada.target);
       }
@@ -727,8 +739,24 @@ function pintarVisor(): void {
   const img = porId<HTMLImageElement>('cq-visor-img');
   if (img) {
     img.classList.remove('is-zoom');
-    img.src = foto.url;
+    if (img.getAttribute('src') !== foto.url) {
+      img.classList.remove('is-lista');
+      img.addEventListener('load', () => img.classList.add('is-lista'), { once: true });
+      img.addEventListener('error', () => img.classList.add('is-lista'), { once: true });
+      img.fetchPriority = 'high';
+      img.decoding = 'async';
+      img.src = foto.url;
+    }
     img.alt = `Foto de recepción — ${visorIndice + 1} de ${fotosActuales.length}`;
+  }
+
+  // Precarga de vecinas: al deslizar, la siguiente foto ya está en memoria.
+  for (const i of [visorIndice - 1, visorIndice + 1]) {
+    const vecina = fotosActuales[i];
+    if (!vecina) continue;
+    const pre = document.createElement("img");
+    pre.decoding = 'async';
+    pre.src = vecina.url;
   }
 
   const contador = porSel<HTMLElement>('[data-campo="contador"]', visor);
@@ -1091,9 +1119,22 @@ function pintarExpediente(exp: ExpedienteDTO): void {
   ponerTexto(document, 'actualizado', `Actualizado ${haceCuando(exp.actualizado)}`);
 }
 
-async function buscar(placaBruta: string): Promise<void> {
+let t4Actual = '';
+
+/** Últimos 4 dígitos del teléfono registrado: segundo factor de la consulta. */
+function t4Valido(t4: string): boolean {
+  return /^\d{4}$/.test(t4);
+}
+
+async function buscar(
+  placaBruta: string,
+  t4Bruto: string,
+  opciones: { fresco?: boolean } = {},
+): Promise<void> {
   const placa = normalizarPlaca(placaBruta);
+  const t4 = String(t4Bruto ?? '').replace(/\D/g, '').slice(0, 4);
   const entrada = porId<HTMLInputElement>('cq-placa');
+  const campo4 = porId<HTMLInputElement>('cq-t4');
 
   if (!placaValida(placa)) {
     if (entrada) {
@@ -1108,6 +1149,21 @@ async function buscar(placaBruta: string): Promise<void> {
   }
   entrada?.removeAttribute('aria-invalid');
 
+  if (!t4Valido(t4)) {
+    if (campo4) {
+      campo4.setAttribute('aria-invalid', 'true');
+      campo4.focus();
+    }
+    mostrarAviso(
+      'Revisa el teléfono',
+      'Escribe los últimos 4 dígitos del teléfono que registramos en la recepción.',
+      { reintentar: false },
+    );
+    anunciar('Faltan los últimos 4 dígitos del teléfono.');
+    return;
+  }
+  campo4?.removeAttribute('aria-invalid');
+
   peticionEnCurso?.abort();
   const control = new AbortController();
   peticionEnCurso = control;
@@ -1118,13 +1174,19 @@ async function buscar(placaBruta: string): Promise<void> {
   }, 15_000);
 
   placaActual = placa;
+  t4Actual = t4;
   if (entrada) entrada.value = placa;
+  if (campo4) campo4.value = t4;
   mostrarVista('cargando');
   anunciar(`Consultando el expediente de la placa ${placa}…`);
 
   try {
-    const respuesta = await fetch(`/api/expediente?placa=${encodeURIComponent(placa)}`, {
+    const respuesta = await fetch(
+      `/api/expediente?placa=${encodeURIComponent(placa)}&t4=${encodeURIComponent(t4)}`,
+      {
       signal: control.signal,
+      // El botón «Actualizar» pide datos frescos aunque el navegador tenga caché.
+      cache: opciones.fresco ? 'no-cache' : 'default',
       headers: { Accept: 'application/json' },
     });
     const datos = (await respuesta.json().catch(() => null)) as
@@ -1144,6 +1206,27 @@ async function buscar(placaBruta: string): Promise<void> {
       mostrarAviso('Revisa la placa', 'Escríbela sin guiones ni espacios. Ejemplo: AE473LM.', {
         reintentar: false,
       });
+      return;
+    }
+
+    if (respuesta.status === 403) {
+      const detalle = datos as { error?: string; whatsappUrl?: string } | null;
+      const enlaceWa = porId<HTMLAnchorElement>('cq-aviso-wa');
+      if (enlaceWa && detalle?.whatsappUrl) enlaceWa.href = detalle.whatsappUrl;
+      if (detalle?.error === 'telefono_no_registrado') {
+        mostrarAviso(
+          'Aún no tenemos tu teléfono',
+          'Para cuidar tu expediente pedimos los últimos 4 dígitos del teléfono. Escríbenos por WhatsApp y lo registramos en minutos.',
+          { reintentar: false, whatsapp: true },
+        );
+      } else {
+        mostrarAviso(
+          'Los datos no coinciden',
+          'Los últimos 4 dígitos no coinciden con el teléfono que registramos en la recepción. Verifícalos o escríbenos por WhatsApp.',
+          { reintentar: false, whatsapp: true },
+        );
+      }
+      anunciar('No pudimos verificar el teléfono.');
       return;
     }
 
@@ -1222,11 +1305,26 @@ function vincular(): void {
     });
   }
 
+  const campo4 = porId<HTMLInputElement>('cq-t4');
+  if (campo4 && campo4.dataset.cqVinculado !== '1') {
+    campo4.dataset.cqVinculado = '1';
+    campo4.addEventListener('input', () => {
+      campo4.value = campo4.value.replace(/\D/g, '').slice(0, 4);
+      campo4.removeAttribute('aria-invalid');
+    });
+    campo4.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Enter') {
+        evento.preventDefault();
+        form?.requestSubmit();
+      }
+    });
+  }
+
   if (form && form.dataset.cqVinculado !== '1') {
     form.dataset.cqVinculado = '1';
     form.addEventListener('submit', (evento) => {
       evento.preventDefault();
-      void buscar(entrada?.value ?? '');
+      void buscar(entrada?.value ?? '', porId<HTMLInputElement>('cq-t4')?.value ?? '');
     });
   }
 
@@ -1236,7 +1334,7 @@ function vincular(): void {
       if (!placaActual) return;
       refrescar.disabled = true;
       refrescar.textContent = 'Actualizando…';
-      void buscar(placaActual).finally(() => {
+      void buscar(placaActual, t4Actual, { fresco: true }).finally(() => {
         refrescar.disabled = false;
         refrescar.textContent = 'Actualizar ↻';
       });
@@ -1246,7 +1344,7 @@ function vincular(): void {
   if (reintentar && reintentar.dataset.cqVinculado !== '1') {
     reintentar.dataset.cqVinculado = '1';
     reintentar.addEventListener('click', () => {
-      if (placaActual) void buscar(placaActual);
+      if (placaActual) void buscar(placaActual, t4Actual);
     });
   }
 
@@ -1326,15 +1424,24 @@ function vincularGlobales(): void {
 function estadoInicial(): void {
   const parametros = new URLSearchParams(location.search);
   const deEnlace = normalizarPlaca(parametros.get('placa') ?? '');
+  const t4Enlace = String(parametros.get('t4') ?? '').replace(/\D/g, '').slice(0, 4);
   const guardada = leerPlacaLocal();
   const entrada = porId<HTMLInputElement>('cq-placa');
+  const campo4 = porId<HTMLInputElement>('cq-t4');
   if (entrada) entrada.value = deEnlace || guardada;
+  if (campo4 && t4Enlace) campo4.value = t4Enlace;
 
-  if (deEnlace) {
-    // buscar() valida el formato: si viene sucia o incompleta, muestra el aviso.
-    void buscar(deEnlace);
+  if (deEnlace && t4Enlace) {
+    // buscar() valida los formatos: si vienen sucios, muestra el aviso.
+    void buscar(deEnlace, t4Enlace);
     return;
   }
+  if (deEnlace && !placaValida(deEnlace)) {
+    // Placa con formato inválido: deja que buscar() muestre el aviso.
+    void buscar(deEnlace, t4Enlace);
+    return;
+  }
+  if (deEnlace) campo4?.focus();
 
   expedienteActual = null;
   placaActual = '';
