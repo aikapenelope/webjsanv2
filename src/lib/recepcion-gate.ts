@@ -13,7 +13,7 @@
  *     valida contra Cloudflare y devuelve la URL del formulario real.
  *  3. Esa URL (el formulario real, validada en el servidor) se entrega solo tras
  *     el gate; el iframe y los enlaces «Pantalla completa» se generan ahí,
- *     precalentando las conexiones que usa la cadena de login de Lark.
+ *     preconectando el host del formulario justo antes de cargarlo.
  *
  * Degradación: sin claves configuradas o si Turnstile/el API fallan, se muestra
  * un aviso amable + el WhatsApp del taller (nunca una página rota).
@@ -22,16 +22,6 @@ import { openLazyEmbed, resetLazyEmbed, setupLazyEmbeds } from './lazyEmbed';
 
 const SCRIPT_TURNSTILE = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
-/**
- * Hosts que usa la cadena de login del share de Lark (medido 27-sep-2026:
- * 6 redirects pasando por accounts/login-sg/accounts-sg antes de servir el
- * formulario). Preconectarlos justo tras el gate ahorra DNS+TLS en redes lentas.
- */
-const HOSTS_LOGIN_LARK = [
-  'https://accounts.larksuite.com',
-  'https://login-sg.larksuite.com',
-  'https://accounts-sg.larksuite.com',
-];
 
 interface TurnstileApi {
   render: (el: HTMLElement, opciones: Record<string, unknown>) => string;
@@ -145,9 +135,8 @@ function inicializar(root: HTMLElement): void {
   else window.setTimeout(precalentar, 2500);
 
   const aplicarAcceso = (url: string) => {
-    // La cadena de login del formulario pasa por varios hosts de Lark: se
-    // precalientan aquí (justo antes del iframe) para ahorrar DNS+TLS.
-    for (const host of HOSTS_LOGIN_LARK) preconectar(host);
+    // El formulario se sirve directo a navegadores reales: preconectar su host
+    // justo antes de cargar el iframe ahorra DNS+TLS en la primera visita.
     try {
       preconectar(new URL(url).origin);
     } catch {
