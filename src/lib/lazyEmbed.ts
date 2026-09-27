@@ -100,6 +100,12 @@ function scheduleIdle(task: () => void): void {
  */
 const limpiadores = new WeakMap<HTMLElement, () => void>();
 
+/**
+ * Cargadores listos de cada embed, para poder abrirlo a demanda desde fuera
+ * (p. ej. la puerta de recepción abre el formulario justo después del gate).
+ */
+const cargadores = new WeakMap<HTMLElement, () => void>();
+
 function setupLazyEmbed(root: HTMLElement): void {
   if (root.dataset.lazyEmbedReady === '1') return;
   root.dataset.lazyEmbedReady = '1';
@@ -183,6 +189,8 @@ function setupLazyEmbed(root: HTMLElement): void {
     timeoutId = window.setTimeout(fail, timeoutMs);
   };
 
+  cargadores.set(root, load);
+
   const warm = () => {
     if (warmedUp) return;
     warmedUp = true;
@@ -240,6 +248,7 @@ function setupLazyEmbed(root: HTMLElement): void {
 export function resetLazyEmbed(root: HTMLElement): void {
   limpiadores.get(root)?.();
   limpiadores.delete(root);
+  cargadores.delete(root);
   delete root.dataset.lazyEmbedReady;
   delete root.dataset.lazyEmbedState;
 }
@@ -247,4 +256,9 @@ export function resetLazyEmbed(root: HTMLElement): void {
 /** Inicializa todos los embeds diferidos presentes en el documento. */
 export function setupLazyEmbeds(): void {
   document.querySelectorAll<HTMLElement>('[data-lazy-embed]').forEach(setupLazyEmbed);
+}
+
+/** Abre (inyecta) un embed ya inicializado sin esperar a un clic del usuario. */
+export function openLazyEmbed(root: HTMLElement): void {
+  cargadores.get(root)?.();
 }

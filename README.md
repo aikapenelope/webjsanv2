@@ -127,3 +127,17 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 - [ ] `GET /api/expediente?placa=AE473LM` responde 200 con el DTO real.
 - [ ] Segunda llamada seguida: cabecera `x-vercel-cache: HIT`.
 - [ ] Revisión en 360–430 px: buscador, tracker y carrusel operativos.
+
+## 🛡️ Recepción blindada (`/recepcion/` · Sprint A)
+
+La URL del formulario de Lark **ya no viaja en el HTML**: la página monta el formulario solo después de pasar una verificación anti-bots de **Cloudflare Turnstile**, canjeada en `api/recepcion-acceso.js` por una URL firmada (HMAC, 10 min) que `api/recepcion-form.js` redirige al formulario real.
+
+- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (se carga recién ahí: 0 bytes de terceros antes de la intención) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL firmada → iframe y enlaces «Pantalla completa» recién generados.
+- **Degradación:** sin claves o si Cloudflare falla, la tarjeta muestra un aviso amable + WhatsApp del taller (nunca una página rota).
+- **Variables de entorno nuevas** (Vercel, proyecto `webjsanv2`; las `PUBLIC_*` exigen redeploy para tomarse en el build):
+  - `PUBLIC_TURNSTILE_SITE_KEY` — Site Key del widget Turnstile (pública).
+  - `TURNSTILE_SECRET_KEY` — Secret Key (solo servidor).
+  - `LARK_FORM_URL` — URL del formulario de recepción (solo servidor; si cambia el formulario, se actualiza aquí sin tocar código).
+  - `RECEPCION_HMAC_SECRET` — opcional; si falta se usa `TURNSTILE_SECRET_KEY` para firmar los accesos cortos.
+- **Pruebas:** `npm run build && node tests/recepcion-acceso.mjs` (mock de Cloudflare, sin red real; incluye smoke del build que verifica que el HTML no contenga URLs de larksuite).
+- **Nota:** con las claves de prueba de Cloudflare (`1x…`) se puede probar todo el flujo antes de crear el widget real.
