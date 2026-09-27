@@ -76,7 +76,9 @@ export default async function handler(req, res) {
     const expediente = await construirExpediente(placa);
 
     if (!expediente) {
-      res.setHeader('Cache-Control', 'public, s-maxage=45, stale-while-revalidate=300');
+      // Una placa inexistente también cuesta 5 búsquedas: se cachea 3 min.
+      console.log('[expediente] fanout sin resultado');
+      res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=180, stale-while-revalidate=1800');
       res.status(200).json({
         ok: true,
         encontrado: false,
@@ -86,7 +88,18 @@ export default async function handler(req, res) {
       return;
     }
 
-    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=900');
+    // Consumo de API: una orden entregada o cancelada ya no cambia (10 min de
+    // caché en el borde y 2 min en el navegador); una activa se refresca cada
+    // 2,5 min. Así una placa popular no golpea a Lark más de lo necesario.
+    const etapa = expediente.ordenes?.[0]?.etapa;
+    const estable = etapa === 6 || etapa === -1;
+    console.log('[expediente] fanout ok · etapa=' + (etapa ?? '?'));
+    res.setHeader(
+      'Cache-Control',
+      estable
+        ? 'public, max-age=120, s-maxage=600, stale-while-revalidate=86400'
+        : 'public, max-age=45, s-maxage=150, stale-while-revalidate=900',
+    );
     res.status(200).json({ ok: true, encontrado: true, ...expediente });
   } catch (err) {
     console.error('[expediente] Lark no disponible:', err?.message ?? err);

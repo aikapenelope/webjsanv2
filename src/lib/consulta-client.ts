@@ -1091,7 +1091,7 @@ function pintarExpediente(exp: ExpedienteDTO): void {
   ponerTexto(document, 'actualizado', `Actualizado ${haceCuando(exp.actualizado)}`);
 }
 
-async function buscar(placaBruta: string): Promise<void> {
+async function buscar(placaBruta: string, opciones: { fresco?: boolean } = {}): Promise<void> {
   const placa = normalizarPlaca(placaBruta);
   const entrada = porId<HTMLInputElement>('cq-placa');
 
@@ -1125,6 +1125,8 @@ async function buscar(placaBruta: string): Promise<void> {
   try {
     const respuesta = await fetch(`/api/expediente?placa=${encodeURIComponent(placa)}`, {
       signal: control.signal,
+      // El botón «Actualizar» pide datos frescos aunque el navegador tenga caché.
+      cache: opciones.fresco ? 'no-cache' : 'default',
       headers: { Accept: 'application/json' },
     });
     const datos = (await respuesta.json().catch(() => null)) as
@@ -1236,7 +1238,7 @@ function vincular(): void {
       if (!placaActual) return;
       refrescar.disabled = true;
       refrescar.textContent = 'Actualizando…';
-      void buscar(placaActual).finally(() => {
+      void buscar(placaActual, { fresco: true }).finally(() => {
         refrescar.disabled = false;
         refrescar.textContent = 'Actualizar ↻';
       });
