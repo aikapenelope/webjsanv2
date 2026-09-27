@@ -69,11 +69,14 @@ import GarantiaSenal from './GarantiaSenal.astro';
   .cq-tabs {
     display: grid;
     gap: 1rem;
+    min-width: 0;
   }
 
   .cq-tablist {
     display: flex;
     gap: 0.4rem;
+    min-width: 0;
+    max-width: 100%;
     overflow-x: auto;
     scrollbar-width: none;
     padding-bottom: 0.15rem;
@@ -117,6 +120,7 @@ import GarantiaSenal from './GarantiaSenal.astro';
   .cq-panel {
     display: grid;
     gap: 1rem;
+    min-width: 0;
     background: #ffffff;
     border: 1px solid var(--sky-line);
     border-radius: var(--radius);
@@ -132,6 +136,7 @@ import GarantiaSenal from './GarantiaSenal.astro';
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.85rem 1.2rem;
+    min-width: 0;
     background: var(--sky);
     border: 1px solid var(--sky-line);
     border-radius: var(--radius-sm);
@@ -254,6 +259,26 @@ import GarantiaSenal from './GarantiaSenal.astro';
       scroll-snap-align: start;
       font-size: 0.9rem;
       padding-inline: 0.85rem;
+    }
+  }
+
+  /* Móvil: ficha en una columna y textos centrados (nada cortado) */
+  @media (max-width: 560px) {
+    .cq-ficha-datos {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .cq-ficha-sintoma {
+      text-align: center;
+      border-left: 0;
+      padding-left: 0;
+      padding-top: 0.6rem;
+      border-top: 3px solid var(--gold);
+    }
+
+    .cq-nota-vacia {
+      text-align: center;
     }
   }
 </style>

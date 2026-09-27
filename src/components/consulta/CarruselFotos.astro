@@ -42,6 +42,7 @@
     --cq-foto-alto: clamp(300px, 58vh, 560px);
     display: grid;
     gap: 0.8rem;
+    min-width: 0;
   }
 
   .cq-fotos-head {
@@ -69,9 +70,15 @@
 
   .cq-fotos-marco {
     position: relative;
+    min-width: 0;
   }
 
   .cq-fotos-viewport {
+    width: 100%;
+    max-width: 980px;
+    min-width: 0;
+    margin-inline: auto;
+    contain: inline-size;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
@@ -81,8 +88,6 @@
     border-radius: var(--radius);
     background: var(--navy-deep);
     border: 1px solid var(--sky-line);
-    max-width: 980px;
-    margin-inline: auto;
   }
 
   .cq-fotos-viewport::-webkit-scrollbar {
@@ -248,6 +253,20 @@
   .cq-fotos-pie {
     font-size: 0.82rem;
     color: var(--muted);
+  }
+
+  /* Móvil: cabecera, puntos y pie centrados */
+  @media (max-width: 560px) {
+    .cq-fotos-head {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      text-align: center;
+    }
+
+    .cq-fotos-pie {
+      text-align: center;
+    }
   }
 
   @keyframes cqShimmerFoto {
