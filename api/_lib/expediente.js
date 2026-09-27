@@ -140,6 +140,7 @@ export function textoDe(valor) {
   if (typeof valor === 'number') return String(valor);
   if (Array.isArray(valor)) return valor.map(textoDe).join('');
   if (typeof valor === 'object') {
+    if (typeof valor.link === 'string') return valor.link; // campos URL ({ link, text })
     if (typeof valor.text === 'string' && valor.value === undefined) return valor.text;
     if (Array.isArray(valor.value)) return textoDe(valor.value);
     if (valor.value !== undefined) return textoDe(valor.value);
@@ -250,7 +251,7 @@ export async function firmarFotos(fileTokens = []) {
 
 /* ───────────────────── Informe X431 (URL capturada en textos) ──────────────── */
 
-const X431_URL = /https?:\/\/[^\s"'<>]*usait\.x431\.com[^\s"'<>]*/i;
+const X431_URL = /https?:\/\/[^\s"'<>]*x431\.com[^\s"'<>]*/i;
 
 /**
  * Busca la URL del informe X431 en cualquier campo de texto del diagnóstico.
@@ -259,12 +260,13 @@ const X431_URL = /https?:\/\/[^\s"'<>]*usait\.x431\.com[^\s"'<>]*/i;
  */
 export function extraerInformeX431(textos = []) {
   for (const texto of textos) {
-    const encontrada = String(texto ?? '').match(X431_URL)?.[0];
+    const encontrada = textoDe(texto).match(X431_URL)?.[0];
     if (!encontrada) continue;
     try {
       const url = new URL(encontrada);
       const informeId = url.searchParams.get('diagnose_record_id') ?? '';
-      const reportType = url.searchParams.get('report_type') ?? '';
+      // Si el enlace no trae report_type, el informe X431 estándar es X2.
+      const reportType = url.searchParams.get('report_type') ?? 'X2';
       if (informeId) return { informeId, reportType, url: encontrada };
     } catch {
       /* seguimos con el próximo texto */

@@ -62,13 +62,34 @@ function adjuntosDe(valor) {
 const esImagen = (a) => String(a?.type ?? '').startsWith('image/');
 const esVideo = (a) => String(a?.type ?? '').startsWith('video/');
 
-/** Campos de texto del diagnóstico donde puede vivir la URL del informe X431. */
+/** Campos conocidos donde suele pegarse la URL del informe X431 (se prueban primero). */
+const CAMPOS_URL_DX = [
+  'DTCs / Errores computadora',
+  'Relato completo del diagnóstico',
+  '🔧 Hallazgos del desmontaje',
+];
+
+/**
+ * Textos del diagnóstico donde puede vivir la URL del X431: primero los campos
+ * conocidos y después CUALQUIER otro campo del registro (adjuntos excluidos).
+ * Así sigue funcionando si mañana la pegan en un campo nuevo o dedicado.
+ */
 function textosDiagnostico(f = {}) {
-  return [
-    textoDe(f['DTCs / Errores computadora']),
-    textoDe(f['Relato completo del diagnóstico']),
-    textoDe(f['🔧 Hallazgos del desmontaje']),
-  ].filter(Boolean);
+  const vistos = new Set();
+  const salida = [];
+  const empujar = (valor) => {
+    const texto = textoDe(valor);
+    if (!texto || vistos.has(texto)) return;
+    vistos.add(texto);
+    salida.push(texto);
+  };
+  for (const campo of CAMPOS_URL_DX) empujar(f[campo]);
+  for (const [campo, valor] of Object.entries(f)) {
+    if (CAMPOS_URL_DX.includes(campo)) continue;
+    if (Array.isArray(valor) && valor[0]?.file_token) continue; // adjuntos
+    empujar(valor);
+  }
+  return salida;
 }
 
 /* ────────────── Correlación Recepción ↔ OT (placa + cercanía temporal) ─────── */
