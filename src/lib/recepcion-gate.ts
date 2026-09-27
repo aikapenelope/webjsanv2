@@ -6,12 +6,14 @@
  * bot podía extraerla y usarla. Ahora el HTML no la contiene en ningún punto.
  *
  * FLUJO
- *  1. El usuario pide abrir la planilla → recién ahí se carga Cloudflare
- *     Turnstile (0 bytes de terceros antes de la intención) y se resuelve el reto.
+ *  1. El usuario pide abrir la planilla → se resuelve el reto de Cloudflare
+ *     Turnstile (script precalentado tras el «idle» + preconnect: el clic no
+ *     espera DNS/TLS ni la descarga).
  *  2. El token (de un solo uso) se canjea en `/api/recepcion-acceso`, que lo
  *     valida contra Cloudflare y devuelve la URL del formulario real.
  *  3. Esa URL (el formulario real, validada en el servidor) se entrega solo tras
- *     el gate; el iframe y los enlaces «Pantalla completa» se generan ahí.
+ *     el gate; el iframe y los enlaces «Pantalla completa» se generan ahí,
+ *     preconectando el host del formulario justo antes de cargarlo.
  *
  * Degradación: sin claves configuradas o si Turnstile/el API fallan, se muestra
  * un aviso amable + el WhatsApp del taller (nunca una página rota).
@@ -19,6 +21,7 @@
 import { openLazyEmbed, resetLazyEmbed, setupLazyEmbeds } from './lazyEmbed';
 
 const SCRIPT_TURNSTILE = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+
 
 interface TurnstileApi {
   render: (el: HTMLElement, opciones: Record<string, unknown>) => string;
@@ -33,17 +36,38 @@ declare global {
 
 let cargaTurnstile: Promise<TurnstileApi> | null = null;
 
+/** preconnect + dns-prefetch idempotentes (una vez por origen). */
+function preconectar(origen: string): void {
+  if (document.head.querySelector(`link[data-gate-preconnect="${origen}"]`)) return;
+  const dns = document.createElement('link');
+  dns.rel = 'dns-prefetch';
+  dns.href = origen;
+  dns.setAttribute('data-gate-preconnect', origen);
+  const pre = document.createElement('link');
+  pre.rel = 'preconnect';
+  pre.href = origen;
+  pre.setAttribute('data-gate-preconnect', origen);
+  document.head.append(dns, pre);
+}
+
 function cargarTurnstile(): Promise<TurnstileApi> {
   if (window.turnstile) return Promise.resolve(window.turnstile);
   if (cargaTurnstile) return cargaTurnstile;
   cargaTurnstile = new Promise<TurnstileApi>((resolve, reject) => {
     const yaExiste = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_TURNSTILE}"]`);
     const script = yaExiste ?? document.createElement('script');
+    const temporizador = window.setTimeout(() => {
+      reject(new Error('Turnstile tardó demasiado'));
+    }, 15000);
     const alCargar = () => {
+      window.clearTimeout(temporizador);
       if (window.turnstile) resolve(window.turnstile);
       else reject(new Error('Turnstile no disponible'));
     };
-    const alFallar = () => reject(new Error('No se pudo cargar Turnstile'));
+    const alFallar = () => {
+      window.clearTimeout(temporizador);
+      reject(new Error('No se pudo cargar Turnstile'));
+    };
     if (yaExiste) {
       yaExiste.addEventListener('load', alCargar, { once: true });
       yaExiste.addEventListener('error', alFallar, { once: true });
@@ -96,7 +120,28 @@ function inicializar(root: HTMLElement): void {
     return;
   }
 
+  // Precalentamiento: preconecta y descarga el script de Turnstile tras el
+  // «idle» para que el clic del usuario no espere red (se reintenta al pedir).
+  preconectar('https://challenges.cloudflare.com');
+  const precalentar = () => {
+    void cargarTurnstile().catch(() => {
+      /* sin drama: al pedir la planilla se vuelve a intentar */
+    });
+  };
+  const idle = (
+    window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }
+  ).requestIdleCallback;
+  if (typeof idle === 'function') idle(precalentar, { timeout: 3000 });
+  else window.setTimeout(precalentar, 2500);
+
   const aplicarAcceso = (url: string) => {
+    // El formulario se sirve directo a navegadores reales: preconectar su host
+    // justo antes de cargar el iframe ahorra DNS+TLS en la primera visita.
+    try {
+      preconectar(new URL(url).origin);
+    } catch {
+      /* la URL ya viene validada; sin drama si algo raro pasa */
+    }
     document.querySelectorAll<HTMLAnchorElement>('[data-recepcion-gated-link]').forEach((enlace) => {
       enlace.href = url;
       enlace.removeAttribute('hidden');
@@ -173,6 +218,9 @@ function inicializar(root: HTMLElement): void {
         sitekey,
         theme: 'light',
         language: 'es',
+        appearance: 'interaction-only',
+        retry: 'auto',
+        'refresh-expired': 'auto',
         callback: (token: string) => {
           void canjear(token);
         },

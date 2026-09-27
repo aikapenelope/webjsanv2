@@ -133,8 +133,10 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 
 La URL del formulario de Lark **ya no viaja en el HTML**: la página monta el formulario solo después de pasar una verificación anti-bots de **Cloudflare Turnstile**; `api/recepcion-acceso.js` valida el token (de un solo uso) y entrega la URL del formulario, que vive solo en el servidor.
 
-- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (se carga recién ahí: 0 bytes de terceros antes de la intención) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL del formulario → iframe y enlaces «Pantalla completa» recién generados.
+- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (precalentado tras el «idle» + preconnect) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL del formulario → iframe y enlaces «Pantalla completa» recién generados.
 - **Timeout amable:** si la planilla tarda (redes lentas), el aviso aparece sin descartar la carga: el iframe sigue vivo y se muestra cuando termina.
+- **Medición real (27-sep-2026):** el formulario es público y con un navegador real se sirve en **un solo salto** (HTTP 200, ~733 KB, TTFB ~1 s); la cadena de login (accounts → login-sg/trap) que aparece con `curl`/UA raras es el anti-bot de Lark, no un requisito de login. El coste real es el peso del formulario y su hidratación. El portal preconecta `challenges.cloudflare.com` y precarga su script tras el idle, preconecta el host del formulario justo tras el gate y usa el widget en modo `interaction-only`.
+- **Límite conocido:** el formulario (~733 KB + bundles) se sirve desde Lark; en redes móviles lentas la hidratación tarda. Por eso el embed usa timeout amable (avisa sin descartar la carga) y ofrece «abrir en pestaña».
 - **Degradación:** sin claves o si Cloudflare falla, la tarjeta muestra un aviso amable + WhatsApp del taller (nunca una página rota).
 - **Variables de entorno nuevas** (Vercel, proyecto `webjsanv2`; las `PUBLIC_*` exigen redeploy para tomarse en el build):
   - `PUBLIC_TURNSTILE_SITE_KEY` — Site Key del widget Turnstile (pública).
