@@ -5,7 +5,7 @@
  *  · `#cq-aviso` — error de red/Lark, límite de consultas o placa inválida
  *    (título, texto, botón de reintentar y WhatsApp se ajustan por JS).
  */
-import { RECEPCION_FORM_URL, waLink } from '../../data/site';
+import { waLink } from '../../data/site';
 
 const waNoAparece = waLink(
   'Hola J-SAN, consulté mi placa en el portal y no aparece mi vehículo. ¿Me ayudan?',
@@ -22,7 +22,7 @@ const waNoAparece = waLink(
     al taller, completa la planilla de recepción y aparecerá aquí.
   </p>
   <div class="cq-noencontrada-acciones">
-    <a class="btn btn-gold" href={RECEPCION_FORM_URL} target="_blank" rel="noopener">
+    <a class="btn btn-gold" href="/recepcion/">
       Completar planilla de recepción →
     </a>
     <a class="btn btn-ghost" href={waNoAparece} target="_blank" rel="noopener">

@@ -652,7 +652,7 @@ await correr('C · placa inexistente', {
     ['estado "no encontrada" visible', () => visible(window, '#cq-noencontrada')],
     ['muestra la placa consultada', () => texto(window, '#cq-noencontrada [data-campo="placa"]') === 'ZZ999ZZ'],
     ['resultado oculto', () => window.document.querySelector('#cq-resultado').hidden === true],
-    ['CTA a la planilla de recepción', () => Boolean(window.document.querySelector('#cq-noencontrada a[href*="larksuite.com"]'))],
+    ['CTA a la planilla de recepción', () => Boolean(window.document.querySelector('#cq-noencontrada a[href="/recepcion/"]'))],
     ['CTA de WhatsApp', () => Boolean(window.document.querySelector('#cq-noencontrada a[href*="wa.me"]'))],
   ],
 });
