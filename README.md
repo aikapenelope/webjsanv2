@@ -118,6 +118,7 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 - **Borde**: `s-maxage=120` + `stale-while-revalidate=900` (no encontrada 45/300); X431 24 h + SWR 7 días → cada placa golpea Lark como máximo ~1 vez cada 2 min.
 - **Fotos**: `preconnect` al CDN de Lark, carga diferida de la visible ±1 y primera foto con `fetchpriority=high`. El navegador cachea por URL firmada.
 - **Videos**: nunca se firman ni se exponen; solo se cuenta cuántos hay y se ofrecen por WhatsApp.
+- **Sin refresco forzado**: la página muestra el sello «Actualizado hace X · se actualiza solo» y la frescura la gobierna la política de caché (activa ≤2,5 min · entregada ≤10 min). No hay botón que salte la caché: los clics no generan llamadas a Lark.
 - **Si el tráfico crece**: proxy `GET /api/foto?t=<file_token>` con caché inmutable por token (URL estable entre visitas) o KV para compartir firmas entre instancias.
 
 ### Checklist post-merge (verificar en producción)

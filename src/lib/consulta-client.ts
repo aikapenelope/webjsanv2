@@ -1116,7 +1116,7 @@ function pintarExpediente(exp: ExpedienteDTO): void {
   reiniciarEmbedInforme();
   estadoX431('vacio');
   activarTab('cq-tab-recepcion');
-  ponerTexto(document, 'actualizado', `Actualizado ${haceCuando(exp.actualizado)}`);
+  ponerTexto(document, 'actualizado', `Actualizado ${haceCuando(exp.actualizado)} · se actualiza solo`);
 }
 
 let t4Actual = '';
@@ -1126,11 +1126,7 @@ function t4Valido(t4: string): boolean {
   return /^\d{4}$/.test(t4);
 }
 
-async function buscar(
-  placaBruta: string,
-  t4Bruto: string,
-  opciones: { fresco?: boolean } = {},
-): Promise<void> {
+async function buscar(placaBruta: string, t4Bruto: string): Promise<void> {
   const placa = normalizarPlaca(placaBruta);
   const t4 = String(t4Bruto ?? '').replace(/\D/g, '').slice(0, 4);
   const entrada = porId<HTMLInputElement>('cq-placa');
@@ -1185,8 +1181,6 @@ async function buscar(
       `/api/expediente?placa=${encodeURIComponent(placa)}&t4=${encodeURIComponent(t4)}`,
       {
       signal: control.signal,
-      // El botón «Actualizar» pide datos frescos aunque el navegador tenga caché.
-      cache: opciones.fresco ? 'no-cache' : 'default',
       headers: { Accept: 'application/json' },
     });
     const datos = (await respuesta.json().catch(() => null)) as
@@ -1288,7 +1282,6 @@ async function buscar(
 function vincular(): void {
   const form = porId<HTMLFormElement>('cq-buscador');
   const entrada = porId<HTMLInputElement>('cq-placa');
-  const refrescar = porId<HTMLButtonElement>('cq-refrescar');
   const reintentar = porId<HTMLButtonElement>('cq-reintentar');
 
   if (entrada && entrada.dataset.cqVinculado !== '1') {
@@ -1325,19 +1318,6 @@ function vincular(): void {
     form.addEventListener('submit', (evento) => {
       evento.preventDefault();
       void buscar(entrada?.value ?? '', porId<HTMLInputElement>('cq-t4')?.value ?? '');
-    });
-  }
-
-  if (refrescar && refrescar.dataset.cqVinculado !== '1') {
-    refrescar.dataset.cqVinculado = '1';
-    refrescar.addEventListener('click', () => {
-      if (!placaActual) return;
-      refrescar.disabled = true;
-      refrescar.textContent = 'Actualizando…';
-      void buscar(placaActual, t4Actual, { fresco: true }).finally(() => {
-        refrescar.disabled = false;
-        refrescar.textContent = 'Actualizar ↻';
-      });
     });
   }
 
