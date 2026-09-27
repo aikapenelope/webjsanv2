@@ -4,17 +4,12 @@
  * Puerta del formulario de recepción (Sprint A):
  *  1. rate-limit por IP (best-effort por instancia),
  *  2. valida el token de Cloudflare Turnstile (de un solo uso, ~5 min),
- *  3. devuelve una URL firmada de vida corta para abrir el formulario real.
+ *  3. entrega la URL del formulario de Lark (que vive solo en el servidor).
  *
  * La URL de Lark NUNCA viaja en el HTML de /recepcion/: solo se entrega aquí,
- * tras pasar el reto anti-bots, y llega redirigida desde /api/recepcion-form.
+ * después de pasar el reto anti-bots.
  */
-import {
-  firmarAcceso,
-  turnstileConfigurado,
-  urlFormulario,
-  verificarTurnstile,
-} from './_lib/recepcion.js';
+import { turnstileConfigurado, urlFormulario, verificarTurnstile } from './_lib/recepcion.js';
 
 const LIMITE_POR_MINUTO = 10;
 const VENTANA_MS = 60_000;
@@ -101,5 +96,5 @@ export default async function handler(req, res) {
     return;
   }
 
-  respuesta(res, 200, { ok: true, url: '/api/recepcion-form?t=' + firmarAcceso() });
+  respuesta(res, 200, { ok: true, url: urlFormulario() });
 }

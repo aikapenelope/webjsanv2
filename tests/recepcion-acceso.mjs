@@ -5,8 +5,8 @@
  *   npm run build && node tests/recepcion-acceso.mjs
  *
  * · Mockea la llamada a Cloudflare Turnstile (respuesta controlada, sin tocar red).
- * · Prueba /api/recepcion-acceso y /api/recepcion-form: token ausente, verificación
- *   fallida, éxito, firma manipulada/expirada, rate-limit y sin configuración.
+ * · Prueba /api/recepcion-acceso: token ausente/rechazado/válido, rate-limit,
+ *   sin configuración, y que la URL entregada sea la oficial (absoluta y de Lark).
  * · Smoke del build: dist/recepcion/index.html NO debe contener la URL de Lark.
  */
 import { existsSync, readFileSync } from 'node:fs';
@@ -18,7 +18,6 @@ const SECRETO_PRUEBA = '1x0000000000000000000000000000000AA'; // clave de prueba
 
 process.env.LARK_FORM_URL = FORM_URL;
 process.env.TURNSTILE_SECRET_KEY = SECRETO_PRUEBA;
-delete process.env.RECEPCION_HMAC_SECRET;
 
 // Mock de Cloudflare Turnstile: el token "bloqueado" siempre falla.
 globalThis.fetch = async (url, opciones = {}) => {
@@ -37,18 +36,12 @@ globalThis.fetch = async (url, opciones = {}) => {
 };
 
 const { default: acceso } = await import(pathToFileURL(`${repo}/api/recepcion-acceso.js`).href);
-const { default: formulario } = await import(pathToFileURL(`${repo}/api/recepcion-form.js`).href);
-const { firmarAcceso, TTL_ACCESO_S } = await import(
-  pathToFileURL(`${repo}/api/_lib/recepcion.js`).href
-);
 
 function mockRes() {
   return {
     code: 0,
     body: null,
-    statusCode: 200,
     headers: {},
-    terminado: false,
     setHeader(k, v) {
       this.headers[k.toLowerCase()] = v;
       return this;
@@ -59,10 +52,6 @@ function mockRes() {
     },
     json(obj) {
       this.body = obj;
-      return this;
-    },
-    end() {
-      this.terminado = true;
       return this;
     },
   };
@@ -93,7 +82,7 @@ function comprobar(condicion, etiqueta) {
   }
 }
 
-// ── 1-4 · /api/recepcion-acceso ─────────────────────────────────────────────
+// ── 1-6 · /api/recepcion-acceso ─────────────────────────────────────────────
 let r = await pedir(acceso, '');
 comprobar(r.code === 400 && r.body?.error === 'token_ausente', 'acceso sin token → 400 token_ausente');
 
@@ -104,34 +93,20 @@ comprobar(
 );
 
 r = await pedir(acceso, 'token=valido');
-const urlFirmada = String(r.body?.url ?? '');
 comprobar(
-  r.code === 200 && r.body?.ok === true && urlFirmada.startsWith('/api/recepcion-form?t='),
-  'token válido → 200 con URL firmada',
+  r.code === 200 && r.body?.ok === true && r.body?.url === FORM_URL,
+  'token válido → 200 con la URL oficial del formulario',
+);
+comprobar(
+  typeof r.body?.url === 'string' && /^https:\/\/[^\s]*larksuite\.com\//.test(r.body.url),
+  'la URL entregada es absoluta y de larksuite.com',
 );
 comprobar(r.headers['cache-control'] === 'no-store', 'acceso responde no-store');
 
 r = await pedir(acceso, 'token=valido', { method: 'POST' });
 comprobar(r.code === 405, 'acceso con POST → 405');
 
-// ── 5-9 · /api/recepcion-form ───────────────────────────────────────────────
-const firma = urlFirmada.split('t=')[1] ?? '';
-
-r = await pedir(formulario, '');
-comprobar(r.code === 403 && r.body?.error === 'token_invalido', 'form sin firma → 403 token_invalido');
-
-r = await pedir(formulario, 't=' + firma);
-comprobar(r.statusCode === 302 && r.headers.location === FORM_URL, 'firma válida → 302 al formulario real');
-
-const manipulada = firma.slice(0, -1) + (firma.endsWith('A') ? 'B' : 'A');
-r = await pedir(formulario, 't=' + manipulada);
-comprobar(r.code === 403, 'firma manipulada → 403');
-
-const expirada = firmarAcceso(Date.now() - (TTL_ACCESO_S + 600) * 1000);
-r = await pedir(formulario, 't=' + expirada);
-comprobar(r.code === 403, 'firma expirada → 403');
-
-// ── 10 · rate-limit (misma IP) ──────────────────────────────────────────────
+// ── 7 · rate-limit (misma IP) ───────────────────────────────────────────────
 const ipFija = 'ip-rate-limit';
 let ultimo;
 for (let i = 0; i < 12; i += 1) {
@@ -139,18 +114,18 @@ for (let i = 0; i < 12; i += 1) {
 }
 comprobar(ultimo.code === 429, 'más de 10 pedidos por minuto desde una IP → 429');
 
-// ── 11 · sin configuración ──────────────────────────────────────────────────
+// ── 8 · sin configuración ───────────────────────────────────────────────────
 delete process.env.TURNSTILE_SECRET_KEY;
 r = await pedir(acceso, 'token=valido');
 comprobar(r.code === 503 && r.body?.error === 'no_configurado', 'sin TURNSTILE_SECRET_KEY → 503 no_configurado');
 process.env.TURNSTILE_SECRET_KEY = SECRETO_PRUEBA;
 
 delete process.env.LARK_FORM_URL;
-r = await pedir(formulario, 't=' + firma);
+r = await pedir(acceso, 'token=valido');
 comprobar(r.code === 503 && r.body?.error === 'no_configurado', 'sin LARK_FORM_URL → 503 no_configurado');
 process.env.LARK_FORM_URL = FORM_URL;
 
-// ── 12 · smoke del HTML compilado ───────────────────────────────────────────
+// ── 9 · smoke del HTML compilado ────────────────────────────────────────────
 const htmlRuta = `${repo}/dist/recepcion/index.html`;
 if (!existsSync(htmlRuta)) {
   fallan += 1;
@@ -165,6 +140,7 @@ if (!existsSync(htmlRuta)) {
     html.includes('data-recepcion-gate') && html.includes('data-recepcion-gate-start'),
     'el HTML trae la puerta de verificación',
   );
+  comprobar(html.includes('data-timeout-soft="true"'), 'el embed usa timeout amable (no descarta la carga)');
 }
 
 console.log('\nPruebas: ' + (pasan + fallan) + ' · Fallos: ' + fallan);

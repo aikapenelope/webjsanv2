@@ -9,9 +9,9 @@
  *  1. El usuario pide abrir la planilla → recién ahí se carga Cloudflare
  *     Turnstile (0 bytes de terceros antes de la intención) y se resuelve el reto.
  *  2. El token (de un solo uso) se canjea en `/api/recepcion-acceso`, que lo
- *     valida contra Cloudflare y devuelve una URL firmada (HMAC, 10 min).
- *  3. Esa URL (`/api/recepcion-form?t=…`) redirige al formulario real; el iframe
- *     y los enlaces «Pantalla completa» se generan SOLO después del gate.
+ *     valida contra Cloudflare y devuelve la URL del formulario real.
+ *  3. Esa URL (el formulario real, validada en el servidor) se entrega solo tras
+ *     el gate; el iframe y los enlaces «Pantalla completa» se generan ahí.
  *
  * Degradación: sin claves configuradas o si Turnstile/el API fallan, se muestra
  * un aviso amable + el WhatsApp del taller (nunca una página rota).
@@ -144,7 +144,7 @@ function inicializar(root: HTMLElement): void {
         res.ok &&
         datos.ok === true &&
         typeof datos.url === 'string' &&
-        datos.url.startsWith('/api/recepcion-form?')
+        /^https:\/\/[^\s]*larksuite\.com\//i.test(datos.url)
       ) {
         mostrar(linea, false);
         aplicarAcceso(datos.url);
