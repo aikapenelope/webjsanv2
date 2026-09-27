@@ -233,6 +233,11 @@ await correr('A · expediente completo (deep-link)', {
       () => /^\d{1,3}(\.\d{3})+ km$/.test(texto(window, '#cq-vehiculo [data-campo="km"]')) || 'km vacío (sin dato)',
     ],
     ['tracker visible', () => visible(window, '#cq-tracker')],
+    ['sin botón de actualización forzada', () => !window.document.querySelector('#cq-refrescar')],
+    [
+      'sello de autoactualización',
+      () => texto(window, '[data-campo="actualizado"]').includes('se actualiza solo'),
+    ],
     ['nro de OT en el tracker', () => /\d/.test(texto(window, '#cq-tracker [data-campo="nroOT"]'))],
     [
       'etapa actual coherente con el API',
