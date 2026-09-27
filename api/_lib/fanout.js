@@ -141,6 +141,35 @@ const waGarantia = (placa) =>
     `Hola J-SAN, quiero detalles de la garantía de mi vehículo placa ${placa}.`,
   )}`;
 
+/* ─────────────────── Segundo factor: placa + 4 dígitos ─────────────────────── */
+/**
+ * Verifica los últimos 4 dígitos del teléfono registrado en la Recepción (o en
+ * la OT como respaldo). Devuelve 'ok' | 'sin_telefono' | 'no_coincide'.
+ * Cuesta 1–2 búsquedas: se usa ANTES del fan-out completo para no gastar la
+ * cuota de Lark en intentos inválidos ni filtrar datos con solo la placa.
+ */
+export async function verificarTelefono(placa, t4) {
+  const CAMPOS_RECEPCION = ['Teléfono', 'Tel dígitos', 'Tel Norm', 'Tel wa.me'];
+  const candidatos = [];
+  const rec = await buscarRegistros(TABLAS.recepcion, porPlacaNorm(placa), { pageSize: 20 });
+  for (const it of rec.items) {
+    const f = it.fields ?? {};
+    for (const campo of CAMPOS_RECEPCION) candidatos.push(textoDe(f[campo]));
+  }
+  if (!candidatos.some((c) => String(c ?? '').trim())) {
+    const ots = await buscarRegistros(TABLAS.ordenes, porPlacaNorm(placa), { pageSize: 20 });
+    for (const it of ots.items) {
+      const f = it.fields ?? {};
+      candidatos.push(textoDe(f['Teléfono cliente']));
+    }
+  }
+  const digitos = candidatos
+    .map((c) => String(c ?? '').replace(/\D/g, ''))
+    .filter((d) => d.length >= 7);
+  if (digitos.length === 0) return 'sin_telefono';
+  return digitos.some((d) => d.endsWith(t4)) ? 'ok' : 'no_coincide';
+}
+
 /* ───────────────────────────── Expediente completo ─────────────────────────── */
 
 const enVuelo = new Map();

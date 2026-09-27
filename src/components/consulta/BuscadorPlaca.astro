@@ -7,14 +7,14 @@
 import { waLink } from '../../data/site';
 
 const waAyuda = waLink(
-  'Hola J-SAN, intenté consultar mi vehículo en el portal con mi placa y necesito ayuda.',
+  'Hola J-SAN, intenté consultar mi vehículo en el portal y necesito ayuda (placa + teléfono).',
 );
 ---
 
 <form class="cq-buscador" id="cq-buscador" novalidate autocomplete="off">
-  <div class="cq-buscador-campo">
-    <label class="cq-buscador-label" for="cq-placa">Placa del vehículo</label>
-    <div class="cq-buscador-fila">
+  <div class="cq-buscador-fila">
+    <div class="cq-buscador-campo">
+      <label class="cq-buscador-label" for="cq-placa">Placa del vehículo</label>
       <input
         id="cq-placa"
         class="cq-input"
@@ -27,16 +27,32 @@ const waAyuda = waLink(
         spellcheck="false"
         maxlength="10"
         placeholder="Ej: AE473LM"
-        aria-describedby="cq-placa-ayuda"
+        aria-describedby="cq-acceso-ayuda"
       />
-      <button class="btn btn-gold cq-buscar" type="submit" id="cq-buscar">
-        <span>Consultar expediente</span>
-      </button>
     </div>
+    <div class="cq-buscador-campo cq-buscador-campo-t4">
+      <label class="cq-buscador-label" for="cq-t4">Últimos 4 del teléfono</label>
+      <input
+        id="cq-t4"
+        class="cq-input cq-input-t4"
+        name="t4"
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        maxlength="4"
+        placeholder="1234"
+        aria-describedby="cq-acceso-ayuda"
+      />
+    </div>
+    <button class="btn btn-gold cq-buscar" type="submit" id="cq-buscar">
+      <span>Consultar expediente</span>
+    </button>
   </div>
-  <p class="cq-ayuda" id="cq-placa-ayuda">
-    Escríbela sin guiones ni espacios (AE-473-LM → <b>AE473LM</b>). ¿No aparece tu placa?
-    <a href={waAyuda} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+  <p class="cq-ayuda" id="cq-acceso-ayuda">
+    Necesitas la placa (sin guiones ni espacios: AE-473-LM → <b>AE473LM</b>) y los
+    <b>últimos 4 dígitos del teléfono</b> que registramos en la recepción. ¿No registramos tu
+    teléfono o no aparece tu placa?
+    <a href={waAyuda} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>.
   </p>
 </form>
 
@@ -65,7 +81,23 @@ const waAyuda = waLink(
   .cq-buscador-fila {
     display: flex;
     gap: 0.7rem;
-    align-items: stretch;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .cq-buscador-campo {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .cq-buscador-campo-t4 {
+    flex: none;
+  }
+
+  .cq-input-t4 {
+    width: 8.5rem;
+    text-align: center;
+    letter-spacing: 0.35em;
   }
 
   .cq-input {
@@ -124,11 +156,20 @@ const waAyuda = waLink(
   @media (max-width: 640px) {
     .cq-buscador-fila {
       flex-direction: column;
+      align-items: stretch;
     }
 
     .cq-input {
       font-size: 1.4rem;
       text-align: center;
+    }
+
+    .cq-buscador-campo-t4 {
+      width: 100%;
+    }
+
+    .cq-input-t4 {
+      width: 100%;
     }
   }
 </style>

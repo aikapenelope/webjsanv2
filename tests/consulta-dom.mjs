@@ -223,7 +223,7 @@ const garantiaA = expCompleto.garantia;
 
 await correr('A · expediente completo (deep-link)', {
   expediente: expCompleto,
-  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}`,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}&t4=1234`,
   revision: (window) => [
     ['tarjeta de vehículo visible', () => visible(window, '#cq-vehiculo')],
     ['título con la placa', () => texto(window, '#cq-resultado-titulo').includes(PLACA_COMPLETA)],
@@ -341,7 +341,7 @@ const sinAccesoB = ordenB?.recepcion?.fotosSinAcceso ?? 0;
 
 await correr('B · medios no accesibles + X431', {
   expediente: expMedia,
-  url: 'https://hidromaticosjsan.com/consulta/?placa=ag-868-za',
+  url: 'https://hidromaticosjsan.com/consulta/?placa=ag-868-za&t4=1234',
   revision: (window) => [
     ['placa normalizada desde URL sucia', () => texto(window, '#cq-vehiculo [data-campo="placa"]') === PLACA_MEDIA],
     [
@@ -472,7 +472,7 @@ expOtraPlaca.ordenes[0].informeX431 = { informeId: 'OTROINFORME0001', reportType
 
 await correr('B2 · cambio de placa reinicia el iframe del informe', {
   expediente: expMedia,
-  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_MEDIA}`,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_MEDIA}&t4=1234`,
   revision: (window) => [
     ['placa inicial en pantalla', () => texto(window, '#cq-vehiculo [data-campo="placa"]') === PLACA_MEDIA],
     [
@@ -573,7 +573,7 @@ const diasB = ordenB?.diasEnTaller;
 
 await correr('B3 · tracker en curso: días en taller y banners', {
   expediente: expMedia,
-  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_MEDIA}`,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_MEDIA}&t4=1234`,
   revision: (window) => [
     [
       'chip «días en taller» con el valor real del API',
@@ -647,7 +647,7 @@ await correr('B3 · tracker en curso: días en taller y banners', {
 /* ── C. Placa inexistente ─────────────────────────────────────────────────── */
 await correr('C · placa inexistente', {
   expediente: { ok: true, encontrado: false, placa: 'ZZ999ZZ', actualizado: new Date().toISOString() },
-  url: 'https://hidromaticosjsan.com/consulta/?placa=ZZ999ZZ',
+  url: 'https://hidromaticosjsan.com/consulta/?placa=ZZ999ZZ&t4=1234',
   revision: (window) => [
     ['estado "no encontrada" visible', () => visible(window, '#cq-noencontrada')],
     ['muestra la placa consultada', () => texto(window, '#cq-noencontrada [data-campo="placa"]') === 'ZZ999ZZ'],
@@ -687,7 +687,7 @@ await correr('E · estado inicial', {
 /* ── F. Límite de consultas (429) ─────────────────────────────────────────── */
 await correr('F · límite 429 del API', {
   expediente: { ok: false, error: 'demasiadas_solicitudes' },
-  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}`,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}&t4=1234`,
   falla: 'limite',
   revision: (window) => [
     ['aviso visible', () => visible(window, '#cq-aviso')],
@@ -700,7 +700,7 @@ await correr('F · límite 429 del API', {
 /* ── G. Fallo de red ──────────────────────────────────────────────────────── */
 await correr('G · fallo de red', {
   expediente: { ok: false, error: 'irrelevante' },
-  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}`,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}&t4=1234`,
   falla: 'red',
   revision: (window) => [
     ['aviso visible', () => visible(window, '#cq-aviso')],

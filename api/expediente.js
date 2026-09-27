@@ -9,7 +9,7 @@
  * Caché de borde: 60 s + SWR 600 s. Errores y excesos de límite: sin caché.
  */
 import { normalizarPlaca, placaValida } from './_lib/expediente.js';
-import { construirExpediente } from './_lib/fanout.js';
+import { construirExpediente, verificarTelefono } from './_lib/fanout.js';
 
 /* Rate-limit básico por IP (best-effort por instancia): 30 rpm */
 const LIMITE_POR_MINUTO = 30;
@@ -68,6 +68,53 @@ export default async function handler(req, res) {
       ok: false,
       error: 'placa_invalida',
       mensaje: 'Escribe una placa válida, por ejemplo: AE473LM.',
+    });
+    return;
+  }
+
+  const t4 = String(req.query?.t4 ?? url.searchParams.get('t4') ?? '').trim();
+  if (!/^\d{4}$/.test(t4)) {
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(400).json({
+      ok: false,
+      error: 't4_invalido',
+      mensaje: 'Escribe los últimos 4 dígitos del teléfono con el que registramos tu vehículo.',
+    });
+    return;
+  }
+
+  // Segundo factor ANTES del fan-out: los intentos inválidos no gastan las 5
+  // búsquedas completas ni permiten enumerar expedientes con solo la placa.
+  try {
+    const acceso = await verificarTelefono(placa, t4);
+    if (acceso !== 'ok') {
+      const sinTelefono = acceso === 'sin_telefono';
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(403).json({
+        ok: false,
+        error: sinTelefono ? 'telefono_no_registrado' : 'telefono_no_coincide',
+        mensaje: sinTelefono
+          ? 'Aún no tenemos un teléfono registrado para esta placa. Escríbenos por WhatsApp y lo registramos en minutos.'
+          : 'Los últimos 4 dígitos no coinciden con el teléfono registrado en la recepción.',
+        whatsappUrl:
+          'https://wa.me/584141066546?text=' +
+          encodeURIComponent(
+            (sinTelefono
+              ? 'Hola J-SAN, quiero consultar el expediente de mi vehículo placa '
+              : 'Hola J-SAN, no puedo consultar el expediente de mi vehículo placa ') +
+              placa +
+              ' y necesito ayuda con el teléfono registrado.',
+          ),
+      });
+      return;
+    }
+  } catch (err) {
+    console.error('[expediente] verificación de teléfono falló:', err?.message ?? err);
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(502).json({
+      ok: false,
+      error: 'lark_no_disponible',
+      mensaje: 'No pudimos verificar tus datos en este momento. Intenta de nuevo en unos segundos.',
     });
     return;
   }
