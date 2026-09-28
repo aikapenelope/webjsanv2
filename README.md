@@ -129,19 +129,14 @@ Página **noindex** (fuera del sitemap) donde el cliente consulta el expediente 
 - [ ] Segunda llamada seguida: cabecera `x-vercel-cache: HIT`.
 - [ ] Revisión en 360–430 px: buscador, tracker y carrusel operativos.
 
-## 🛡️ Recepción blindada (`/recepcion/` · Sprint A)
+## 📥 Recepción (`/recepcion/`)
 
-La URL del formulario de Lark **ya no viaja en el HTML**: la página monta el formulario solo después de pasar una verificación anti-bots de **Cloudflare Turnstile**; `api/recepcion-acceso.js` valida el token (de un solo uso) y entrega la URL del formulario, que vive solo en el servidor.
+El formulario oficial de Lark se embebe **directo** (la URL es pública por decisión del taller) con carga diferida y protecciones de red:
 
-- **Flujo:** clic en «Verificar y abrir la planilla» → Turnstile (precalentado tras el «idle» + preconnect) → `GET /api/recepcion-acceso?token=…` (valida contra Cloudflare + rate-limit 10 rpm/IP) → URL del formulario → iframe y enlaces «Pantalla completa» recién generados.
-- **Timeout amable:** si la planilla tarda (redes lentas), el aviso aparece sin descartar la carga: el iframe sigue vivo y se muestra cuando termina.
-- **Medición real (27-sep-2026):** el formulario es público y con un navegador real se sirve en **un solo salto** (HTTP 200, ~733 KB, TTFB ~1 s); la cadena de login (accounts → login-sg/trap) que aparece con `curl`/UA raras es el anti-bot de Lark, no un requisito de login. El coste real es el peso del formulario y su hidratación. El portal preconecta `challenges.cloudflare.com` y precarga su script tras el idle, preconecta el host del formulario justo tras el gate y usa el widget en modo `interaction-only`.
-- **Límite conocido:** el formulario (~733 KB + bundles) se sirve desde Lark; en redes móviles lentas la hidratación tarda. Por eso el embed usa timeout amable (avisa sin descartar la carga) y ofrece «abrir en pestaña».
-- **Degradación:** sin claves o si Cloudflare falla, la tarjeta muestra un aviso amable + WhatsApp del taller (nunca una página rota).
-- **Variables de entorno nuevas** (Vercel, proyecto `webjsanv2`; las `PUBLIC_*` exigen redeploy para tomarse en el build):
-  - `PUBLIC_TURNSTILE_SITE_KEY` — Site Key del widget Turnstile (pública).
-  - `TURNSTILE_SECRET_KEY` — Secret Key (solo servidor).
-  - `LARK_FORM_URL` — URL del formulario de recepción (solo servidor; si cambia el formulario, se actualiza aquí sin tocar código).
-  - `RECEPCION_HMAC_SECRET` — opcional; si falta se usa `TURNSTILE_SECRET_KEY` para firmar los accesos cortos.
-- **Pruebas:** `npm run build && node tests/recepcion-acceso.mjs` (mock de Cloudflare, sin red real; incluye smoke del build que verifica que el HTML no contenga URLs de larksuite).
-- **Nota:** con las claves de prueba de Cloudflare (`1x…`) se puede probar todo el flujo antes de crear el widget real.
+- **Fachada + iframe diferido** (`lazyEmbed`): 0 bytes de terceros hasta que el usuario pide la planilla (o auto en desktop al entrar en pantalla); el iframe se inyecta con `data-src`.
+- **Timeout amable** (`data-timeout-soft`): si el formulario tarda en redes lentas, el aviso aparece SIN descartar la carga; el iframe sigue vivo y se muestra cuando termina.
+- **Preconnect/dns-prefetch al host del formulario** para ahorrar DNS+TLS en la primera carga.
+- **Sandbox con `allow-storage-access-by-user-activation`** (Storage Access API para el contexto cross-site).
+- **Medición (27-sep-2026):** el formulario se sirve en un solo salto (HTTP 200, ~733 KB, TTFB ~1 s con UA real); su peso/hidratación es el coste principal. La cadena de login que aparece con `curl` es el anti-bot de Lark, no un requisito para usuarios.
+- **Pruebas:** `npm run build && node tests/recepcion-smoke.mjs`.
+- **Nota histórica:** el gate con Cloudflare Turnstile (Sprint A) se retiró el 27-sep-2026 — el formulario es público y el gate añadía fricción y fallos; el widget y sus claves se eliminaron de Cloudflare/Vercel.

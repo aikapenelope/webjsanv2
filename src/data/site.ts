@@ -19,7 +19,11 @@ export const SITE = {
     threads: 'https://www.threads.net/@hidromaticosjs',
     instagram: 'https://www.instagram.com/hidromaticosjs/',
   },
+  formRecepcion: 'https://clarkuseqtlegfgv.usttp.larksuite.com/share/base/form/shrutqFpforzg3QLDEbgDX1iAae',
 } as const;
+
+export const RECEPCION_FORM_URL =
+  'https://clarkuseqtlegfgv.usttp.larksuite.com/share/base/form/shrutqFpforzg3QLDEbgDX1iAae';
 
 export const waLink = (texto: string) =>
   `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(texto)}`;
