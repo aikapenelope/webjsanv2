@@ -1,5 +1,5 @@
 ---
-import { SITE, waLink } from '../data/site';
+import { SITE, RECEPCION_FORM_URL, waLink } from '../data/site';
 
 interface Props {
   isPage?: boolean;
@@ -8,10 +8,12 @@ interface Props {
 const { isPage = false } = Astro.props;
 const waDudas = waLink('Hola J-SAN, estoy llenando la planilla de recepción de mi vehículo y tengo una consulta:');
 
-// Clave pública de Cloudflare Turnstile (se configura en Vercel). Si falta, la
-// puerta muestra un aviso amable en vez de romperse.
-const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
+// Host del formulario para preconnect/dns-prefetch (ahorra DNS+TLS en la primera carga).
+const formOrigin = new URL(RECEPCION_FORM_URL).origin;
 ---
+
+<link rel="preconnect" href={formOrigin} />
+<link rel="dns-prefetch" href={formOrigin} />
 
 <section id="recepcion" class:list={['recepcion-section', isPage ? 'recepcion-page-mode' : 'section']}>
   <div class="wrap">
@@ -88,8 +90,7 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
         </div>
         <div class="iframe-header-right">
           <a
-            data-recepcion-gated-link
-            hidden
+            href={RECEPCION_FORM_URL}
             target="_blank"
             rel="noopener noreferrer"
             class="open-external-btn"
@@ -108,14 +109,15 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
       <div
         class="iframe-wrapper"
         id="iframe-wrapper"
-        data-recepcion-embed
+        data-lazy-embed
+        data-src={RECEPCION_FORM_URL}
         data-auto="desktop"
         data-timeout-ms="20000"
         data-timeout-soft="true"
         data-frame-class="recepcion-iframe"
         data-frame-title="Formulario Oficial de Recepción de Vehículo - HIDROMÁTICOS J-SAN, C.A."
         data-frame-allow="camera; geolocation; clipboard-write; encrypted-media; fullscreen"
-        data-frame-sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+        data-frame-sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-storage-access-by-user-activation"
         data-frame-allow-fullscreen="true"
       >
         <!-- FACHADA LIGERA: se pinta sin tocar la red de Lark (0 KB de terceros) -->
@@ -139,38 +141,22 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
               <li>Cédula del propietario y teléfono de contacto</li>
               <li>Kilometraje y síntomas (patineo, golpes, fugas o testigo encendido)</li>
             </ul>
-            <div
-              class="embed-actions"
-              data-recepcion-gate
-              data-sitekey={turnstileSiteKey}
-              data-recepcion-gate-state="inicial"
-            >
-              <button type="button" class="btn btn-primary embed-inline-btn" data-recepcion-gate-start>
-                Verificar y abrir la planilla
+            <div class="embed-actions">
+              <button type="button" class="btn btn-primary embed-inline-btn" data-lazy-embed-load>
+                Llenar la planilla aquí mismo
               </button>
-              <div class="recepcion-gate-widget" data-recepcion-gate-widget hidden></div>
-              <p class="recepcion-gate-line" data-recepcion-gate-estado role="status" aria-live="polite" hidden></p>
-              <p class="recepcion-gate-aviso" data-recepcion-gate-noconfig hidden>
-                La verificación de seguridad aún no está activa. Escríbenos por WhatsApp y te enviamos la planilla.
-              </p>
-              <p class="recepcion-gate-error" data-recepcion-gate-error role="alert" hidden>
-                <span data-recepcion-gate-error-texto>
-                  No pudimos verificar que eres una persona. Revisa tu conexión e inténtalo de nuevo.
-                </span>
-              </p>
               <a
                 class="btn btn-ghost embed-external-btn"
-                data-recepcion-gated-link
-                hidden
+                href={RECEPCION_FORM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Abrir en pantalla completa ↗
+                Abrir formulario en pantalla completa ↗
               </a>
             </div>
             <p class="embed-note">
-              Protegido con verificación anti-bots (Cloudflare). ¿Prefieres que te ayudemos?
-              <a href={waDudas} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>.
+              En celular el formulario abre más rápido en pantalla completa.
+              ¿Prefieres que te ayudemos? <a href={waDudas} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>.
             </p>
           </div>
         </div>
@@ -205,7 +191,7 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
             </p>
             <div class="embed-actions">
               <button type="button" class="btn btn-primary" data-lazy-embed-retry>Reintentar carga</button>
-              <a class="btn btn-ghost" data-recepcion-gated-link hidden target="_blank" rel="noopener noreferrer">
+              <a class="btn btn-ghost" href={RECEPCION_FORM_URL} target="_blank" rel="noopener noreferrer">
                 Abrir en pestaña nueva ↗
               </a>
             </div>
@@ -227,12 +213,8 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
             <line x1="12" y1="16" x2="12" y2="12"/>
             <line x1="12" y1="8" x2="12.01" y2="8"/>
           </svg>
-          <span data-recepcion-gate-pre>
-            La planilla oficial se habilita al completar la verificación de seguridad.
-          </span>
-          <span data-recepcion-gated-block hidden>
-            ¿Problemas al cargar el formulario en tu teléfono? Ábrelo directo en
-            <a data-recepcion-gated-link target="_blank" rel="noopener noreferrer">pantalla completa ↗</a>
+          <span>
+            ¿Problemas al cargar el formulario en tu teléfono? Abre directamente en <a href={RECEPCION_FORM_URL} target="_blank" rel="noopener noreferrer">Lark Base Formulario ↗</a>
           </span>
         </div>
         <a href={waDudas} target="_blank" rel="noopener" class="footer-wa-link">
@@ -248,17 +230,12 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
 
 <script>
   import { setupLazyEmbeds } from '../lib/lazyEmbed';
-  import { setupRecepcionGate } from '../lib/recepcion-gate';
 
-  // Idempotente: los módulos ignoran los nodos ya inicializados, por lo que se
-  // pueden invocar en la carga inicial y en cada navegación de ClientRouter sin
-  // duplicar listeners ni temporizadores (el bug anterior registraba todo dos veces).
-  const preparar = () => {
-    setupLazyEmbeds();
-    setupRecepcionGate();
-  };
-  preparar();
-  document.addEventListener('astro:page-load', preparar);
+  // Idempotente: el módulo ignora los nodos ya inicializados, por lo que se puede
+  // invocar en la carga inicial y en cada navegación de ClientRouter sin duplicar
+  // listeners ni temporizadores (el bug anterior registraba todo dos veces).
+  setupLazyEmbeds();
+  document.addEventListener('astro:page-load', setupLazyEmbeds);
 </script>
 
 <style>
@@ -872,48 +849,8 @@ const turnstileSiteKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '')
     }
   }
 
-  /* ── Puerta de verificación (Sprint A) ────────────────────────────── */
   /* El atributo hidden debe mandar sobre los display: de las clases */
   [hidden] {
     display: none !important;
-  }
-
-  .recepcion-gate-widget {
-    width: 100%;
-    min-height: 65px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .recepcion-gate-line {
-    width: 100%;
-    margin: 0.45rem 0 0;
-    font-size: 0.86rem;
-    line-height: 1.5;
-    color: var(--navy);
-    text-align: center;
-  }
-
-  .recepcion-gate-aviso,
-  .recepcion-gate-error {
-    width: 100%;
-    margin: 0.5rem 0 0;
-    padding: 0.6rem 0.8rem;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    line-height: 1.55;
-    text-align: left;
-  }
-
-  .recepcion-gate-aviso {
-    background: #fff7e0;
-    border: 1px solid rgba(201, 162, 39, 0.45);
-    color: #6b5410;
-  }
-
-  .recepcion-gate-error {
-    background: #fdecec;
-    border: 1px solid rgba(180, 35, 35, 0.3);
-    color: #7a1c1c;
   }
 </style>
