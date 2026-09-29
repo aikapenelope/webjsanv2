@@ -225,7 +225,11 @@ export async function firmarFotos(fileTokens = []) {
       const query = lote.map((t) => 'file_tokens=' + encodeURIComponent(t)).join('&');
       const res = await fetch(
         LARK + '/open-apis/drive/v1/medias/batch_get_tmp_download_url?' + query,
-        { headers: { Authorization: 'Bearer ' + token } },
+        {
+          headers: { Authorization: 'Bearer ' + token },
+          // Sin esto, un cuelgue de Lark bloquea hasta el maxDuration.
+          signal: AbortSignal.timeout(10_000),
+        },
       );
       const data = await res.json().catch(() => ({}));
       return res.ok && data.code === 0 ? (data.data?.tmp_download_urls ?? []) : [];
