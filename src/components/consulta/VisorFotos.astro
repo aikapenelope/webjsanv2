@@ -100,8 +100,13 @@
     overflow: hidden;
   }
 
-  /* La imagen escala hasta llenar la pantalla (contener = sin recortar) */
+  /* La imagen escala hasta llenar la pantalla (contener = sin recortar).
+     Absoluta al escenario: como grid item con height:% algunos motores
+     (WebKit en PC, con fotos EXIF-rotadas) la alinean al fondo en vez de
+     centrarla; con inset:0 la caja es siempre el viewport completo. */
   .cq-visor-img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     max-width: 100%;
