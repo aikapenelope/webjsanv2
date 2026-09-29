@@ -16,6 +16,7 @@
  */
 import sharp from 'sharp';
 import { firmarFotos as firmarAdjuntosLark } from './_lib/expediente.js';
+import { conReintento } from './_lib/reintento.js';
 import {
   verificarFoto,
   ANCHO_MINI,
@@ -55,21 +56,27 @@ export default async function handler(req, res) {
 
   try {
     // El bot no puede descargar directo (403 probado); firma temporal y baja.
-    const firmadas = await firmarAdjuntosLark([t]);
-    const urlOriginal = firmadas.get(t);
-    if (!urlOriginal) throw new Error('sin_firma_lark');
-
-    const upstream = await fetch(urlOriginal, { signal: AbortSignal.timeout(15_000) });
-    if (!upstream.ok) throw new Error('lark ' + upstream.status);
+    // Un reintento cubre fallos transitorios; la firma se renueva en cada
+    // intento (el timeout de 8 s mantiene el peor caso dentro de maxDuration).
+    const upstream = await conReintento(async () => {
+      const firmadas = await firmarAdjuntosLark([t]);
+      const urlOriginal = firmadas.get(t);
+      if (!urlOriginal) throw new Error('sin_firma_lark');
+      const res = await fetch(urlOriginal, { signal: AbortSignal.timeout(8_000) });
+      if (!res.ok) throw new Error('lark ' + res.status);
+      return res;
+    });
 
     const tipo = String(upstream.headers.get('content-type') || '');
     if (!tipo.startsWith('image/')) throw new Error('no_es_imagen: ' + tipo);
 
     const original = Buffer.from(await upstream.arrayBuffer());
 
-    let lona = sharp(original, { failOn: 'none' }).rotate(); // EXIF: endereza
+    // autoOrient = API canónica actual de sharp para EXIF (borra el tag).
+    let lona = sharp(original, { failOn: 'none' }).autoOrient();
     if (w > 0) lona = lona.resize({ width: w, withoutEnlargement: true });
-    const jpeg = await lona.jpeg({ quality: calidad(w) }).toBuffer();
+    // mozjpeg medido con una foto real: 640 → 123 KB (−18 %) · 1280 → 268 KB (−22 %).
+    const jpeg = await lona.jpeg({ quality: calidad(w), mozjpeg: true }).toBuffer();
 
     res.setHeader('Content-Type', 'image/jpeg');
     res.setHeader('Cache-Control', CACHE);
