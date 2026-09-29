@@ -246,6 +246,22 @@ function calentarVentana(centro: number, radio: number, tamano: 'mini' | 'visor'
   }
 }
 
+let temporizadorGrande: number | undefined;
+
+/**
+ * Cuando el carrusel se asienta, adelanta la versión grande de la foto actual
+ * (la que el usuario probablemente abra). Con debounce: no calienta mientras
+ * se está deslizando, solo cuando el movimiento para.
+ */
+function programarCalentadoGrande(indice: number): void {
+  window.clearTimeout(temporizadorGrande);
+  if (conexionLimitada()) return;
+  temporizadorGrande = window.setTimeout(() => {
+    const foto = fotosActuales[indice];
+    if (foto) calentarFoto(foto.url, 'high');
+  }, 300);
+}
+
 /* ──────────────────────────────── Helpers de DOM ────────────────────────────── */
 
 const porId = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
@@ -755,6 +771,8 @@ function actualizarCarrusel(): void {
 
   // Al moverse, mantiene la ventana de miniaturas por delante.
   calentarVentana(indice, RADIO_CARRUSEL, 'mini');
+  // Y cuando el carrusel se asienta, adelanta la grande de la foto actual.
+  programarCalentadoGrande(indice);
 }
 
 function irAFoto(indice: number, forzar?: ScrollBehavior): void {
@@ -798,13 +816,38 @@ function pintarVisor(): void {
   if (img) {
     img.classList.remove('is-zoom');
     if (img.getAttribute('src') !== foto.url) {
-      img.classList.remove('is-lista');
-      img.addEventListener('load', () => img.classList.add('is-lista'), { once: true });
-      // El error lo maneja un listener persistente (ver `vincular`): reintenta
-      // con la URL de Lark y, si tampoco, revela para no dejar el shimmer.
       img.fetchPriority = 'high';
       img.decoding = 'async';
-      img.src = foto.url;
+
+      const vistaPrevia = foto.urlMini;
+      if (vistaPrevia && img.getAttribute('src') !== vistaPrevia) {
+        // 1) La miniatura ya está en caché (viene del carrusel): se ve al
+        //    instante y no hay "blanco" mientras llega la versión grande.
+        img.src = vistaPrevia;
+        img.classList.add('is-lista');
+      } else if (!vistaPrevia) {
+        // Sin miniatura (proxy desactivado): comportamiento clásico con shimmer.
+        img.classList.remove('is-lista');
+        img.addEventListener('load', () => img.classList.add('is-lista'), { once: true });
+      }
+
+      // 2) Cuando la grande esté decodificada se cambia sin parpadeo
+      //    (MDN: `decode()` evita el tirón de decodificar al pintar el frame).
+      const grande = new Image();
+      grande.decoding = 'async';
+      grande.fetchPriority = 'high';
+      grande.src = foto.url;
+      grande
+        .decode()
+        .then(() => {
+          if (visor.hidden || fotosActuales[visorIndice] !== foto) return;
+          img.src = foto.url;
+        })
+        .catch(() => {
+          // Si la grande falla, la miniatura se queda a la vista (nunca blanco).
+          // El listener persistente de `error` (ver `vincular`) cubre que
+          // falle también la miniatura.
+        });
     }
     img.alt = `Foto de recepción — ${visorIndice + 1} de ${fotosActuales.length}`;
   }
@@ -1012,7 +1055,7 @@ async function cargarInforme(orden: OrdenDTO | undefined, forzar = false): Promi
   estadoX431('carga');
   try {
     const respuesta = await fetch(
-      `/api/x431?doc=${encodeURIComponent(ref.informeId)}&rt=${encodeURIComponent(ref.reportType || 'X2')}`,
+      `/api/x431/?doc=${encodeURIComponent(ref.informeId)}&rt=${encodeURIComponent(ref.reportType || 'X2')}`,
       { headers: { Accept: 'application/json' } },
     );
     const datos = (await respuesta.json().catch(() => null)) as
@@ -1232,7 +1275,7 @@ async function buscar(placaBruta: string, t4Bruto: string): Promise<void> {
 
   try {
     const respuesta = await fetch(
-      `/api/expediente?placa=${encodeURIComponent(placa)}&t4=${encodeURIComponent(t4)}`,
+      `/api/expediente/?placa=${encodeURIComponent(placa)}&t4=${encodeURIComponent(t4)}`,
       {
       signal: control.signal,
       headers: { Accept: 'application/json' },
