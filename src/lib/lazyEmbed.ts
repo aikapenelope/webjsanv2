@@ -210,6 +210,12 @@ function setupLazyEmbed(root: HTMLElement): void {
     warmUp(src);
   };
 
+  // Precalentamiento (DNS + TLS) solo ante intención real: el limpiador de abajo
+  // desmonta estos listeners al desarmar el embed.
+  WARM_EVENTS.forEach((event) =>
+    root.addEventListener(event, warm, { passive: true, once: true }),
+  );
+
   const disparadores = root.querySelectorAll<HTMLElement>(
     '[data-lazy-embed-load], [data-lazy-embed-retry]',
   );
