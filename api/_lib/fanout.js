@@ -18,6 +18,7 @@ import {
   normalizarPlaca,
   aISO,
 } from './expediente.js';
+import { firmarFoto, ANCHO_MINI, ANCHO_VISOR, ANCHO_ORIGINAL } from './foto-firma.js';
 
 /** WhatsApp oficial del taller (fuente: src/data/site.ts). */
 const WA_TALLER = '584141066546';
@@ -274,13 +275,24 @@ async function construirExpedienteInterno(placa) {
       const fotos =
         idx === 0
           ? imagenes
-              .map((a) => ({
-                nombre: String(a.name ?? 'foto'),
-                mime: String(a.type ?? 'image/jpeg'),
-                tamano: Number(a.size) || 0,
-                url: urlsFotos.get(a.file_token) ?? '',
-              }))
-              .filter((foto) => foto.url)
+              .map((a) => {
+                const respaldo = urlsFotos.get(a.file_token) ?? '';
+                if (!respaldo) return null; // el bot no puede acceder a esta foto
+                const proxy = (ancho) => {
+                  const query = firmarFoto(a.file_token, ancho);
+                  return query ? `/api/foto?${query}` : '';
+                };
+                return {
+                  nombre: String(a.name ?? 'foto'),
+                  mime: String(a.type ?? 'image/jpeg'),
+                  tamano: Number(a.size) || 0,
+                  url: proxy(ANCHO_VISOR) || respaldo,
+                  urlMini: proxy(ANCHO_MINI) || undefined,
+                  urlOriginal: proxy(ANCHO_ORIGINAL) || undefined,
+                  urlRespaldo: respaldo,
+                };
+              })
+              .filter(Boolean)
           : [];
       dto.recepcion = {
         nroEntrada: textoDe(rf['🔢 N° entrada']).trim(),

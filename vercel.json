@@ -18,7 +18,8 @@
   ],
   "functions": {
     "api/expediente.js": { "maxDuration": 30 },
-    "api/x431.js": { "maxDuration": 30 }
+    "api/x431.js": { "maxDuration": 30 },
+    "api/foto.js": { "maxDuration": 30 }
   },
   "headers": [
     {

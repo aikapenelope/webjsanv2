@@ -21,7 +21,14 @@ export interface FotoDTO {
   nombre: string;
   mime: string;
   tamano: number;
+  /** Versión del visor (proxy /api/foto a 1280 px). */
   url: string;
+  /** Miniatura del carrusel (proxy a 640 px); usa `url` si falta. */
+  urlMini?: string;
+  /** Original para descargar (proxy sin reescalar); usa `url` si falta. */
+  urlOriginal?: string;
+  /** URL firmada de Lark: reintento único si el proxy fallara. */
+  urlRespaldo?: string;
 }
 
 export interface RecepcionDTO {
@@ -657,8 +664,13 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
       img.loading = 'lazy';
     }
     img.decoding = 'async';
-    img.dataset.src = foto.url;
+    img.dataset.src = foto.urlMini || foto.url;
     img.addEventListener('load', () => slide.classList.add('is-lista'), { once: true });
+    // Si el proxy de miniaturas falla, reintenta una vez con la URL de Lark.
+    img.addEventListener('error', () => {
+      const respaldo = foto.urlRespaldo;
+      if (respaldo && img.getAttribute('src') !== respaldo) img.src = respaldo;
+    });
 
     boton.appendChild(img);
     slide.appendChild(boton);
@@ -742,7 +754,8 @@ function pintarVisor(): void {
     if (img.getAttribute('src') !== foto.url) {
       img.classList.remove('is-lista');
       img.addEventListener('load', () => img.classList.add('is-lista'), { once: true });
-      img.addEventListener('error', () => img.classList.add('is-lista'), { once: true });
+      // El error lo maneja un listener persistente (ver `vincular`): reintenta
+      // con la URL de Lark y, si tampoco, revela para no dejar el shimmer.
       img.fetchPriority = 'high';
       img.decoding = 'async';
       img.src = foto.url;
@@ -764,7 +777,7 @@ function pintarVisor(): void {
 
   const descargar = porId<HTMLAnchorElement>('cq-visor-descargar');
   if (descargar) {
-    descargar.href = foto.url;
+    descargar.href = foto.urlOriginal || foto.url;
     descargar.setAttribute('download', foto.nombre || 'foto.jpg');
   }
 
@@ -1378,6 +1391,18 @@ function vincular(): void {
       if (accion === 'cerrar') cerrarVisor();
       else if (accion === 'prev') moverVisor(-1);
       else if (accion === 'next') moverVisor(1);
+    });
+    // Foto del visor: si el proxy falla, reintenta una vez con la URL de Lark;
+    // si tampoco, revela la caja vacía en vez de dejar el shimmer infinito.
+    const visorImg = porId<HTMLImageElement>('cq-visor-img');
+    visorImg?.addEventListener('error', () => {
+      if (visor.hidden || !visorImg) return;
+      const respaldo = fotosActuales[visorIndice]?.urlRespaldo;
+      if (respaldo && visorImg.getAttribute('src') !== respaldo) {
+        visorImg.src = respaldo;
+        return;
+      }
+      visorImg.classList.add('is-lista');
     });
     const escena = porSel<HTMLElement>('.cq-visor-escena', visor);
     if (escena) vincularGestosDelVisor(escena);
