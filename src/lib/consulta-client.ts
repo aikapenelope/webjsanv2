@@ -203,6 +203,49 @@ let informeCargado: { informeId: string; datos: InformeX431DTO | null } | null =
 let peticionEnCurso: AbortController | null = null;
 let observadorFotos: IntersectionObserver | null = null;
 
+/* ─────────────────────────── Precarga en ventana ────────────────────────────── */
+/**
+ * Calienta las fotos próximas en la caché del navegador para que pasar de una
+ * a otra se sienta instantáneo. Patrón MDN (`HTMLImageElement.decode`): crear
+ * `new Image()`, apuntarla a la URL y decodificar en segundo plano; cuando el
+ * carrusel/visor la muestra de verdad, ya está descargada (y decodificada).
+ * Con el proxy `/api/foto` (respuestas `immutable`) el calentado queda en la
+ * caché HTTP; con las URLs de Lark (`no-store`) es un mejor esfuerzo.
+ */
+const calentadas = new Set<string>();
+const RADIO_CARRUSEL = 3; // miniaturas por delante (+1 detrás)
+const RADIO_VISOR = 2; // fotos grandes por delante (+1 detrás)
+
+/** Misma política que `lazyEmbed`: en redes limitadas no gastamos datos de más. */
+const conexionLimitada = (): boolean => {
+  const c = (navigator as Navigator & {
+    connection?: { saveData?: boolean; effectiveType?: string };
+  }).connection;
+  if (!c) return false;
+  return c.saveData === true || /(^|-)2g$/.test(c.effectiveType ?? '');
+};
+
+function calentarFoto(url: string | undefined, prioridad: 'low' | 'high' = 'low'): void {
+  if (!url || calentadas.has(url)) return;
+  calentadas.add(url);
+  const img = new Image();
+  img.decoding = 'async';
+  img.fetchPriority = prioridad; // no compite con la foto visible
+  img.src = url;
+  img.decode().catch(() => {}); // decodifica sin bloquear el frame siguiente
+}
+
+/** Ventana alrededor de `centro`: `+1..radio` adelante y 1 atrás. */
+function calentarVentana(centro: number, radio: number, tamano: 'mini' | 'visor'): void {
+  const alcance = conexionLimitada() ? 1 : radio;
+  for (let d = -1; d <= alcance; d++) {
+    if (d === 0) continue;
+    const foto = fotosActuales[centro + d];
+    if (!foto) continue;
+    calentarFoto(tamano === 'mini' ? foto.urlMini || foto.url : foto.url);
+  }
+}
+
 /* ──────────────────────────────── Helpers de DOM ────────────────────────────── */
 
 const porId = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
@@ -629,17 +672,10 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
           img.src = img.dataset.src ?? '';
           delete img.dataset.src;
 
-          // Precarga de la 2.ª foto: el primer swipe arranca instantáneo.
+          // Ventana de miniaturas: el swipe arranca con las siguientes listas.
           const slide = entrada.target as HTMLElement;
-          if (slide === track.firstElementChild) {
-            const segundo = track.querySelectorAll<HTMLElement>('.cq-slide')[1];
-            const img2 = segundo ? porSel<HTMLImageElement>('img[data-src]', segundo) : null;
-            if (img2 && segundo) {
-              img2.src = img2.dataset.src ?? '';
-              delete img2.dataset.src;
-              img2.addEventListener('load', () => segundo.classList.add('is-lista'), { once: true });
-            }
-          }
+          const indice = Number(slide.dataset.indice ?? '-1');
+          if (indice >= 0) calentarVentana(indice, RADIO_CARRUSEL, 'mini');
         }
         observador.unobserve(entrada.target);
       }
@@ -650,10 +686,14 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
 
   fotos.forEach((foto, i) => {
     const slide = crear('figure', 'cq-slide');
+    slide.dataset.indice = String(i);
     const boton = crear('button', 'cq-slide-btn');
     boton.type = 'button';
     boton.setAttribute('aria-label', `Ver foto ${i + 1} de ${fotos.length} en pantalla completa`);
     boton.addEventListener('click', () => abrirVisor(i, boton));
+    // Al apuntar/tocar una foto, adelanta la versión grande para que el visor
+    // abra instantáneo (en táctil también dispara antes del clic).
+    boton.addEventListener('pointerenter', () => calentarFoto(foto.url, 'high'));
 
     const img = crear('img');
     img.alt = `Foto de recepción — placa ${placa} — ${i + 1} de ${fotos.length}`;
@@ -685,6 +725,9 @@ function pintarFotos(fotos: FotoDTO[], placa: string): void {
     dots.appendChild(dot);
   });
 
+  // La ventana inicial arranca ya, sin esperar al observer.
+  calentarVentana(0, RADIO_CARRUSEL, 'mini');
+
   actualizarCarrusel();
   requestAnimationFrame(() => irAFoto(0, 'auto'));
 }
@@ -709,6 +752,9 @@ function actualizarCarrusel(): void {
   const next = porSel<HTMLButtonElement>('[data-accion="next"]', porId('cq-fotos'));
   if (prev) prev.disabled = indice === 0;
   if (next) next.disabled = indice >= fotosActuales.length - 1;
+
+  // Al moverse, mantiene la ventana de miniaturas por delante.
+  calentarVentana(indice, RADIO_CARRUSEL, 'mini');
 }
 
 function irAFoto(indice: number, forzar?: ScrollBehavior): void {
@@ -763,14 +809,8 @@ function pintarVisor(): void {
     img.alt = `Foto de recepción — ${visorIndice + 1} de ${fotosActuales.length}`;
   }
 
-  // Precarga de vecinas: al deslizar, la siguiente foto ya está en memoria.
-  for (const i of [visorIndice - 1, visorIndice + 1]) {
-    const vecina = fotosActuales[i];
-    if (!vecina) continue;
-    const pre = document.createElement("img");
-    pre.decoding = 'async';
-    pre.src = vecina.url;
-  }
+  // Ventana en tamaño visor: al deslizar, las siguientes ya están decodificadas.
+  calentarVentana(visorIndice, RADIO_VISOR, 'visor');
 
   const contador = porSel<HTMLElement>('[data-campo="contador"]', visor);
   if (contador) contador.textContent = `${visorIndice + 1}/${fotosActuales.length}`;
@@ -1120,6 +1160,7 @@ function pintarExpediente(exp: ExpedienteDTO): void {
   expedienteActual = exp;
   placaActual = exp.placa;
   informeCargado = null;
+  calentadas.clear(); // cada placa reinicia la ventana de precarga
 
   pintarVehiculo(exp);
   pintarTracker(exp.ordenes);
