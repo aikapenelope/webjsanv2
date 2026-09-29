@@ -280,7 +280,9 @@ async function construirExpedienteInterno(placa) {
                 if (!respaldo) return null; // el bot no puede acceder a esta foto
                 const proxy = (ancho) => {
                   const query = firmarFoto(a.file_token, ancho);
-                  return query ? `/api/foto?${query}` : '';
+                  // Con slash final: `trailingSlash: true` redirige (308)
+                  // `/api/foto` → `/api/foto/`; así cada foto ahorra un viaje.
+                  return query ? `/api/foto/?${query}` : '';
                 };
                 return {
                   nombre: String(a.name ?? 'foto'),

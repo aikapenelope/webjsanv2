@@ -20,7 +20,10 @@ export const ANCHO_VISOR = 1280;
 export const ANCHO_ORIGINAL = 0;
 
 const VALIDEZ_SEGUNDOS = 7 * 24 * 60 * 60; // 7 días
-const BUCKET_SEGUNDOS = 60 * 60; // la firma cambia una vez por hora
+// La firma cambia una vez por día: la URL es estable y la caché de borde queda
+// tibia todo el día (con bucket horario, el primer visitante de cada hora pagaba
+// la conversión de sharp). La ventana de exposición no cambia: 7 días igual.
+const BUCKET_SEGUNDOS = 24 * 60 * 60;
 
 const secreto = () => process.env.FOTO_HMAC_SECRET || process.env.LARK_APP_SECRET || '';
 

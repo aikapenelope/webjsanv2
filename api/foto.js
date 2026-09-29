@@ -2,17 +2,20 @@
  * GET /api/foto?t=<file_token>&w=<ancho>&e=<expira>&s=<firma>
  *
  * Proxy de fotos del expediente (100% lectura):
- *  · Baja el original de Lark con el token del bot.
+ *  · Firma la URL temporal del adjunto con el bot (mismo camino que el fanout:
+ *    `batch_get_tmp_download_url`) y baja por ahí.
+ *    ⚠️ `drive/v1/medias/{token}/download` NO sirve: el bot recibe HTTP 403
+ *    (verificado 2026-09-29 con la misma app) aunque el usuario sí pueda.
  *  · Endereza la orientación EXIF y reescala al ancho pedido
  *    (640 carrusel · 1280 visor · 0 original).
- *  · Devuelve JPEG cacheable (30 días) — a diferencia de Lark, que sirve
+ *  · Devuelve JPEG cacheable (7 días) — a diferencia de Lark, que sirve
  *    `no-store` y obliga a re-descargar en cada apertura.
  *
  * La firma HMAC (ver `_lib/foto-firma.js`) impide usar el endpoint para
  * pedir otras fotos: sin firma válida responde 400/403 y no toca Lark.
  */
 import sharp from 'sharp';
-import { getTenantToken } from './_lib/expediente.js';
+import { firmarFotos as firmarAdjuntosLark } from './_lib/expediente.js';
 import {
   verificarFoto,
   ANCHO_MINI,
@@ -20,7 +23,6 @@ import {
   ANCHO_ORIGINAL,
 } from './_lib/foto-firma.js';
 
-const LARK = 'https://open.larksuite.com';
 const ANCHOS = new Set([ANCHO_ORIGINAL, ANCHO_MINI, ANCHO_VISOR]);
 const CACHE = 'public, max-age=604800, s-maxage=604800, immutable';
 
@@ -52,14 +54,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const token = await getTenantToken();
-    const upstream = await fetch(
-      `${LARK}/open-apis/drive/v1/medias/${encodeURIComponent(t)}/download`,
-      {
-        headers: { Authorization: 'Bearer ' + token },
-        signal: AbortSignal.timeout(15_000),
-      },
-    );
+    // El bot no puede descargar directo (403 probado); firma temporal y baja.
+    const firmadas = await firmarAdjuntosLark([t]);
+    const urlOriginal = firmadas.get(t);
+    if (!urlOriginal) throw new Error('sin_firma_lark');
+
+    const upstream = await fetch(urlOriginal, { signal: AbortSignal.timeout(15_000) });
     if (!upstream.ok) throw new Error('lark ' + upstream.status);
 
     const tipo = String(upstream.headers.get('content-type') || '');
