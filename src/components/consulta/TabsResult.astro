@@ -1,6 +1,6 @@
 ---
 /**
- * Tabs del resultado: Recepción · Informe X431 · Historial · Garantía.
+ * Tabs del resultado: Recepción · Informe X431 · Avances · Historial · Garantía.
  * Patrón de tabs con ARIA (tablist/tab/tabpanel, roving tabindex y teclado)
  * controlado desde `consulta-client.ts`. La pestaña X431 carga el informe en
  * diferido la primera vez que se abre.
@@ -8,6 +8,7 @@
 import CarruselFotos from './CarruselFotos.astro';
 import AvisoVideo from './AvisoVideo.astro';
 import InformeX431 from './InformeX431.astro';
+import GaleriaAvances from './GaleriaAvances.astro';
 import HistorialVisitas from './HistorialVisitas.astro';
 import GarantiaSenal from './GarantiaSenal.astro';
 ---
@@ -19,6 +20,10 @@ import GarantiaSenal from './GarantiaSenal.astro';
     </button>
     <button class="cq-tab" type="button" role="tab" id="cq-tab-x431" aria-controls="cq-panel-x431" aria-selected="false" tabindex="-1">
       <span aria-hidden="true">🔍</span> Informe X431
+    </button>
+    <button class="cq-tab" type="button" role="tab" id="cq-tab-avances" aria-controls="cq-panel-avances" aria-selected="false" tabindex="-1">
+      <span aria-hidden="true">📸</span> Avances del Trabajo
+      <span class="cq-tab-badge" id="cq-badge-avances" hidden>0</span>
     </button>
     <button class="cq-tab" type="button" role="tab" id="cq-tab-historial" aria-controls="cq-panel-historial" aria-selected="false" tabindex="-1">
       <span aria-hidden="true">🗂️</span> Historial
@@ -49,6 +54,10 @@ import GarantiaSenal from './GarantiaSenal.astro';
 
   <div class="cq-panel" role="tabpanel" id="cq-panel-x431" aria-labelledby="cq-tab-x431" tabindex="0" hidden>
     <InformeX431 />
+  </div>
+
+  <div class="cq-panel" role="tabpanel" id="cq-panel-avances" aria-labelledby="cq-tab-avances" tabindex="0" hidden>
+    <GaleriaAvances />
   </div>
 
   <div class="cq-panel" role="tabpanel" id="cq-panel-historial" aria-labelledby="cq-tab-historial" tabindex="0" hidden>
@@ -114,6 +123,26 @@ import GarantiaSenal from './GarantiaSenal.astro';
     color: var(--navy);
     border-bottom-color: var(--gold);
     background: var(--sky);
+  }
+
+  .cq-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cq-tab-badge[hidden] {
+    display: none;
   }
 
   .cq-panel {
