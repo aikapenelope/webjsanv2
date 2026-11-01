@@ -35,6 +35,7 @@ const ESPERADOS = {
   recepcion: ['🔢 N° entrada', '📅 Fecha', 'Placa Norm', 'Km reportado', '¿Qué le pasa al carro?', 'Fotos'],
   diagnosticos: ['📅 Fecha', 'Placa Norm', 'OT vinculada', 'DTCs / Errores computadora', 'Relato completo del diagnóstico', '🔧 Hallazgos del desmontaje'],
   garantias: ['# GAR', 'Placa', 'Estado', '📅 Fecha de garantía', 'Fecha entrega', '✅ PDF generado', 'Vigencia', 'OT'],
+  avances: ['🔢 N°', '📅 Fecha', 'Placa', 'Placa Norm', 'Etapa', '📸 Fotos'],
 };
 
 let fallos = 0;
