@@ -63,6 +63,27 @@ function adjuntosDe(valor) {
 const esImagen = (a) => String(a?.type ?? '').startsWith('image/');
 const esVideo = (a) => String(a?.type ?? '').startsWith('video/');
 
+/** DTO de una foto firmada, compartido por Recepción y Avances. */
+function fotoDto(a, urlsFotos) {
+  const respaldo = urlsFotos.get(a.file_token) ?? '';
+  if (!respaldo) return null; // el bot no puede acceder a esta foto
+  const proxy = (ancho) => {
+    const query = firmarFoto(a.file_token, ancho);
+    // Con slash final: `trailingSlash: true` redirige (308)
+    // `/api/foto` → `/api/foto/`; así cada foto ahorra un viaje.
+    return query ? `/api/foto/?${query}` : '';
+  };
+  return {
+    nombre: String(a.name ?? 'foto'),
+    mime: String(a.type ?? 'image/jpeg'),
+    tamano: Number(a.size) || 0,
+    url: proxy(ANCHO_VISOR) || respaldo,
+    urlMini: proxy(ANCHO_MINI) || undefined,
+    urlOriginal: proxy(ANCHO_ORIGINAL) || undefined,
+    urlRespaldo: respaldo,
+  };
+}
+
 /** Campos conocidos donde suele pegarse la URL del informe X431 (se prueban primero). */
 const CAMPOS_URL_DX = [
   'DTCs / Errores computadora',
@@ -176,12 +197,17 @@ export async function verificarTelefono(placa, t4) {
 const enVuelo = new Map();
 
 async function construirExpedienteInterno(placa) {
-  const [veh, ots, entradas, dxs, gars] = await Promise.all([
+  const [veh, ots, entradas, dxs, gars, avancesRaw] = await Promise.all([
     buscarRegistros(TABLAS.vehiculos, porPlacaNorm(placa), { pageSize: 5 }),
     buscarRegistros(TABLAS.ordenes, porPlacaNorm(placa), { pageSize: 100 }),
     buscarRegistros(TABLAS.recepcion, porPlacaNorm(placa), { pageSize: 100 }),
     buscarRegistros(TABLAS.diagnosticos, porPlacaNorm(placa), { pageSize: 100 }),
     buscarGarantias(placa),
+    // Opcional: si la tabla nueva no existe o falla, el portal sigue funcionando.
+    buscarRegistros(TABLAS.avances, porPlacaNorm(placa), { pageSize: 100 }).catch((err) => {
+      console.error('[expediente] avances no disponible:', err?.message ?? err);
+      return { items: [] };
+    }),
   ]);
 
   const ordenes = ots.items
@@ -197,6 +223,14 @@ async function construirExpedienteInterno(placa) {
     f: it.fields ?? {},
     ts: numeroDe(it.fields?.['📅 Fecha']) ?? 0,
   }));
+
+  const avancesNorm = avancesRaw.items
+    .map((it) => ({
+      record_id: it.record_id,
+      f: it.fields ?? {},
+      ts: numeroDe(it.fields?.['📅 Fecha']) ?? 0,
+    }))
+    .sort((a, b) => b.ts - a.ts);
 
   const vehiculoBase = veh.items[0]?.fields ?? null;
   if (!vehiculoBase && ordenes.length === 0 && entradasNorm.length === 0 && gars.length === 0) {
@@ -250,6 +284,42 @@ async function construirExpedienteInterno(placa) {
     for (const [token, url] of firmadas) urlsFotos.set(token, url);
   }
 
+  // Avances: la OT actual es la más reciente. Su rango va desde su
+  // `📅 Fecha ingreso` hasta ahora; las fotos de visitas anteriores quedan
+  // fuera (Fase 2: Historial). No hay link ni workflow: la placa es la llave
+  // y la fecha separa una visita de otra.
+  const ahoraMs = Date.now();
+  const avancesActuales =
+    ordenes.length > 0
+      ? avancesNorm.filter((a) => a.ts >= ordenes[0].ts && a.ts < ahoraMs)
+      : [];
+
+  const urlsAvances = new Map();
+  if (avancesActuales.length > 0) {
+    const tokens = avancesActuales.flatMap((a) =>
+      adjuntosDe(a.f['📸 Fotos'])
+        .filter(esImagen)
+        .map((img) => img.file_token),
+    );
+    const firmadas = await firmarFotos(tokens);
+    for (const [token, url] of firmadas) urlsAvances.set(token, url);
+  }
+
+  let avancesSinAcceso = 0;
+  const avancesDto = avancesActuales.map((a) => {
+    const imagenes = adjuntosDe(a.f['📸 Fotos']).filter(esImagen);
+    const fotos = imagenes.map((img) => fotoDto(img, urlsAvances)).filter(Boolean);
+    avancesSinAcceso += imagenes.length - fotos.length;
+    return {
+      id: textoDe(a.f['🔢 N°']).trim() || a.record_id,
+      fecha: aISO(a.ts),
+      etapa: textoDe(a.f['Etapa']).trim(),
+      fotos,
+    };
+  });
+  const totalFotos = avancesDto.reduce((total, a) => total + a.fotos.length, 0);
+  const ultimaActualizacion = avancesDto[0]?.fecha;
+
   const ordenesDto = base.map(({ ot, rec, imagenes, videos }, idx) => {
     const f = ot.f;
     const rf = rec?.f ?? {};
@@ -272,30 +342,7 @@ async function construirExpedienteInterno(placa) {
     };
 
     if (rec) {
-      const fotos =
-        idx === 0
-          ? imagenes
-              .map((a) => {
-                const respaldo = urlsFotos.get(a.file_token) ?? '';
-                if (!respaldo) return null; // el bot no puede acceder a esta foto
-                const proxy = (ancho) => {
-                  const query = firmarFoto(a.file_token, ancho);
-                  // Con slash final: `trailingSlash: true` redirige (308)
-                  // `/api/foto` → `/api/foto/`; así cada foto ahorra un viaje.
-                  return query ? `/api/foto/?${query}` : '';
-                };
-                return {
-                  nombre: String(a.name ?? 'foto'),
-                  mime: String(a.type ?? 'image/jpeg'),
-                  tamano: Number(a.size) || 0,
-                  url: proxy(ANCHO_VISOR) || respaldo,
-                  urlMini: proxy(ANCHO_MINI) || undefined,
-                  urlOriginal: proxy(ANCHO_ORIGINAL) || undefined,
-                  urlRespaldo: respaldo,
-                };
-              })
-              .filter(Boolean)
-          : [];
+      const fotos = idx === 0 ? imagenes.map((a) => fotoDto(a, urlsFotos)).filter(Boolean) : [];
       dto.recepcion = {
         nroEntrada: textoDe(rf['🔢 N° entrada']).trim(),
         fecha: aISO(numeroDe(rf['📅 Fecha'])),
@@ -309,6 +356,15 @@ async function construirExpedienteInterno(placa) {
       if (idx === 0 && imagenes.length > fotos.length) {
         dto.recepcion.fotosSinAcceso = imagenes.length - fotos.length;
       }
+    }
+
+    // La pestaña de Avances solo se arma para la OT actual. Las visitas
+    // anteriores quedan para la Fase 2 (Historial).
+    if (idx === 0) {
+      dto.avances = avancesDto;
+      dto.totalFotos = totalFotos;
+      if (ultimaActualizacion) dto.ultimaActualizacion = ultimaActualizacion;
+      if (avancesSinAcceso > 0) dto.fotosSinAcceso = avancesSinAcceso;
     }
 
     const informe = informeDeOrden(ot);

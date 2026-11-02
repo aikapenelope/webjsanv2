@@ -1,0 +1,223 @@
+---
+/**
+ * Pestaña "Avances del Trabajo" — contenedor.
+ * El timeline y las fotos se pintan desde `consulta-client.ts` con los datos
+ * de la API (`ordenes[0].avances`). Solo se muestran fecha, etapa y fotos.
+ */
+---
+
+<section class="cq-avances" id="cq-avances" aria-labelledby="cq-avances-title">
+  <header class="cq-avances-head">
+    <div class="cq-avances-title">
+      <h3 id="cq-avances-title">Avances del trabajo</h3>
+      <p class="cq-avances-ultima" data-campo="ultima" hidden></p>
+    </div>
+    <span class="cq-avances-total" data-campo="total" hidden></span>
+  </header>
+
+  <p class="cq-avances-vacio" data-campo="vacio">
+    Aún no hay fotos de avance. Cuando el especialista las suba, aparecerán aquí.
+  </p>
+
+  <p class="cq-avances-sin-acceso" data-campo="sin-acceso" hidden>
+    <span data-campo="sin-acceso-texto"></span>
+    <a data-campo="sin-acceso-wa" href="https://wa.me/584141066546" target="_blank" rel="noopener">
+      Escríbenos por WhatsApp
+    </a>
+  </p>
+
+  <div class="cq-avances-timeline" data-campo="timeline"></div>
+</section>
+
+<style>
+  .cq-avances {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .cq-avances-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .cq-avances-title h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--navy);
+    letter-spacing: 0.01em;
+  }
+
+  .cq-avances-ultima {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .cq-avances-total {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--sky-line);
+    background: var(--sky);
+    color: var(--navy);
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .cq-avances-vacio {
+    margin: 0;
+    padding: 1rem;
+    border: 1px dashed var(--sky-line);
+    border-radius: var(--radius-sm);
+    background: var(--sky);
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  .cq-avances-sin-acceso {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius-sm);
+    background: #fffaf0;
+    color: var(--navy);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .cq-avances-sin-acceso a {
+    color: var(--blue);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cq-avances-timeline {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .cq-avance {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+  }
+
+  .cq-avance-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .cq-avance-fecha {
+    color: var(--navy);
+    font-size: 0.86rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cq-avance-etapa {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: #fdf6dd;
+    border: 1px solid #ecdca0;
+    color: #6b5a13;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .cq-avance-cuenta {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .cq-avance-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .cq-avance-foto {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--sky-line);
+    border-radius: 10px;
+    background: var(--sky);
+    cursor: zoom-in;
+  }
+
+  .cq-avance-foto img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+
+  .cq-avance-foto:hover img {
+    transform: scale(1.03);
+  }
+
+  .cq-avance-foto:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .cq-avance-vacio {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  @media (min-width: 640px) {
+    .cq-avance-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 420px) {
+    .cq-avance {
+      padding: 0.8rem;
+    }
+
+    .cq-avance-grid {
+      gap: 0.45rem;
+    }
+
+    .cq-avance-cuenta {
+      width: 100%;
+      margin-left: 0;
+      text-align: right;
+    }
+  }
+</style>

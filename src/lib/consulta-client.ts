@@ -42,6 +42,13 @@ export interface RecepcionDTO {
   videos: { cantidad: number };
 }
 
+export interface AvanceDTO {
+  id: string;
+  fecha: string;
+  etapa: string;
+  fotos: FotoDTO[];
+}
+
 type InformeRef = { informeId: string; reportType: string; url: string } | { pendiente: true };
 
 export interface OrdenDTO {
@@ -56,6 +63,10 @@ export interface OrdenDTO {
   sintoma?: string;
   recepcion?: RecepcionDTO;
   informeX431?: InformeRef;
+  avances?: AvanceDTO[];
+  totalFotos?: number;
+  ultimaActualizacion?: string;
+  fotosSinAcceso?: number;
 }
 
 export interface VehiculoDTO {
@@ -197,6 +208,8 @@ const prefiereMenosMovimiento = (): boolean =>
 let placaActual = '';
 let expedienteActual: ExpedienteDTO | null = null;
 let fotosActuales: FotoDTO[] = [];
+let visorFotos: FotoDTO[] = [];
+let visorContexto = '';
 let visorIndice = 0;
 let visorFocoPrevio: HTMLElement | null = null;
 let informeCargado: { informeId: string; datos: InformeX431DTO | null } | null = null;
@@ -236,11 +249,16 @@ function calentarFoto(url: string | undefined, prioridad: 'low' | 'high' = 'low'
 }
 
 /** Ventana alrededor de `centro`: `+1..radio` adelante y 1 atrás. */
-function calentarVentana(centro: number, radio: number, tamano: 'mini' | 'visor'): void {
+function calentarVentana(
+  centro: number,
+  radio: number,
+  tamano: 'mini' | 'visor',
+  fotos: FotoDTO[] = fotosActuales,
+): void {
   const alcance = conexionLimitada() ? 1 : radio;
   for (let d = -1; d <= alcance; d++) {
     if (d === 0) continue;
-    const foto = fotosActuales[centro + d];
+    const foto = fotos[centro + d];
     if (!foto) continue;
     calentarFoto(tamano === 'mini' ? foto.urlMini || foto.url : foto.url);
   }
@@ -508,6 +526,126 @@ function pintarRecepcion(ordenes: OrdenDTO[], placa: string): void {
 
   pintarFotos(rec.fotos, placa);
   pintarAvisos(rec, placa);
+}
+
+/* ───────────────────────────── Render: avances ──────────────────────────────── */
+
+function pintarAvances(orden: OrdenDTO | undefined): void {
+  const caja = porId('cq-avances');
+  if (!caja) return;
+
+  const timeline = porSel<HTMLElement>('[data-campo="timeline"]', caja);
+  const vacio = porSel<HTMLElement>('[data-campo="vacio"]', caja);
+  const ultima = porSel<HTMLElement>('[data-campo="ultima"]', caja);
+  const total = porSel<HTMLElement>('[data-campo="total"]', caja);
+  const sinAcceso = porSel<HTMLElement>('[data-campo="sin-acceso"]', caja);
+  const badge = porId('cq-badge-avances');
+
+  if (timeline) timeline.textContent = '';
+
+  const avances = [...(orden?.avances ?? [])].sort(
+    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+  );
+
+  if (avances.length === 0) {
+    mostrar(vacio, true);
+    mostrar(ultima, false);
+    mostrar(total, false);
+    mostrar(sinAcceso, false);
+    if (badge) {
+      badge.textContent = '0';
+      badge.hidden = true;
+    }
+    return;
+  }
+
+  mostrar(vacio, false);
+
+  const totalFotos =
+    orden?.totalFotos ?? avances.reduce((suma, avance) => suma + avance.fotos.length, 0);
+  if (total) {
+    total.textContent = `${totalFotos} ${totalFotos === 1 ? 'foto' : 'fotos'}`;
+    mostrar(total, true);
+  }
+  if (badge) {
+    badge.textContent = String(totalFotos);
+    badge.hidden = totalFotos === 0;
+  }
+
+  const ultimaFecha = orden?.ultimaActualizacion || avances[0]?.fecha;
+  if (ultima) {
+    ultima.textContent = ultimaFecha ? `Última actualización: ${fmtFechaHora(ultimaFecha)}` : '';
+    mostrar(ultima, Boolean(ultimaFecha));
+  }
+
+  const bloqueadas = orden?.fotosSinAcceso ?? 0;
+  if (sinAcceso) {
+    if (bloqueadas > 0) {
+      const texto = porSel<HTMLElement>('[data-campo="sin-acceso-texto"]', caja);
+      if (texto) {
+        texto.textContent = `No pudimos cargar ${bloqueadas} ${bloqueadas === 1 ? 'foto' : 'fotos'} de este avance.`;
+      }
+      const enlace = porSel<HTMLAnchorElement>('[data-campo="sin-acceso-wa"]', caja);
+      if (enlace) {
+        enlace.href = wa(
+          `Hola J-SAN, necesito las fotos de avance de mi vehículo placa ${placaActual}.`,
+        );
+      }
+      mostrar(sinAcceso, true);
+    } else {
+      mostrar(sinAcceso, false);
+    }
+  }
+
+  for (const avance of avances) {
+    const fecha = fmtFechaHora(avance.fecha) || 'Sin fecha';
+    const etapa = avance.etapa || 'Avance';
+    const tarjeta = crear('article', 'cq-avance');
+    const cabecera = crear('div', 'cq-avance-head');
+    cabecera.appendChild(crear('span', 'cq-avance-fecha', fecha));
+    cabecera.appendChild(crear('span', 'cq-avance-etapa', etapa));
+    const cantidad = avance.fotos.length;
+    if (cantidad > 0) {
+      cabecera.appendChild(
+        crear('span', 'cq-avance-cuenta', `${cantidad} ${cantidad === 1 ? 'foto' : 'fotos'}`),
+      );
+    }
+    tarjeta.appendChild(cabecera);
+
+    if (cantidad === 0) {
+      tarjeta.appendChild(
+        crear('p', 'cq-avance-vacio', 'Las fotos de este avance aún no están disponibles.'),
+      );
+    } else {
+      const grilla = crear('div', 'cq-avance-grid');
+      avance.fotos.forEach((foto, indice) => {
+        const boton = crear('button', 'cq-avance-foto');
+        boton.type = 'button';
+        boton.setAttribute(
+          'aria-label',
+          `Ver foto ${indice + 1} de ${cantidad} — ${etapa} — ${fecha}`,
+        );
+        const img = crear('img');
+        img.src = foto.urlMini || foto.url;
+        img.alt = `Avance — ${etapa} — ${fecha} — foto ${indice + 1} de ${cantidad}`;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.addEventListener('error', () => {
+          if (foto.urlRespaldo && img.getAttribute('src') !== foto.urlRespaldo) {
+            img.src = foto.urlRespaldo;
+          }
+        });
+        boton.appendChild(img);
+        boton.addEventListener('click', () =>
+          abrirVisorCon(avance.fotos, indice, `Avance — ${etapa} — ${fecha}`, boton),
+        );
+        grilla.appendChild(boton);
+      });
+      tarjeta.appendChild(grilla);
+    }
+
+    timeline?.appendChild(tarjeta);
+  }
 }
 
 /* ──────────────────────── Render: avisos de video / fotos ───────────────────── */
@@ -796,10 +934,21 @@ const visorAbierto = (): boolean => {
 };
 
 function abrirVisor(indice: number, origen?: HTMLElement): void {
-  const visor = porId('cq-visor');
-  if (!visor || fotosActuales.length === 0) return;
+  abrirVisorCon(fotosActuales, indice, 'Foto de recepción', origen);
+}
 
-  visorIndice = indice;
+function abrirVisorCon(
+  fotos: FotoDTO[],
+  indice: number,
+  contexto: string,
+  origen?: HTMLElement,
+): void {
+  const visor = porId('cq-visor');
+  if (!visor || fotos.length === 0) return;
+
+  visorFotos = fotos;
+  visorContexto = contexto;
+  visorIndice = Math.min(Math.max(indice, 0), fotos.length - 1);
   visorFocoPrevio = origen ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
   pintarVisor();
   visor.hidden = false;
@@ -809,7 +958,7 @@ function abrirVisor(indice: number, origen?: HTMLElement): void {
 
 function pintarVisor(): void {
   const visor = porId('cq-visor');
-  const foto = fotosActuales[visorIndice];
+  const foto = visorFotos[visorIndice];
   if (!visor || !foto) return;
 
   const img = porId<HTMLImageElement>('cq-visor-img');
@@ -840,7 +989,7 @@ function pintarVisor(): void {
       grande
         .decode()
         .then(() => {
-          if (visor.hidden || fotosActuales[visorIndice] !== foto) return;
+          if (visor.hidden || visorFotos[visorIndice] !== foto) return;
           img.src = foto.url;
         })
         .catch(() => {
@@ -849,14 +998,14 @@ function pintarVisor(): void {
           // falle también la miniatura.
         });
     }
-    img.alt = `Foto de recepción — ${visorIndice + 1} de ${fotosActuales.length}`;
+    img.alt = `${visorContexto} — ${visorIndice + 1} de ${visorFotos.length}`;
   }
 
   // Ventana en tamaño visor: al deslizar, las siguientes ya están decodificadas.
-  calentarVentana(visorIndice, RADIO_VISOR, 'visor');
+  calentarVentana(visorIndice, RADIO_VISOR, 'visor', visorFotos);
 
   const contador = porSel<HTMLElement>('[data-campo="contador"]', visor);
-  if (contador) contador.textContent = `${visorIndice + 1}/${fotosActuales.length}`;
+  if (contador) contador.textContent = `${visorIndice + 1}/${visorFotos.length}`;
 
   const descargar = porId<HTMLAnchorElement>('cq-visor-descargar');
   if (descargar) {
@@ -867,12 +1016,12 @@ function pintarVisor(): void {
   const prev = porSel<HTMLButtonElement>('.cq-visor-prev', visor);
   const next = porSel<HTMLButtonElement>('.cq-visor-next', visor);
   if (prev) prev.disabled = visorIndice === 0;
-  if (next) next.disabled = visorIndice === fotosActuales.length - 1;
+  if (next) next.disabled = visorIndice === visorFotos.length - 1;
 }
 
 function moverVisor(paso: number): void {
-  if (fotosActuales.length === 0) return;
-  visorIndice = (visorIndice + paso + fotosActuales.length) % fotosActuales.length;
+  if (visorFotos.length === 0) return;
+  visorIndice = (visorIndice + paso + visorFotos.length) % visorFotos.length;
   pintarVisor();
 }
 
@@ -1127,6 +1276,7 @@ function pintarInforme(d: InformeX431DTO): void {
 const TABS: { boton: string; panel: string }[] = [
   { boton: 'cq-tab-recepcion', panel: 'cq-panel-recepcion' },
   { boton: 'cq-tab-x431', panel: 'cq-panel-x431' },
+  { boton: 'cq-tab-avances', panel: 'cq-panel-avances' },
   { boton: 'cq-tab-historial', panel: 'cq-panel-historial' },
   { boton: 'cq-tab-garantia', panel: 'cq-panel-garantia' },
 ];
@@ -1208,6 +1358,7 @@ function pintarExpediente(exp: ExpedienteDTO): void {
   pintarVehiculo(exp);
   pintarTracker(exp.ordenes);
   pintarRecepcion(exp.ordenes, exp.placa);
+  pintarAvances(exp.ordenes[0]);
   pintarHistorial(exp.ordenes);
   pintarGarantia(exp.garantia);
   reiniciarEmbedInforme();
@@ -1481,7 +1632,7 @@ function vincular(): void {
     const visorImg = porId<HTMLImageElement>('cq-visor-img');
     visorImg?.addEventListener('error', () => {
       if (visor.hidden || !visorImg) return;
-      const respaldo = fotosActuales[visorIndice]?.urlRespaldo;
+      const respaldo = visorFotos[visorIndice]?.urlRespaldo;
       if (respaldo && visorImg.getAttribute('src') !== respaldo) {
         visorImg.src = respaldo;
         return;

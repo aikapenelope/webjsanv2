@@ -31,7 +31,7 @@ const { construirExpediente } = await import('../api/_lib/fanout.js');
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const PLACA_COMPLETA = process.env.PLACA_COMPLETA || 'AE473LM';
-const PLACA_MEDIA = process.env.PLACA_MEDIA || 'AG868ZA';
+const PLACA_MEDIA = process.env.PLACA_MEDIA || 'AB636DO';
 
 if (!process.env.LARK_APP_ID || !process.env.LARK_APP_SECRET) {
   console.error('❌ Faltan las credenciales LARK_* (exporta el .env.local del workspace Jsan/Lark).');
@@ -119,6 +119,10 @@ function crearEntorno(payloadExpediente, url, falla) {
     /* Node ≥21 define navigator sin setter */
   }
   globalThis.HTMLElement = window.HTMLElement;
+  globalThis.Image = window.Image;
+  if (!window.HTMLImageElement.prototype.decode) {
+    window.HTMLImageElement.prototype.decode = () => Promise.resolve();
+  }
   globalThis.Element = window.Element;
   globalThis.Event = window.Event;
   globalThis.requestAnimationFrame = (cb) => setTimeout(() => cb(Date.now()), 0);
@@ -334,6 +338,23 @@ await correr('A · expediente completo (deep-link)', {
         const ref = ordenA?.informeX431;
         const tieneInforme = Boolean(ref && 'informeId' in ref);
         return window.document.getElementById('cq-x431-embed').hidden === !tieneInforme;
+      },
+    ],
+    ['pestaña Avances presente', () => Boolean(window.document.getElementById('cq-tab-avances'))],
+    [
+      'Avances sin fotos: empty state y badge oculto',
+      () =>
+        window.document.querySelector('#cq-avances [data-campo="vacio"]').hidden === false &&
+        window.document.getElementById('cq-badge-avances').hidden === true,
+    ],
+    [
+      'pestaña Avances activa su panel',
+      () => {
+        window.document.getElementById('cq-tab-avances').click();
+        return (
+          window.document.getElementById('cq-panel-avances').hidden === false &&
+          window.document.getElementById('cq-tab-avances').getAttribute('aria-selected') === 'true'
+        );
       },
     ],
   ],
@@ -647,6 +668,55 @@ await correr('B3 · tracker en curso: días en taller y banners', {
       ],
     ];
   },
+});
+
+/* ── H. Avances con fotos: timeline y visor ────────────────────────────────── */
+const fotosAvance = expCompleto.ordenes[0].recepcion.fotos.slice(0, 2);
+const expAvances = structuredClone(expCompleto);
+expAvances.ordenes[0].avances = [
+  { id: 'AV-0001', fecha: '2026-10-31T20:00:00.000Z', etapa: 'Etapa 2', fotos: fotosAvance },
+  { id: 'AV-0002', fecha: '2026-11-01T14:00:00.000Z', etapa: 'Etapa 3', fotos: fotosAvance },
+];
+expAvances.ordenes[0].totalFotos = 4;
+expAvances.ordenes[0].ultimaActualizacion = '2026-11-01T14:00:00.000Z';
+
+await correr('H · avances con fotos', {
+  expediente: expAvances,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}&t4=1234`,
+  revision: (window) => [
+    ['badge de avances con 4 fotos', () => texto(window, '#cq-badge-avances') === '4' && window.document.getElementById('cq-badge-avances').hidden === false],
+    [
+      'pestaña Avances activa su panel',
+      () => {
+        window.document.getElementById('cq-tab-avances').click();
+        return window.document.getElementById('cq-panel-avances').hidden === false;
+      },
+    ],
+    ['última actualización visible', () => texto(window, '#cq-avances [data-campo="ultima"]').includes('Última actualización')],
+    ['dos grupos en el timeline', () => window.document.querySelectorAll('#cq-avances .cq-avance').length === 2],
+    ['etapas visibles', () => texto(window, '#cq-avances').includes('Etapa 2') && texto(window, '#cq-avances').includes('Etapa 3')],
+    ['cuatro fotos en la grilla', () => window.document.querySelectorAll('#cq-avances .cq-avance-foto').length === 4],
+    ['empty state oculto con fotos', () => window.document.querySelector('#cq-avances [data-campo="vacio"]').hidden === true],
+    [
+      'abrir visor desde una foto de avance',
+      () => {
+        window.document.querySelector('#cq-avances .cq-avance-foto').click();
+        return (
+          window.document.getElementById('cq-visor').hidden === false &&
+          texto(window, '#cq-visor [data-campo="contador"]') === '1/2' &&
+          window.document.documentElement.style.overflow === 'hidden'
+        );
+      },
+    ],
+    ['visor con contexto de avance', () => (window.document.getElementById('cq-visor-img')?.alt ?? '').includes('Avance')],
+    [
+      'cerrar visor de avance',
+      () => {
+        window.document.querySelector('#cq-visor [data-accion="cerrar"]').click();
+        return window.document.getElementById('cq-visor').hidden === true;
+      },
+    ],
+  ],
 });
 
 /* ── C. Placa inexistente ─────────────────────────────────────────────────── */

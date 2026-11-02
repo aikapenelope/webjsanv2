@@ -21,6 +21,7 @@ export const TABLAS = {
   recepcion: 'tbls5438JO9EoxZu', // 📥 Entradas Recepción
   diagnosticos: 'tblOXCdYdWpdW4F9', // 🔍 Diagnósticos
   garantias: 'tblBaCVbbmV1whtq', // 🛡️ Garantías
+  avances: 'tbli81Og3c0Ftrc0', // 📸 Avances de Reparación
 };
 
 /* ─────────────────────────────── Autenticación ─────────────────────────────── */
@@ -98,16 +99,18 @@ export async function buscarRegistros(tableId, conditions, { pageSize = 100, sor
     body: JSON.stringify(cuerpo),
   };
 
-  // Reintento único ante frecuencia (429 · code 99991400): espera el reset que
-  // indica Lark (acotado a 2 s para no acercarse al maxDuration de la función).
+  // Reintento ante frecuencia (429 · 99991400 · 1254290): espera el reset que
+  // indica Lark, acotado a 2 s por intento para no acercarse al maxDuration.
   const pedir = async (query) => {
-    let res = await fetch(url(query), opciones);
-    let data = await res.json().catch(() => ({}));
-    if (res.status === 429 || data.code === 99991400) {
-      const reset = Number(res.headers?.get?.('x-ogw-ratelimit-reset')) || 1;
-      await new Promise((r) => setTimeout(r, Math.min(reset, 2) * 1000));
+    let res;
+    let data;
+    for (let intento = 0; intento < 3; intento += 1) {
       res = await fetch(url(query), opciones);
       data = await res.json().catch(() => ({}));
+      const limitado = res.status === 429 || data.code === 99991400 || data.code === 1254290;
+      if (!limitado || intento === 2) break;
+      const reset = Number(res.headers?.get?.('x-ogw-ratelimit-reset')) || 1;
+      await new Promise((r) => setTimeout(r, Math.max(1, Math.min(reset, 2)) * 1000));
     }
     return { res, data };
   };
