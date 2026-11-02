@@ -670,45 +670,106 @@ await correr('B3 · tracker en curso: días en taller y banners', {
   },
 });
 
-/* ── H. Avances con fotos: timeline y visor ────────────────────────────────── */
-const fotosAvance = expCompleto.ordenes[0].recepcion.fotos.slice(0, 2);
+/* ── H. Avances con fotos: etapas, colapso y visor ────────────────────────── */
+const fotosAvance = expCompleto.ordenes[0].recepcion.fotos.slice(0, 5);
 const expAvances = structuredClone(expCompleto);
-expAvances.ordenes[0].avances = [
-  { id: 'AV-0001', fecha: '2026-10-31T20:00:00.000Z', etapa: 'Etapa 2', fotos: fotosAvance },
-  { id: 'AV-0002', fecha: '2026-11-01T14:00:00.000Z', etapa: 'Etapa 3', fotos: fotosAvance },
+const etapasMock = [
+  ['Etapa 1', '2026-10-28T14:00:00.000Z'],
+  ['Etapa 2', '2026-10-29T14:00:00.000Z'],
+  ['Etapa 3', '2026-10-30T14:00:00.000Z'],
+  ['Etapa 4', '2026-10-31T14:00:00.000Z'],
 ];
-expAvances.ordenes[0].totalFotos = 4;
-expAvances.ordenes[0].ultimaActualizacion = '2026-11-01T14:00:00.000Z';
+expAvances.ordenes[0].avances = etapasMock.map(([etapa, fecha], indice) => ({
+  id: `AV-000${indice + 1}`,
+  fecha,
+  etapa,
+  fotos: fotosAvance,
+}));
+expAvances.ordenes[0].totalFotos = 20;
+expAvances.ordenes[0].ultimaActualizacion = '2026-10-31T14:00:00.000Z';
 
-await correr('H · avances con fotos', {
+await correr('H · avances por etapa', {
   expediente: expAvances,
   url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}&t4=1234`,
   revision: (window) => [
-    ['badge de avances con 4 fotos', () => texto(window, '#cq-badge-avances') === '4' && window.document.getElementById('cq-badge-avances').hidden === false],
+    ['badge de avances con 20 fotos', () => texto(window, '#cq-badge-avances') === '20' && window.document.getElementById('cq-badge-avances').hidden === false],
+    ['total 20 fotos en la cabecera', () => texto(window, '#cq-avances [data-campo="total"]') === '20 fotos'],
+    ['última actualización visible', () => texto(window, '#cq-avances [data-campo="ultima"]').includes('Última actualización')],
+    ['acciones visibles', () => window.document.querySelector('#cq-avances [data-campo="acciones"]').hidden === false],
+    ['cuatro etapas', () => window.document.querySelectorAll('#cq-avances .cq-etapa').length === 4],
     [
-      'pestaña Avances activa su panel',
+      'etapas en orden 1..4',
+      () =>
+        [...window.document.querySelectorAll('#cq-avances .cq-etapa')]
+          .map((el) => el.dataset.etapa)
+          .join(',') === 'Etapa 1,Etapa 2,Etapa 3,Etapa 4',
+    ],
+    [
+      'Etapa 4 abierta por defecto',
+      () =>
+        window.document.getElementById('cq-etapa-panel-4').hidden === false &&
+        window.document.getElementById('cq-etapa-head-4').getAttribute('aria-expanded') === 'true',
+    ],
+    [
+      'Etapa 1 colapsada',
+      () =>
+        window.document.getElementById('cq-etapa-panel-1').hidden === true &&
+        window.document.getElementById('cq-etapa-head-1').getAttribute('aria-expanded') === 'false',
+    ],
+    [
+      'preview de Etapa 1 con 2 fotos',
+      () => window.document.querySelectorAll('[data-etapa="Etapa 1"] .cq-etapa-preview-foto').length === 2,
+    ],
+    [
+      'la grilla de Etapa 1 no se renderiza cerrada',
+      () => window.document.querySelectorAll('#cq-etapa-panel-1 .cq-avance-foto').length === 0,
+    ],
+    [
+      'expandir Etapa 1',
       () => {
-        window.document.getElementById('cq-tab-avances').click();
-        return window.document.getElementById('cq-panel-avances').hidden === false;
+        window.document.getElementById('cq-etapa-head-1').click();
+        return (
+          window.document.getElementById('cq-etapa-panel-1').hidden === false &&
+          window.document.querySelectorAll('#cq-etapa-panel-1 .cq-avance-foto').length === 5 &&
+          window.document.querySelector('[data-etapa="Etapa 1"] .cq-etapa-preview').hidden === true
+        );
       },
     ],
-    ['última actualización visible', () => texto(window, '#cq-avances [data-campo="ultima"]').includes('Última actualización')],
-    ['dos grupos en el timeline', () => window.document.querySelectorAll('#cq-avances .cq-avance').length === 2],
-    ['etapas visibles', () => texto(window, '#cq-avances').includes('Etapa 2') && texto(window, '#cq-avances').includes('Etapa 3')],
-    ['cuatro fotos en la grilla', () => window.document.querySelectorAll('#cq-avances .cq-avance-foto').length === 4],
-    ['empty state oculto con fotos', () => window.document.querySelector('#cq-avances [data-campo="vacio"]').hidden === true],
     [
-      'abrir visor desde una foto de avance',
+      'Ver desde el inicio expande todas',
       () => {
-        window.document.querySelector('#cq-avances .cq-avance-foto').click();
+        window.document.querySelector('#cq-avances [data-accion="ver-inicio"]').click();
+        return [...window.document.querySelectorAll('#cq-avances .cq-etapa-panel')].every(
+          (panel) => panel.hidden === false,
+        );
+      },
+    ],
+    [
+      'fotos con carga diferida y srcset',
+      () => {
+        const fotos = [...window.document.querySelectorAll('#cq-etapa-panel-4 .cq-avance-foto img')];
+        const foto = fotos[2] ?? fotos[0];
+        return (
+          foto.loading === 'lazy' &&
+          foto.decoding === 'async' &&
+          (foto.getAttribute('sizes') ?? '').includes('vw') &&
+          (foto.getAttribute('srcset') ?? '').includes('640w') &&
+          (foto.getAttribute('src') ?? '').includes('/api/foto/')
+        );
+      },
+    ],
+    [
+      'abrir visor desde una foto de Etapa 4',
+      () => {
+        window.document.querySelector('#cq-etapa-panel-4 .cq-avance-foto').click();
         return (
           window.document.getElementById('cq-visor').hidden === false &&
-          texto(window, '#cq-visor [data-campo="contador"]') === '1/2' &&
+          texto(window, '#cq-visor [data-campo="contador"]') === '1/5' &&
           window.document.documentElement.style.overflow === 'hidden'
         );
       },
     ],
-    ['visor con contexto de avance', () => (window.document.getElementById('cq-visor-img')?.alt ?? '').includes('Avance')],
+    ['visor con contexto de etapa', () => (window.document.getElementById('cq-visor-img')?.alt ?? '').includes('Etapa 4')],
     [
       'cerrar visor de avance',
       () => {
@@ -716,10 +777,20 @@ await correr('H · avances con fotos', {
         return window.document.getElementById('cq-visor').hidden === true;
       },
     ],
+    [
+      'Ir al último avance mantiene Etapa 4 abierta',
+      () => {
+        window.document.querySelector('#cq-avances [data-accion="ver-ultimo"]').click();
+        return (
+          window.document.getElementById('cq-etapa-panel-4').hidden === false &&
+          window.document.getElementById('cq-etapa-head-4').getAttribute('aria-expanded') === 'true'
+        );
+      },
+    ],
   ],
 });
 
-/* ── C. Placa inexistente ─────────────────────────────────────────────────── */
+/* ── C. Placa inexistente ─────────────────────────────────────────────────── *//* ── C. Placa inexistente ─────────────────────────────────────────────────── */
 await correr('C · placa inexistente', {
   expediente: { ok: true, encontrado: false, placa: 'ZZ999ZZ', actualizado: new Date().toISOString() },
   url: 'https://hidromaticosjsan.com/consulta/?placa=ZZ999ZZ&t4=1234',
