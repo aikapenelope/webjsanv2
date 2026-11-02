@@ -215,6 +215,7 @@ let visorFocoPrevio: HTMLElement | null = null;
 let informeCargado: { informeId: string; datos: InformeX431DTO | null } | null = null;
 let peticionEnCurso: AbortController | null = null;
 let observadorFotos: IntersectionObserver | null = null;
+let observadorAvances: IntersectionObserver | null = null;
 
 /* ─────────────────────────── Precarga en ventana ────────────────────────────── */
 /**
@@ -530,6 +531,139 @@ function pintarRecepcion(ordenes: OrdenDTO[], placa: string): void {
 
 /* ───────────────────────────── Render: avances ──────────────────────────────── */
 
+const ETAPAS_AVANCE = ['Etapa 1', 'Etapa 2', 'Etapa 3', 'Etapa 4'];
+
+type EtapaAgrupada = {
+  etapa: string;
+  orden: number;
+  grupos: AvanceDTO[];
+  totalFotos: number;
+  ultimaFecha: string;
+};
+
+function agruparAvancesPorEtapa(avances: AvanceDTO[]): EtapaAgrupada[] {
+  const mapa = new Map<string, AvanceDTO[]>();
+  for (const avance of avances) {
+    const etapa = avance.etapa || 'Sin etapa';
+    const lista = mapa.get(etapa) ?? [];
+    lista.push(avance);
+    mapa.set(etapa, lista);
+  }
+
+  return [...mapa.entries()]
+    .map(([etapa, grupos]) => {
+      const ordenados = [...grupos].sort(
+        (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+      );
+      let ultimaFecha = ordenados[0]?.fecha ?? '';
+      for (const grupo of ordenados) {
+        if (new Date(grupo.fecha).getTime() > new Date(ultimaFecha).getTime()) {
+          ultimaFecha = grupo.fecha;
+        }
+      }
+      const indice = ETAPAS_AVANCE.indexOf(etapa);
+      return {
+        etapa,
+        orden: indice >= 0 ? indice : 99,
+        grupos: ordenados,
+        totalFotos: ordenados.reduce((suma, grupo) => suma + grupo.fotos.length, 0),
+        ultimaFecha,
+      };
+    })
+    .sort((a, b) => a.orden - b.orden || a.etapa.localeCompare(b.etapa));
+}
+
+function asegurarObservadorAvances(): IntersectionObserver | null {
+  if (typeof IntersectionObserver === 'undefined') return null;
+  if (observadorAvances) return observadorAvances;
+  observadorAvances = new IntersectionObserver(
+    (entradas) => {
+      for (const entrada of entradas) {
+        if (!entrada.isIntersecting) continue;
+        const img = entrada.target as HTMLImageElement;
+        if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+        if (img.dataset.src) img.src = img.dataset.src;
+        delete img.dataset.src;
+        delete img.dataset.srcset;
+        observadorAvances?.unobserve(img);
+      }
+    },
+    { rootMargin: '200px 0px', threshold: 0.01 },
+  );
+  return observadorAvances;
+}
+
+function observarMiniaturasAvance(raiz: HTMLElement): void {
+  const imagenes = raiz.querySelectorAll<HTMLImageElement>('img[data-src]');
+  if (imagenes.length === 0) return;
+  const observador = asegurarObservadorAvances();
+  imagenes.forEach((img) => {
+    if (!observador) {
+      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+      if (img.dataset.src) img.src = img.dataset.src;
+      delete img.dataset.src;
+      delete img.dataset.srcset;
+      return;
+    }
+    observador.observe(img);
+  });
+}
+
+function crearMiniaturaAvance(
+  foto: FotoDTO,
+  opciones: {
+    alt: string;
+    clase?: string;
+    prioridad?: boolean;
+    onClick?: () => void;
+  },
+): HTMLButtonElement {
+  const boton = crear('button', `cq-avance-foto${opciones.clase ? ` ${opciones.clase}` : ''}`);
+  boton.type = 'button';
+  boton.setAttribute('aria-label', opciones.alt);
+  if (opciones.onClick) boton.addEventListener('click', opciones.onClick);
+
+  const img = crear('img');
+  img.alt = opciones.alt;
+  img.width = 640;
+  img.height = 480;
+  img.decoding = 'async';
+  img.loading = opciones.prioridad ? 'eager' : 'lazy';
+  if (opciones.prioridad) img.fetchPriority = 'high';
+
+  const mini = foto.urlMini || foto.url;
+  const srcset = [
+    foto.urlMini ? `${foto.urlMini} 640w` : '',
+    foto.url ? `${foto.url} 1280w` : '',
+  ]
+    .filter(Boolean)
+    .join(', ');
+  if (srcset) img.sizes = '(min-width: 1024px) 300px, (min-width: 640px) 33vw, 45vw';
+
+  img.addEventListener('load', () => boton.classList.add('is-lista'), { once: true });
+  img.addEventListener('error', () => {
+    if (foto.urlRespaldo && img.getAttribute('src') !== foto.urlRespaldo) {
+      img.removeAttribute('srcset');
+      img.src = foto.urlRespaldo;
+      return;
+    }
+    boton.classList.add('is-lista');
+  });
+  boton.addEventListener('pointerenter', () => calentarFoto(foto.url, 'high'));
+  boton.addEventListener('focus', () => calentarFoto(foto.url, 'high'));
+
+  if (opciones.prioridad) {
+    if (srcset) img.srcset = srcset;
+    img.src = mini;
+  } else {
+    img.dataset.src = mini;
+    if (srcset) img.dataset.srcset = srcset;
+  }
+
+  boton.appendChild(img);
+  return boton;
+}
+
 function pintarAvances(orden: OrdenDTO | undefined): void {
   const caja = porId('cq-avances');
   if (!caja) return;
@@ -539,18 +673,19 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
   const ultima = porSel<HTMLElement>('[data-campo="ultima"]', caja);
   const total = porSel<HTMLElement>('[data-campo="total"]', caja);
   const sinAcceso = porSel<HTMLElement>('[data-campo="sin-acceso"]', caja);
+  const acciones = porSel<HTMLElement>('[data-campo="acciones"]', caja);
   const badge = porId('cq-badge-avances');
 
+  observadorAvances?.disconnect();
+  observadorAvances = null;
   if (timeline) timeline.textContent = '';
 
-  const avances = [...(orden?.avances ?? [])].sort(
-    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
-  );
-
+  const avances = orden?.avances ?? [];
   if (avances.length === 0) {
     mostrar(vacio, true);
     mostrar(ultima, false);
     mostrar(total, false);
+    mostrar(acciones, false);
     mostrar(sinAcceso, false);
     if (badge) {
       badge.textContent = '0';
@@ -560,7 +695,6 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
   }
 
   mostrar(vacio, false);
-
   const totalFotos =
     orden?.totalFotos ?? avances.reduce((suma, avance) => suma + avance.fotos.length, 0);
   if (total) {
@@ -597,14 +731,20 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
     }
   }
 
-  for (const avance of avances) {
-    const fecha = fmtFechaHora(avance.fecha) || 'Sin fecha';
-    const etapa = avance.etapa || 'Avance';
+  const etapas = agruparAvancesPorEtapa(avances);
+  const actual = [...etapas].reverse().find((etapa) => etapa.totalFotos > 0) ?? etapas[0];
+  const refs = new Map<
+    string,
+    { section: HTMLElement; head: HTMLButtonElement; panel: HTMLElement; preview: HTMLElement }
+  >();
+
+  const renderGrupo = (grupo: AvanceDTO, etapa: string, prioridad: boolean): HTMLElement => {
+    const fecha = fmtFechaHora(grupo.fecha) || 'Sin fecha';
     const tarjeta = crear('article', 'cq-avance');
+    tarjeta.dataset.avanceId = grupo.id;
     const cabecera = crear('div', 'cq-avance-head');
     cabecera.appendChild(crear('span', 'cq-avance-fecha', fecha));
-    cabecera.appendChild(crear('span', 'cq-avance-etapa', etapa));
-    const cantidad = avance.fotos.length;
+    const cantidad = grupo.fotos.length;
     if (cantidad > 0) {
       cabecera.appendChild(
         crear('span', 'cq-avance-cuenta', `${cantidad} ${cantidad === 1 ? 'foto' : 'fotos'}`),
@@ -616,35 +756,132 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
       tarjeta.appendChild(
         crear('p', 'cq-avance-vacio', 'Las fotos de este avance aún no están disponibles.'),
       );
-    } else {
-      const grilla = crear('div', 'cq-avance-grid');
-      avance.fotos.forEach((foto, indice) => {
-        const boton = crear('button', 'cq-avance-foto');
-        boton.type = 'button';
-        boton.setAttribute(
-          'aria-label',
-          `Ver foto ${indice + 1} de ${cantidad} — ${etapa} — ${fecha}`,
-        );
-        const img = crear('img');
-        img.src = foto.urlMini || foto.url;
-        img.alt = `Avance — ${etapa} — ${fecha} — foto ${indice + 1} de ${cantidad}`;
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.addEventListener('error', () => {
-          if (foto.urlRespaldo && img.getAttribute('src') !== foto.urlRespaldo) {
-            img.src = foto.urlRespaldo;
-          }
-        });
-        boton.appendChild(img);
-        boton.addEventListener('click', () =>
-          abrirVisorCon(avance.fotos, indice, `Avance — ${etapa} — ${fecha}`, boton),
-        );
-        grilla.appendChild(boton);
-      });
-      tarjeta.appendChild(grilla);
+      return tarjeta;
     }
 
-    timeline?.appendChild(tarjeta);
+    const grilla = crear('div', 'cq-avance-grid');
+    grupo.fotos.forEach((foto, indice) => {
+      const boton = crearMiniaturaAvance(foto, {
+        alt: `${etapa} — ${fecha} — foto ${indice + 1} de ${cantidad}`,
+        prioridad: prioridad && indice < 2,
+      });
+      boton.addEventListener('click', () =>
+        abrirVisorCon(grupo.fotos, indice, `${etapa} — ${fecha}`, boton),
+      );
+      grilla.appendChild(boton);
+    });
+    tarjeta.appendChild(grilla);
+    return tarjeta;
+  };
+
+  const setAbierta = (etapa: EtapaAgrupada, abrir: boolean): void => {
+    const ref = refs.get(etapa.etapa);
+    if (!ref) return;
+    if (abrir && ref.panel.dataset.renderizado !== '1') {
+      ref.panel.textContent = '';
+      etapa.grupos.forEach((grupo, indice) => {
+        ref.panel.appendChild(renderGrupo(grupo, etapa.etapa, indice === 0));
+      });
+      ref.panel.dataset.renderizado = '1';
+      observarMiniaturasAvance(ref.panel);
+    }
+    ref.panel.hidden = !abrir;
+    ref.preview.hidden = abrir;
+    ref.head.setAttribute('aria-expanded', String(abrir));
+    ref.section.classList.toggle('is-abierta', abrir);
+  };
+
+  const buildEtapa = (etapa: EtapaAgrupada, indice: number, abierta: boolean): void => {
+    const section = crear('section', 'cq-etapa');
+    section.dataset.etapa = etapa.etapa;
+    const panelId = `cq-etapa-panel-${indice + 1}`;
+    const headId = `cq-etapa-head-${indice + 1}`;
+
+    const head = crear('button', 'cq-etapa-head');
+    head.type = 'button';
+    head.id = headId;
+    head.setAttribute('aria-controls', panelId);
+    head.setAttribute('aria-expanded', String(abierta));
+    head.appendChild(crear('span', 'cq-etapa-chevron', '▸'));
+    head.appendChild(crear('span', 'cq-etapa-nombre', etapa.etapa));
+    head.appendChild(
+      crear(
+        'span',
+        'cq-etapa-meta',
+        `${etapa.totalFotos} ${etapa.totalFotos === 1 ? 'foto' : 'fotos'} · ${
+          fmtFechaHora(etapa.ultimaFecha) || 'sin fecha'
+        }`,
+      ),
+    );
+    section.appendChild(head);
+
+    const preview = crear('div', 'cq-etapa-preview');
+    preview.hidden = abierta;
+    etapa.grupos
+      .flatMap((grupo) => grupo.fotos)
+      .slice(0, 2)
+      .forEach((foto, i) => {
+        preview.appendChild(
+          crearMiniaturaAvance(foto, {
+            alt: `Vista previa de ${etapa.etapa} — foto ${i + 1}`,
+            clase: 'cq-etapa-preview-foto',
+            onClick: () => setAbierta(etapa, true),
+          }),
+        );
+      });
+    const ver = crear(
+      'button',
+      'cq-etapa-ver',
+      `Ver ${etapa.totalFotos} ${etapa.totalFotos === 1 ? 'foto' : 'fotos'}`,
+    );
+    ver.type = 'button';
+    ver.addEventListener('click', () => setAbierta(etapa, true));
+    preview.appendChild(ver);
+    section.appendChild(preview);
+
+    const panel = crear('div', 'cq-etapa-panel');
+    panel.id = panelId;
+    panel.setAttribute('aria-labelledby', headId);
+    panel.hidden = true;
+    section.appendChild(panel);
+
+    timeline?.appendChild(section);
+    refs.set(etapa.etapa, { section, head, panel, preview });
+    observarMiniaturasAvance(preview);
+    head.addEventListener('click', () => setAbierta(etapa, panel.hidden));
+    if (abierta) setAbierta(etapa, true);
+  };
+
+  etapas.forEach((etapa, indice) => buildEtapa(etapa, indice, etapa.etapa === actual?.etapa));
+
+  if (acciones) {
+    const btnInicio = porSel<HTMLButtonElement>('[data-accion="ver-inicio"]', acciones);
+    const btnUltimo = porSel<HTMLButtonElement>('[data-accion="ver-ultimo"]', acciones);
+    if (btnInicio) {
+      btnInicio.onclick = () => {
+        for (const etapa of etapas) setAbierta(etapa, true);
+      };
+    }
+    if (btnUltimo) {
+      btnUltimo.onclick = () => {
+        const ultimo = avances.reduce(
+          (max, avance) => (new Date(avance.fecha) > new Date(max.fecha) ? avance : max),
+          avances[0],
+        );
+        const etapaUltimo = etapas.find((etapa) => etapa.grupos.includes(ultimo));
+        if (!etapaUltimo) return;
+        setAbierta(etapaUltimo, true);
+        requestAnimationFrame(() => {
+          const id = String(ultimo.id).replace(/["\\]/g, '');
+          const grupo = timeline?.querySelector<HTMLElement>(`[data-avance-id="${id}"]`);
+          grupo?.scrollIntoView({
+            behavior: prefiereMenosMovimiento() ? 'auto' : 'smooth',
+            block: 'start',
+          });
+        });
+      };
+    }
+    mostrar(acciones, true);
   }
 }
 
