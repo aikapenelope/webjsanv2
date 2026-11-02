@@ -15,6 +15,11 @@
     <span class="cq-avances-total" data-campo="total" hidden></span>
   </header>
 
+  <div class="cq-avances-acciones" data-campo="acciones" hidden>
+    <button type="button" class="cq-avances-accion" data-accion="ver-inicio">Ver desde el inicio</button>
+    <button type="button" class="cq-avances-accion" data-accion="ver-ultimo">Ir al último avance</button>
+  </div>
+
   <p class="cq-avances-vacio" data-campo="vacio">
     Aún no hay fotos de avance. Cuando el especialista las suba, aparecerán aquí.
   </p>
@@ -218,6 +223,207 @@
       width: 100%;
       margin-left: 0;
       text-align: right;
+    }
+  }
+
+  .cq-avances-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cq-avances-acciones[hidden] {
+    display: none;
+  }
+
+  .cq-avances-accion {
+    min-height: 40px;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--sky-line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--navy);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .cq-avances-accion:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .cq-avances-accion:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .cq-etapa {
+    overflow: hidden;
+    border: 1px solid var(--sky-line);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+  }
+
+  .cq-etapa-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 48px;
+    padding: 0.65rem 0.85rem;
+    border: 0;
+    border-bottom: 1px solid var(--sky-line);
+    background: var(--sky);
+    color: var(--navy);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cq-etapa-head:hover {
+    background: #e7f0fb;
+  }
+
+  .cq-etapa-head:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: -3px;
+  }
+
+  .cq-etapa-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    flex: none;
+    color: var(--blue);
+    font-size: 0.95rem;
+    transition: transform 0.2s ease;
+  }
+
+  .cq-etapa.is-abierta .cq-etapa-chevron {
+    transform: rotate(90deg);
+  }
+
+  .cq-etapa-nombre {
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+  }
+
+  .cq-etapa-meta {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .cq-etapa-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .cq-etapa-preview[hidden] {
+    display: none;
+  }
+
+  .cq-etapa-preview-foto {
+    width: 76px;
+    flex: none;
+    border-radius: 8px;
+  }
+
+  .cq-etapa-ver {
+    margin-left: auto;
+    min-height: 40px;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--sky-line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--navy);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .cq-etapa-ver:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .cq-etapa-panel {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem 0.85rem;
+  }
+
+  .cq-etapa-panel[hidden] {
+    display: none;
+  }
+
+  .cq-etapa-panel .cq-avance {
+    box-shadow: none;
+  }
+
+  .cq-avance-foto {
+    background:
+      linear-gradient(90deg, #eef4fb 25%, #dce9f7 37%, #eef4fb 63%);
+    background-size: 400% 100%;
+    animation: cqAvanceShimmer 1.4s ease-in-out infinite;
+  }
+
+  .cq-avance-foto img {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .cq-avance-foto.is-lista {
+    background: var(--sky);
+    animation: none;
+  }
+
+  .cq-avance-foto.is-lista img {
+    opacity: 1;
+  }
+
+  @keyframes cqAvanceShimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .cq-etapa-meta {
+      width: 100%;
+      margin-left: 1.7rem;
+      text-align: left;
+    }
+
+    .cq-etapa-preview-foto {
+      width: 64px;
+    }
+
+    .cq-etapa-ver {
+      margin-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cq-avance-foto,
+    .cq-avance-foto img,
+    .cq-etapa-chevron {
+      animation: none;
+      transition: none;
     }
   }
 </style>
