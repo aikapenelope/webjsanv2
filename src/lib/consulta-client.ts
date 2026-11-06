@@ -169,6 +169,29 @@ const fmtFechaHora = (iso?: string): string => {
   }).format(fecha);
 };
 
+/** "06 nov, 12:56 p. m." — fecha corta para las cabeceras de etapa. */
+const fmtFechaCorta = (iso?: string): string => {
+  if (!iso) return '';
+  const fecha = new Date(iso);
+  if (Number.isNaN(fecha.getTime())) return '';
+  const partes = new Intl.DateTimeFormat('es-VE', {
+    timeZone: TZ,
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).formatToParts(fecha);
+  const valor = (tipo: string) => partes.find((p) => p.type === tipo)?.value ?? '';
+  const dia = valor('day');
+  const mes = valor('month').replace('.', '').toLowerCase();
+  const hora = valor('hour');
+  const minuto = valor('minute');
+  const ampm = valor('dayPeriod').trim();
+  if (!dia || !mes) return '';
+  return `${dia} ${mes}, ${hora}:${minuto}${ampm ? ` ${ampm}` : ''}`;
+};
+
 const fmtNumero = (n?: number): string =>
   typeof n === 'number' && Number.isFinite(n)
     ? new Intl.NumberFormat('es-VE').format(n)
@@ -638,7 +661,7 @@ function crearMiniaturaAvance(
   ]
     .filter(Boolean)
     .join(', ');
-  if (srcset) img.sizes = '(min-width: 1024px) 300px, (min-width: 640px) 33vw, 45vw';
+  if (srcset) img.sizes = '(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 45vw';
 
   img.addEventListener('load', () => boton.classList.add('is-lista'), { once: true });
   img.addEventListener('error', () => {
@@ -738,14 +761,19 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
     { section: HTMLElement; head: HTMLButtonElement; panel: HTMLElement; preview: HTMLElement }
   >();
 
-  const renderGrupo = (grupo: AvanceDTO, etapa: string, prioridad: boolean): HTMLElement => {
+  const renderGrupo = (
+    grupo: AvanceDTO,
+    etapa: string,
+    prioridad: boolean,
+    mostrarCuenta: boolean,
+  ): HTMLElement => {
     const fecha = fmtFechaHora(grupo.fecha) || 'Sin fecha';
     const tarjeta = crear('article', 'cq-avance');
     tarjeta.dataset.avanceId = grupo.id;
     const cabecera = crear('div', 'cq-avance-head');
     cabecera.appendChild(crear('span', 'cq-avance-fecha', fecha));
     const cantidad = grupo.fotos.length;
-    if (cantidad > 0) {
+    if (cantidad > 0 && mostrarCuenta) {
       cabecera.appendChild(
         crear('span', 'cq-avance-cuenta', `${cantidad} ${cantidad === 1 ? 'foto' : 'fotos'}`),
       );
@@ -780,7 +808,9 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
     if (abrir && ref.panel.dataset.renderizado !== '1') {
       ref.panel.textContent = '';
       etapa.grupos.forEach((grupo, indice) => {
-        ref.panel.appendChild(renderGrupo(grupo, etapa.etapa, indice === 0));
+        ref.panel.appendChild(
+          renderGrupo(grupo, etapa.etapa, indice === 0, etapa.grupos.length > 1),
+        );
       });
       ref.panel.dataset.renderizado = '1';
       observarMiniaturasAvance(ref.panel);
@@ -794,6 +824,8 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
   const buildEtapa = (etapa: EtapaAgrupada, indice: number, abierta: boolean): void => {
     const section = crear('section', 'cq-etapa');
     section.dataset.etapa = etapa.etapa;
+    const esActual = etapa.etapa === actual?.etapa;
+    section.classList.toggle('is-actual', esActual);
     const panelId = `cq-etapa-panel-${indice + 1}`;
     const headId = `cq-etapa-head-${indice + 1}`;
 
@@ -804,12 +836,13 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
     head.setAttribute('aria-expanded', String(abierta));
     head.appendChild(crear('span', 'cq-etapa-chevron', '▸'));
     head.appendChild(crear('span', 'cq-etapa-nombre', etapa.etapa));
+    if (esActual) head.appendChild(crear('span', 'cq-etapa-actual', 'Actual'));
     head.appendChild(
       crear(
         'span',
         'cq-etapa-meta',
         `${etapa.totalFotos} ${etapa.totalFotos === 1 ? 'foto' : 'fotos'} · ${
-          fmtFechaHora(etapa.ultimaFecha) || 'sin fecha'
+          fmtFechaCorta(etapa.ultimaFecha) || 'sin fecha'
         }`,
       ),
     );
@@ -823,7 +856,7 @@ function pintarAvances(orden: OrdenDTO | undefined): void {
       .forEach((foto, i) => {
         preview.appendChild(
           crearMiniaturaAvance(foto, {
-            alt: `Vista previa de ${etapa.etapa} — foto ${i + 1}`,
+            alt: `Vista previa ${i + 1} de ${etapa.etapa} — abrir etapa`,
             clase: 'cq-etapa-preview-foto',
             onClick: () => setAbierta(etapa, true),
           }),

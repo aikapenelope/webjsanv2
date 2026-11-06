@@ -220,6 +220,31 @@ async function correr(nombre, { expediente, url, revision, extra, falla }) {
   window.close();
 }
 
+/* ── 0. Guardia de estilos ─────────────────────────────────────────────────────
+   El timeline se pinta desde JS y esos nodos NO llevan el `data-astro-cid` de
+   Astro. Si alguien vuelve a usar `<style>` con scope, las reglas no aplican y
+   el diseño se rompe en silencio (bug que llegó a producción con el PR #43). */
+const cssDelSitio = (
+  await Promise.all(
+    archivos
+      .filter((f) => f.endsWith('.css'))
+      .map((f) => readFile(`${DIST}_astro/${f}`, 'utf8')),
+  )
+).join('\n');
+
+console.log('\n══ 0 · estilos del timeline ══');
+evaluar(
+  '0 · estilos',
+  [
+    ['CSS del timeline presente', () => cssDelSitio.includes('.cq-etapa-head{')],
+    [
+      'sin scope de Astro en los nodos dinámicos',
+      () => !/\.cq-(?:etapa|avance)[a-z-]*\[data-astro-cid/.test(cssDelSitio),
+    ],
+  ],
+  null,
+);
+
 /* ── A. Expediente más completo de la Base (deep-link) ────────────────────── */
 const ordenA = expCompleto.ordenes[0];
 const fotosA = ordenA?.recepcion?.fotos?.length ?? 0;
@@ -342,10 +367,17 @@ await correr('A · expediente completo (deep-link)', {
     ],
     ['pestaña Avances presente', () => Boolean(window.document.getElementById('cq-tab-avances'))],
     [
-      'Avances sin fotos: empty state y badge oculto',
-      () =>
-        window.document.querySelector('#cq-avances [data-campo="vacio"]').hidden === false &&
-        window.document.getElementById('cq-badge-avances').hidden === true,
+      'estado de Avances coherente con el payload',
+      () => {
+        const vacio = window.document.querySelector('#cq-avances [data-campo="vacio"]');
+        const badge = window.document.getElementById('cq-badge-avances');
+        const conFotos = (ordenA?.avances?.length ?? 0) > 0;
+        return conFotos
+          ? vacio.hidden === true &&
+              badge.hidden === false &&
+              badge.textContent === String(ordenA.totalFotos ?? 0)
+          : vacio.hidden === false && badge.hidden === true;
+      },
     ],
     [
       'pestaña Avances activa su panel',
@@ -787,6 +819,37 @@ await correr('H · avances por etapa', {
         );
       },
     ],
+    [
+      'chip "Actual" solo en la etapa actual',
+      () =>
+        window.document.querySelectorAll('#cq-avances .cq-etapa-actual').length === 1 &&
+        texto(window, '[data-etapa="Etapa 4"] .cq-etapa-actual') === 'Actual',
+    ],
+    [
+      'meta de etapa con fecha corta',
+      () => /^\d+ fotos · \d{2} [a-z]{3}, \d{2}:\d{2}/.test(texto(window, '[data-etapa="Etapa 2"] .cq-etapa-meta')),
+    ],
+    [
+      'sin conteo duplicado en el grupo',
+      () => window.document.querySelectorAll('#cq-etapa-panel-4 .cq-avance-cuenta').length === 0,
+    ],
+  ],
+});
+
+/* ── I. Avances vacío: empty state explícito ─────────────────────────────── */
+const expSinAvances = structuredClone(expCompleto);
+expSinAvances.ordenes[0].avances = [];
+expSinAvances.ordenes[0].totalFotos = 0;
+delete expSinAvances.ordenes[0].ultimaActualizacion;
+
+await correr('I · avances vacío', {
+  expediente: expSinAvances,
+  url: `https://hidromaticosjsan.com/consulta/?placa=${PLACA_COMPLETA}&t4=1234`,
+  revision: (window) => [
+    ['empty state visible', () => visible(window, '#cq-avances [data-campo="vacio"]')],
+    ['badge de la pestaña oculto', () => window.document.getElementById('cq-badge-avances').hidden === true],
+    ['sin secciones de etapa', () => window.document.querySelectorAll('#cq-avances .cq-etapa').length === 0],
+    ['sin acciones', () => window.document.querySelector('#cq-avances [data-campo="acciones"]').hidden === true],
   ],
 });
 
